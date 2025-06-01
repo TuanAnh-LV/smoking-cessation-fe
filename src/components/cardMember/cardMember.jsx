@@ -28,7 +28,7 @@ const CardMemberSection = () => {
           {/* Gói 1 tháng */}
           <div className="member-card monthly">
              <div className="package-header">
-              <span className="package-title-2">1 month package</span>
+              <span className="package-title-2">1 month package </span>
               <span className="package-badge">Preferential price</span>
             </div>
             <div className="package-price">499.000VNĐ</div>

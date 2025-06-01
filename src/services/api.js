@@ -3,12 +3,13 @@ import Cookies from 'js-cookie';
 
 // Tạo instance axios với cấu hình mặc định
 const api = axios.create({
-  baseURL: 'https://67dda021e00db03c406c656d.mockapi.io/',
+  baseURL: 'https://localhost:7066/',
   timeout: 10000,
   headers: {
     
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 // Cấu hình interceptor cho request

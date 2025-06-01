@@ -14,13 +14,17 @@
       display: flex;
       gap: 50px;
   
+      a {
+        text-decoration: none;
+      }
+
       p {
         margin: 0;
         font-size: 14px;
         color: #000;
         cursor: pointer;
         white-space: nowrap;
-  
+        border-bottom: none;
         &:hover {
           font-weight: 500;
         }
@@ -30,6 +34,10 @@
     .auth-buttons {
       display: flex;
       gap: 12px;
+
+      a {
+        text-decoration: none;
+      }
   
       .register {
         background-color: black;
