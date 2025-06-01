@@ -1,0 +1,77 @@
+.quit-plan-page {
+  background: #fff6f6;
+  min-height: 100vh;
+  padding: 40px 0;
+  text-align: center;
+
+  .title {
+    color: #ff5c5c;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: #222;
+    font-size: 1.1rem;
+    margin-bottom: 32px;
+  }
+
+  .reasons-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    text-align: left;
+
+    .reasons-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+
+      .icon {
+        font-size: 1.7rem;
+        margin-right: 10px;
+        color: #ff5c5c;
+      }
+      .reasons-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+    }
+
+    .reasons-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px 32px;
+      margin-bottom: 18px;
+
+      .reason-item {
+        flex: 1 1 45%;
+        display: flex;
+        align-items: center;
+        font-size: 1.08rem;
+        font-weight: 500;
+        margin-bottom: 6px;
+        input[type="checkbox"] {
+          width: 22px;
+          height: 22px;
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .reasons-textarea {
+      width: 100%;
+      min-height: 70px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      padding: 12px 14px;
+      font-size: 1rem;
+      resize: vertical;
+      margin-top: 8px;
+    }
+  }
+}
