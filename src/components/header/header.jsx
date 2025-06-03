@@ -85,6 +85,9 @@ const Header = () => {
         <Link to="/status">
           <p>QuitSmokingPlan</p>
         </Link>
+        <Link to="/coach">
+          <p>Coach</p>
+        </Link>
       </div>
       {/* Conditional rendering based on login status */}
       {isLoggedIn ? (

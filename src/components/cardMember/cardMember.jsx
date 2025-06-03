@@ -47,7 +47,7 @@ const CardMemberSection = () => {
             <div className="package-header">
               <span className="package-title-2">12 month package</span>
             </div>
-            <div className="package-price">4.399.000VNĐ</div>
+            <div className="package-price">499.000VNĐ</div>
             <p className="package-description">
               ............................................................................
             </p>
