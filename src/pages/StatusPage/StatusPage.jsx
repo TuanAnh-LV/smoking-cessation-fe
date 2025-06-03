@@ -1,6 +1,7 @@
 import React from "react";
 import "./StatusPage.scss";
 import { FaSmoking } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const StatusPage = () => {
   return (
@@ -37,7 +38,7 @@ const StatusPage = () => {
             <input type="number" placeholder="3.5" />
           </div>
         </div>
-        <button className="plan-btn">Make a Plan</button>
+        <Link to='/quit-plan'><button className="plan-btn">Make a Plan</button></Link>
       </div>
       <div className="summary-row">
         <div className="summary-box">

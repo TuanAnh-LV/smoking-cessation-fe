@@ -44,7 +44,7 @@ const styles = {
 
   },
   container: {
-    backgroundColor: '#FFF9F9',
+    backgroundColor: '#fefbf8',
 
     gap: '60px',
     width: '100%',

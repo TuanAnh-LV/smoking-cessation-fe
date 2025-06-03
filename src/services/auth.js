@@ -5,34 +5,36 @@ const authService = {
   // Đăng nhập
   login: async (email, password) => {
     try {
+      console.log('Attempting login with:', { email }); // Debug log
       const response = await apiClient.post('/api/Authen/Login', {
         email,
         password
       });
       
-      console.log('Full API Response:', response); // Log toàn bộ response để debug
+      console.log('Full API Response:', response);
       
-      // Kiểm tra cấu trúc response.data
       if (response.data) {
         console.log('Response data structure:', response.data);
         
-        // Kiểm tra token trong response
         const token = response.data.Token || response.data.token;
         console.log('Extracted token:', token);
         
         if (token) {
-          // Lưu token vào cookie
+          console.log('Setting authToken cookie...'); // Debug log
+          console.log('Token value before setting cookie:', token); // Debug log
           Cookies.set('authToken', token, {
             expires: 7,
             path: '/',
             sameSite: 'Lax'
           });
           
-          // Verify token was set
           const savedToken = Cookies.get('authToken');
           console.log('Saved token in cookie:', savedToken);
           
-          // Lưu thông tin user nếu có
+          // Dispatch custom event for auth state change
+          window.dispatchEvent(new Event('authStateChange'));
+          console.log('Dispatched authStateChange event'); // Debug log
+          
           if (response.data.user) {
             localStorage.setItem('user', JSON.stringify(response.data.user));
           }

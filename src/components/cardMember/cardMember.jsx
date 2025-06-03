@@ -25,23 +25,7 @@ const CardMemberSection = () => {
             <button className="package-button">Phiên bản đang sử dụng</button>
           </div>
 
-          {/* Gói 1 tháng */}
-          <div className="member-card monthly">
-             <div className="package-header">
-              <span className="package-title-2">1 month package </span>
-              <span className="package-badge">Preferential price</span>
-            </div>
-            <div className="package-price">499.000VNĐ</div>
-             <p className="package-description">Ready to answer all questions and create a detox plan. Connect with coaches anytime, anywhere.</p>
-            <ul className="package-features">
-              <li><FaCheck className="check-icon" /> .................................</li>
-              <li><FaCheck className="check-icon" /> .................................................</li>
-              <li><FaCheck className="check-icon" /> ....................................</li>
-              <li><FaCheck className="check-icon" /> .................................</li>
-            </ul>
-            <button className="package-button primary">Upgrade now</button>
-          </div>
-
+          
           {/* Gói 12 tháng */}
           <div className="member-card yearly">
              <div className="package-header">

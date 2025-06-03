@@ -1,6 +1,10 @@
 import React from "react";
 import "./QuitPlan.scss";
 import { FaHeart } from "react-icons/fa";
+import CardPlan from "../../components/cardPlan/CardPlan";
+import ImplementationTime from "../../components/ImplementationTime/ImplementationTime";
+import Coach from "../../components/coach/coach";
+import NotificationSettings from "../../components/NotificationSettings/NotificationSettings";
 
 const reasons = [
   "Health for yourself and your family",
@@ -40,6 +44,11 @@ const QuitPlan = () => {
           placeholder="Describe in detail your reasons..."
         />
       </div>
+      <CardPlan />
+      <ImplementationTime />
+      <Coach />
+      {/* set up notifications */}
+      <NotificationSettings/>
     </div>
   );
 };

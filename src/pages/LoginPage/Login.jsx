@@ -35,6 +35,8 @@ const LoginPage = () => {
             await authService.login(formData.email, formData.password);
             console.log('authService.login finished successfully'); // Log 3
             console.log('Login successful, attempting to navigate...');
+            // Dispatch custom event to notify about login status change
+            window.dispatchEvent(new Event('authStateChange'));
             navigate('/'); // Chuyển hướng về trang chủ sau khi đăng nhập thành công
         } catch (error) {
             console.error('Login error caught in handleSubmit:', error); // Log 4

@@ -1,31 +1,111 @@
 .header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 30px 40px;
-    background-color: #FFF9F9;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     flex-wrap: wrap; // Cho responsive
   
     .logo {
-      width:60px;
+      height: 40px;
+      width: auto;
     }
   
     .nav-links {
       display: flex;
-      gap: 50px;
+      gap: 4rem;
   
       a {
         text-decoration: none;
-      }
-
-      p {
-        margin: 0;
-        font-size: 14px;
-        color: #000;
-        cursor: pointer;
-        white-space: nowrap;
-        border-bottom: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.3s ease;
+  
         &:hover {
+          color: #dd4b5f;
+        }
+      }
+    }
+  
+    .logged-in-icons {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+  
+      .notification-button {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #f0f0f0;
+        }
+  
+        .icon {
+          font-size: 1.5rem;
+          color: #333;
+        }
+  
+        .notification-badge {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background-color: #ff4444;
+          color: white;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          font-size: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+  
+      .user-avatar {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #f0f0f0;
+        }
+  
+        .icon {
+          font-size: 1.8rem;
+          color: #333;
+        }
+      }
+  
+      .logout-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #333;
+  
+        &:hover {
+          background-color: #e9ecef;
+          border-color: #ced4da;
+        }
+  
+        .icon {
+          font-size: 1.2rem;
+        }
+  
+        span {
+          font-size: 0.9rem;
           font-weight: 500;
         }
       }
@@ -33,32 +113,36 @@
   
     .auth-buttons {
       display: flex;
-      gap: 12px;
-
-      a {
-        text-decoration: none;
+      gap: 1rem;
+  
+      .login, .register {
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+  
+      .login {
+        background-color: transparent;
+        border: 1px solid black;
+        color: #020a13;
+  
+        &:hover {
+          background-color: #FF2D55;
+          color: white;
+        }
       }
   
       .register {
         background-color: black;
+        
         color: white;
-        padding: 8px 20px;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 999px;
-        border: none;
-        cursor: pointer;
-      }
   
-      .login {
-        background-color: #ff2d55;
-        color: white;
-        padding: 8px 20px;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 999px;
-        border: none;
-        cursor: pointer;
+        &:hover {
+          background-color: #FF2D55;
+          color: white;
+        }
       }
     }
   

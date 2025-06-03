@@ -1,0 +1,152 @@
+.progress-page-container {
+  font-family: sans-serif;
+  padding: 20px;
+  background-color: #fefbf8; /* Approximate background color */
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  color: #e57373; /* Approximate title color */
+  font-size: 2em;
+  margin-bottom: 5px;
+}
+
+header p {
+  color: #555;
+  font-size: 1em;
+}
+
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background-color: #ffebee; /* Approximate card background color */
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+  margin: 0 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit text color to avoid default blue link color */
+}
+
+.stat-card h2 {
+  font-size: 1.8em;
+  margin-bottom: 5px;
+  color: #e57373; /* Approximate number color */
+}
+
+.stat-card:nth-child(2) h2 {
+    color: #e57373;
+}
+
+.stat-card:nth-child(3) h2 {
+    color: #e57373;
+}
+
+.stat-card p {
+  color: #555;
+  font-size: 1em;
+}
+
+.progress-section {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.progress-section h2 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  color: #555;
+}
+
+td {
+    color: #333;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.date-info p {
+  font-size: 0.9em;
+  color: #777;
+  margin: 5px 0;
+}
+
+.stat-card:nth-child(1) {
+    background-color: #ffebee;
+}
+
+.stat-card:nth-child(2) {
+    background-color: #f8e0e0; /* Slightly different color for second card */
+}
+
+.stat-card:nth-child(3) {
+    background-color: #f8e0e0; /* Slightly different color for third card */
+}
+
+.stat-card svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+td:nth-child(3) {
+    color: #e57373;
+}
+
+td:nth-child(4) span {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+td:nth-child(4) span.hard {
+    background-color: #ff9800; /* Orange */
+}
+
+td:nth-child(4) span.Better {
+    background-color: #4caf50; /* Green */
+}
+
+td:nth-child(4) span.Positive {
+    background-color: #e57373; /* Reddish */
+}
+
+td:nth-child(2) span {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #555;
+     background-color: #eee;
+} 

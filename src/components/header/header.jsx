@@ -5,6 +5,9 @@ import LogoBlack from '../../assets/LogoBlack.png'; // Import the logo image
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../../services/auth'; // Import authService
 import Cookies from 'js-cookie'; // Import Cookies
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { FaRegUserCircle } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
 // Import icons if needed for notification and avatar
 // import { IoMdNotificationsOutline } from "react-icons/io"; 
 // import { FaRegUserCircle } from "react-icons/fa";
@@ -16,23 +19,34 @@ const Header = () => {
   // Function to check login status
   const checkLoginStatus = () => {
     const token = Cookies.get('authToken');
+    console.log('Current authToken:', token); // Debug log
     setIsLoggedIn(!!token);
+    console.log('Login status updated:', !!token); // Debug log
   };
 
   useEffect(() => {
+    console.log('Header component mounted'); // Debug log
     // Check login status when component mounts
     checkLoginStatus();
 
-    // Add event listener for storage changes
+    // Add event listener for storage changes and custom auth state changes
     const handleStorageChange = () => {
+      console.log('Storage changed'); // Debug log
+      checkLoginStatus();
+    };
+
+    const handleAuthStateChange = () => {
+      console.log('Auth state changed'); // Debug log
       checkLoginStatus();
     };
 
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('authStateChange', handleAuthStateChange);
     
     // Cleanup
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('authStateChange', handleAuthStateChange);
     };
   }, []);
 
@@ -48,20 +62,27 @@ const Header = () => {
 
       <div className='nav-links'>
         <Link to='/'><p>Home</p></Link>
-        <Link to='/blog'><p>Blog</p></Link>
-        <Link to='/package'><p>Member ship Package</p></Link>
+        <Link to='/blog'><p>Comunity</p></Link>
         <Link to='achievements'><p>Achievements</p></Link>
+        <Link to='/progress'><p>Track Progress</p></Link>
+        <Link to='/status'><p>QuitSmokingPlan</p></Link>
       </div>
 
       {/* Conditional rendering based on login status */}
       {isLoggedIn ? (
         // If logged in, show avatar and notification
         <div className='logged-in-icons'>
-          {/* Placeholder for Notification Button */}
-          <button className='notification-button'>Notification</button> {/* Replace with icon like <IoMdNotificationsOutline /> */}
-          {/* Placeholder for User Avatar */}
-          <div className='user-avatar'>Avatar</div> {/* Replace with img or component like <FaRegUserCircle /> */}
-          <button onClick={handleLogout} className='logout-button'>Đăng xuất</button>
+          <button className='notification-button'>
+            <IoMdNotificationsOutline className="icon" />
+            <span className="notification-badge">3</span>
+          </button>
+          <div className='user-avatar'>
+            <FaRegUserCircle className="icon" />
+          </div>
+          <button onClick={handleLogout} className='logout-button'>
+            <FiLogOut className="icon" />
+            <span>Đăng xuất</span>
+          </button>
         </div>
       ) : (
         // If not logged in, show login and register buttons
