@@ -1,7 +1,5 @@
 .card-member-section {
-  padding: 80px 0;
-  background-color: #fefbf8;
-
+  margin-bottom: 80px;
   .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -9,10 +7,10 @@
     text-align: center; // Center content by default
 
     h2 {
-      font-size: 48px;
-      font-weight: 400;
-      color: red; 
-      margin-bottom: 40px;
+      font-size: 64px;
+      font-weight: 600;
+      color: #804622;
+      margin-bottom: 50px;
     }
 
     .cards-container {
@@ -44,27 +42,26 @@
         .package-title {
           font-size: 18px;
           font-weight: 600;
-          background-color: #e0e0e0; // Gray background for title
+          color: #9c7055;
+          background-color: #ede0cf; // Gray background for title
           padding: 4px 12px 4px 12px;
-          gap:10px;
+          gap: 10px;
           border-radius: 15px; // Pill shape
         }
         .package-title-2 {
           font-size: 18px;
-          color:red;
+          color: #9c7055;
           font-weight: 600;
-          background-color: #F9DEDC; // Gray background for title
+          background-color: #ede0cf; // Gray background for title
           padding: 10px 12px 4px 12px;
-          gap:0px;
+          gap: 0px;
           border-radius: 15px; // Pill shape
         }
-        
 
         .package-badge {
-            font-size: 14px;
-            font-weight: 500;
-            color: red; // Pink color for badge
-            
+          font-size: 14px;
+          font-weight: 500;
+          color: red; // Pink color for badge
         }
       }
 
@@ -75,7 +72,7 @@
         margin-bottom: 10px;
 
         &.free {
-            color: #000; // Black color for FREE
+          color: #000; // Black color for FREE
         }
       }
 
@@ -101,7 +98,6 @@
           color: #333;
 
           .check-icon {
-            
             margin-right: 10px;
           }
         }
@@ -120,56 +116,54 @@
         transition: background-color 0.3s ease;
 
         &.primary {
-            background-color: #FF2D55; // Pink background for primary button
-            color: white;
+          background-color: #ff2d55; // Pink background for primary button
+          color: white;
 
-            &:hover {
-                background-color: rgb(201, 145, 145); // Darker pink on hover
-            }
+          &:hover {
+            background-color: rgb(201, 145, 145); // Darker pink on hover
+          }
         }
 
         &:not(.primary) {
-            background-color: #000; // Black background for other buttons
-            color: white;
+          background-color: #000; // Black background for other buttons
+          color: white;
 
-            &:hover {
-                background-color: #333; // Darker gray on hover
-            }
+          &:hover {
+            background-color: #333; // Darker gray on hover
+          }
         }
         &.super {
           background-color: white; // Pink background for primary button
-          color: red;
-          border:1px solid #D7D7D7;
+          color: black;
+          border: 1px solid #d7d7d7;
           &:hover {
-              background-color: rgb(201, 145, 145); // Darker pink on hover
+            color: white;
+            background-color: #865b40; // Darker pink on hover
           }
-      }
-        
+        }
       }
 
       &.monthly {
         background-color: white; // Lighter pink background for monthly card
 
         .package-title {
-             background-color: #F9DEDC; // Lighter pink for title background
+          background-color: #f9dedc; // Lighter pink for title background
         }
 
-         .package-price {
-            color: black; // Darker pink for price
-         }
+        .package-price {
+          color: black; // Darker pink for price
+        }
 
         .package-features li .check-icon {
-           
         }
       }
 
       &.yearly {
-         .package-price {
-            color: red; // Pink color for price
-         }
+        .package-price {
+          color: black; // Pink color for price
+        }
 
-         .package-features li .check-icon {
-            
+        .package-features li .check-icon {
         }
       }
     }
@@ -203,7 +197,7 @@
         }
 
         .package-badge {
-            font-size: 12px; // Adjust font size
+          font-size: 12px; // Adjust font size
         }
       }
 
@@ -264,7 +258,7 @@
         }
 
         .package-badge {
-            font-size: 11px; // Adjust font size
+          font-size: 11px; // Adjust font size
         }
       }
 
@@ -297,4 +291,4 @@
       }
     }
   }
-} 
+}

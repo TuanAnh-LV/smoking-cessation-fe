@@ -38,7 +38,9 @@ const StatusPage = () => {
             <input type="number" placeholder="3.5" />
           </div>
         </div>
-        <Link to='/quit-plan'><button className="plan-btn">Make a Plan</button></Link>
+        <Link to="/quit-plan">
+          <button className="plan-btn">Make a Plan</button>
+        </Link>
       </div>
       <div className="summary-row">
         <div className="summary-box">
@@ -50,7 +52,7 @@ const StatusPage = () => {
           <div className="summary-value">378.875 VNĐ</div>
         </div>
         <div className="summary-box">
-          <div>Điếu thuốc /năm</div>
+          <div>Cigarettes/year</div>
           <div className="summary-value">378.875 VNĐ</div>
         </div>
       </div>

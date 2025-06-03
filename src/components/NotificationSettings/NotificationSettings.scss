@@ -1,7 +1,7 @@
 .notification-settings-container {
   border-radius: 8px;
   padding: 20px;
-  background-color: #fff;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
   max-width: 980px; /* Adjust max-width as needed */
   margin: 20px auto; /* Center the container and add some top/bottom margin */
 }
@@ -27,7 +27,7 @@
   display: flex;
   justify-content: space-around; /* Space out the two sections */
   margin-bottom: 20px;
-    
+
   .reminder-section,
   .achievements-section {
     h3 {
@@ -64,4 +64,4 @@
   &:hover {
     background-color: #333;
   }
-} 
+}

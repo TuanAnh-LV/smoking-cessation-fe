@@ -1,0 +1,379 @@
+.community-page {
+  padding: 50px 50px;
+
+  min-height: 100vh;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    & .community-page__join-btn {
+      background: #9c7055;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      &:hover {
+        background: #64391e;
+      }
+    }
+  }
+
+  &__content {
+    display: flex;
+    gap: 32px;
+  }
+
+  &__left {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__right {
+    flex: 1;
+    min-width: 320px;
+  }
+}
+
+.share-story {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  h2 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+    margin-bottom: 12px;
+    resize: vertical;
+    font-size: 1rem;
+  }
+
+  .achievement-list {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .achievement-item {
+      background: #f3f4f6;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
+  &__btn {
+    background: #9c7055;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover {
+      background: #966644;
+    }
+  }
+}
+
+.community-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  .post {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    &__avatar {
+      width: 44px;
+      height: 44px;
+      background: #ede0cf;
+
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    &__content {
+      flex: 1;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+
+      .post__author {
+        font-weight: 600;
+        color: #22223b;
+      }
+      .post__badge {
+        background: #ede0cf;
+        color: #b45309;
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+      .post__time {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-left: auto;
+      }
+    }
+
+    &__achievement {
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      font-size: 0.97rem;
+      color: #b45309;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    &__text {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    &__actions {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      font-size: 0.95rem;
+
+      .post__encourage {
+        color: #9c7055;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .post--highlight {
+    border: 2px solid #ede0cf;
+    background: #fffbe9;
+  }
+}
+
+.community-chat {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 10px;
+
+    .community-chat__online {
+      color: #9c7055;
+      font-size: 0.95rem;
+    }
+  }
+
+  &__messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+  }
+
+  .chat-message {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+
+    &__avatar {
+      width: 32px;
+      height: 32px;
+      background: #ede0cf;
+
+      font-weight: bold;
+      font-size: 1rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    &__content {
+      background: #f3f4f6;
+      border-radius: 8px;
+      padding: 6px 12px;
+      min-width: 120px;
+      max-width: 220px;
+    }
+
+    &__author {
+      font-weight: 600;
+      margin-right: 6px;
+    }
+    &__time {
+      color: #6b7280;
+      font-size: 0.85rem;
+    }
+  }
+
+  &__input {
+    display: flex;
+    gap: 8px;
+
+    input {
+      flex: 1;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      padding: 8px 12px;
+      font-size: 1rem;
+    }
+
+    .community-chat__send-btn {
+      background: #9c7055;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      &:hover {
+        background: #6366f1;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .community-page {
+    padding: 20px; /* Reduce padding on smaller screens */
+
+    &__header {
+      flex-direction: column; /* Stack header items */
+      align-items: flex-start;
+      gap: 10px; /* Add space between stacked items */
+
+      h1 {
+        font-size: 1.8rem; /* Slightly smaller title */
+      }
+
+      & .community-page__join-btn {
+        width: 100%; /* Make button full width */
+        text-align: center;
+      }
+    }
+
+    &__content {
+      flex-direction: column; /* Stack left and right columns */
+      gap: 20px; /* Adjust gap */
+    }
+
+    &__left {
+      flex: 1 1 auto; /* Allow flex item to grow/shrink */
+      width: 100%; /* Full width */
+    }
+
+    &__right {
+      flex: 1 1 auto; /* Allow flex item to grow/shrink */
+      min-width: unset; /* Remove min-width constraint */
+      width: 100%; /* Full width */
+    }
+
+    .share-story {
+      padding: 15px; /* Adjust padding */
+
+      .achievement-list {
+        flex-wrap: wrap; /* Allow achievements to wrap */
+        gap: 8px; /* Adjust gap */
+      }
+    }
+
+    .community-posts {
+      .post {
+        padding: 15px; /* Adjust padding */
+        gap: 10px; /* Adjust gap */
+
+        &__avatar {
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+        }
+
+        &__header {
+          flex-wrap: wrap; /* Allow header items to wrap */
+          gap: 6px; /* Adjust gap */
+
+          .post__time {
+            margin-left: 0; /* Remove auto margin */
+          }
+        }
+
+        &__actions {
+          flex-wrap: wrap; /* Allow actions to wrap */
+          gap: 10px; /* Adjust gap */
+        }
+      }
+    }
+
+    .community-chat {
+      .community-chat__messages {
+        /* May need max-height and overflow-y if chat box has fixed height */
+      }
+      .community-chat__input {
+        input {
+          padding: 8px 10px; /* Adjust input padding */
+        }
+        button {
+          padding: 8px 15px; /* Adjust button padding */
+        }
+      }
+    }
+  }
+}

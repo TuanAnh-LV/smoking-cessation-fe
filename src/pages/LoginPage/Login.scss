@@ -3,7 +3,6 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #fefbf8; /* Approximate background color */
   padding: 80px;
 
   .error-message {
@@ -25,7 +24,7 @@
   text-align: center; // Center content inside the container
   width: 100%;
   max-width: 639px; // Increased maximum width
-  
+
   gap: 32px;
 }
 
@@ -141,7 +140,7 @@
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       flex: 1;
       border-bottom: 1px solid #e0e0e0; // Light gray line
       margin: 0 10px;
@@ -161,11 +160,11 @@
     margin: 0 auto 30px auto; // Increased bottom margin
 
     .google-icon {
-        font-size: 30px; // Increased icon size
+      font-size: 30px; // Increased icon size
     }
 
     &:hover {
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); // Subtle shadow on hover
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); // Subtle shadow on hover
     }
   }
 
@@ -246,18 +245,18 @@
       font-size: 14px; // Adjusted font size for smaller screens
     }
 
-     .google-login-button {
-       width: 50px; // Adjusted size for smaller screens
-       height: 50px; // Adjusted size for smaller screens
-       margin: 0 auto 20px auto; // Adjusted margin for smaller screens
+    .google-login-button {
+      width: 50px; // Adjusted size for smaller screens
+      height: 50px; // Adjusted size for smaller screens
+      margin: 0 auto 20px auto; // Adjusted margin for smaller screens
 
-       .google-icon {
-         font-size: 24px; // Adjusted icon size for smaller screens
-       }
-     }
+      .google-icon {
+        font-size: 24px; // Adjusted icon size for smaller screens
+      }
+    }
 
     .signup-link {
       font-size: 14px; // Adjusted font size for smaller screens
     }
   }
-} 
+}

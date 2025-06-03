@@ -7,6 +7,9 @@ import StatusPage from "../pages/StatusPage/StatusPage";
 import QuitPlan from "../pages/QuitPlan/QuitPlan";
 import ProgressPage from "../pages/ProgressPage/ProgressPage";
 import AchievementPage from "../pages/AchievementPage/AchievementPage";
+import CommunityPage from "../pages/CommunityPage/CommunityPage";
+import ProfilePage from "../pages/ProfilePage/ProfilePage";
+import PaymentPage from "../pages/PaymentPage/PaymentPage";
 // import thêm các page khác nếu có
 
 const AppRoutes = () => {
@@ -21,6 +24,9 @@ const AppRoutes = () => {
       <Route path="/quit-plan" element={<QuitPlan />} />
       <Route path="/progress" element={<ProgressPage />} />
       <Route path="/achievements" element={<AchievementPage />} />
+      <Route path="/community" element={<CommunityPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/payment" element={<PaymentPage />} />
     </Routes>
   );
 };

@@ -1,17 +1,19 @@
 .progress-page-container {
   font-family: sans-serif;
   padding: 20px;
-  background-color: #fefbf8; /* Approximate background color */
 }
 
 header {
   text-align: center;
+  font-weight: 600;
+  
   margin-bottom: 30px;
 }
 
 header h1 {
-  color: #e57373; /* Approximate title color */
-  font-size: 2em;
+  color: black; /* Approximate title color */
+  font-size: 3em;
+  font-weight: 600;
   margin-bottom: 5px;
 }
 
@@ -41,19 +43,19 @@ header p {
 .stat-card h2 {
   font-size: 1.8em;
   margin-bottom: 5px;
-  color: #e57373; /* Approximate number color */
+  color: BLACK; /* Approximate number color */
 }
 
 .stat-card:nth-child(2) h2 {
-    color: #e57373;
+    color: BLACK;
 }
 
 .stat-card:nth-child(3) h2 {
-    color: #e57373;
+    color: BLACK;
 }
 
 .stat-card p {
-  color: #555;
+  color: BLACK;
   font-size: 1em;
 }
 
@@ -101,15 +103,15 @@ tbody tr:last-child td {
 }
 
 .stat-card:nth-child(1) {
-    background-color: #ffebee;
+    background-color: #EDE0CD;
 }
 
 .stat-card:nth-child(2) {
-    background-color: #f8e0e0; /* Slightly different color for second card */
+    background-color: #E0C0A9; /* Slightly different color for second card */
 }
 
 .stat-card:nth-child(3) {
-    background-color: #f8e0e0; /* Slightly different color for third card */
+    background-color: #9c7055; /* Slightly different color for third card */
 }
 
 .stat-card svg {

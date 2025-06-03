@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import './communitycard.scss'; // Import the SCSS file
+import React, { useEffect, useState } from "react";
+import "./communitycard.scss"; // Import the SCSS file
 import { FaQuoteLeft } from "react-icons/fa";
-import apiClient from '../../services/api';
+import apiClient from "../../services/api";
 
 // Sample data (replace with API call later)
 // Removed sample data as we are fetching from API
@@ -16,10 +16,10 @@ const CommunityCardSection = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await apiClient.get('/community');
+        const data = await apiClient.get("/community");
         setTestimonials(data);
       } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu testimonials:', error);
+        console.error("Lỗi khi lấy dữ liệu testimonials:", error);
       }
     };
 
@@ -28,7 +28,7 @@ const CommunityCardSection = () => {
 
   // Function to load more testimonials
   const loadMore = () => {
-    setDisplayCount(prevCount => prevCount + 6); // Increase display count by 6 (or any number you prefer)
+    setDisplayCount((prevCount) => prevCount + 6); // Increase display count by 6 (or any number you prefer)
   };
 
   // Determine if there are more testimonials to load
@@ -39,23 +39,31 @@ const CommunityCardSection = () => {
       <div className="container">
         <h2>Sharing Community for Members</h2>
         <div className="cards-grid">
-          {testimonials.slice(0, displayCount).map((card, index) => ( // Slice the array to display only up to displayCount
-            <div key={index} className="community-card">
-              <div className="quote-icon"><FaQuoteLeft />
-              </div>
-              <p className="quote-text">{card.quote}</p>
-              <div className="card-footer">
-                <img src={card.image} alt={card.name} className="avatar" />
-                <div className="author-info">
-                  <p className="author-name">{card.name}</p>
-                  <p className="author-title">{card.title}</p>
+          {testimonials.slice(0, displayCount).map(
+            (
+              card,
+              index // Slice the array to display only up to displayCount
+            ) => (
+              <div key={index} className="community-card">
+                <div className="quote-icon">
+                  <FaQuoteLeft />
+                </div>
+                <p className="quote-text">{card.quote}</p>
+                <div className="card-footer">
+                  <img src={card.image} alt={card.name} className="avatar" />
+                  <div className="author-info">
+                    <p className="author-name">{card.name}</p>
+                    <p className="author-title">{card.title}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
         {hasMore && ( // Conditionally render the button
-          <button className="view-more-button" onClick={loadMore}>More</button>
+          <button className="view-more-button" onClick={loadMore}>
+            More
+          </button>
         )}
       </div>
     </div>
