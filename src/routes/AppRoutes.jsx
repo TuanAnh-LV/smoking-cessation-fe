@@ -10,6 +10,9 @@ import AchievementPage from "../pages/AchievementPage/AchievementPage";
 import CommunityPage from "../pages/CommunityPage/CommunityPage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
+import Coach from "../pages/CoachPage/CoachPage";
+import CoachPage from "../pages/CoachPage/CoachPage";
+import ProfileCoach from "../pages/ProfileCoach/ProfileCoach";
 // import thêm các page khác nếu có
 
 const AppRoutes = () => {
@@ -27,6 +30,8 @@ const AppRoutes = () => {
       <Route path="/community" element={<CommunityPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/coach" element={<CoachPage/>} />
+      <Route path="/profile-coach" element={<ProfileCoach/>} />
     </Routes>
   );
 };
