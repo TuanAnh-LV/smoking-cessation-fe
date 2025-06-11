@@ -1,19 +1,25 @@
-import { useState } from 'react'
-import Header from './components/header/header'
-import Footer from './components/footer/footer'
-import AppRoutes from './routes/AppRoutes'
-function App() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main style={{ flex: 1 }}>
-        {/* Page content goes here */}
-        <AppRoutes /> {/* Đây là nơi hiển thị các route */}
+import { Suspense } from "react";
+import { BrowserRouter as Router, useRoutes } from "react-router-dom";
+import routes from "./routes/routes";
+// import Loading from "./app/Loading";
+// import { useSelector } from "react-redux";
 
-      </main>
-      <Footer />
-    </div>
-  )
+function AppRoutes() {
+  const routing = useRoutes(routes);
+  return routing;
 }
 
-export default App
+function App() {
+  // const isLoading = useSelector((state) => state.loading);
+
+  return (
+    <Router>
+      {/* {isLoading && <Loading />} */}
+      <Suspense fallback={<div>Đang tải...</div>}>
+        <AppRoutes />
+      </Suspense>
+    </Router>
+  );
+}
+
+export default App;

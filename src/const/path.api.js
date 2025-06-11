@@ -1,0 +1,70 @@
+export const API = {
+    COMMON: {
+      PUBLIC_CATEGORY: "api/client/category/search",
+    },
+    AUTH: {
+      LOGIN: "/auth/login",
+      LOGIN_GOOGLE: "/auth/google-login",
+      REGISTER: "/auth/register",
+      CHANGE_PASSWORD: "/auth/change-password",
+      RESET_PASSWORD: "/auth/reset-password",
+      FORGOT_PASSWORD: "/auth/forgot-password",
+      VERIFY_NEW_EMAIL: "/auth/verify-email",
+      GET_ALL_USER:"/users"
+    },
+    USER: {
+      GET_CURRENT_USER_INFO: "/users/me",
+      UPDATE_CURRENT_USER: "/users",
+      GET_COACH_OF_USER:"/users/:id/coach",
+      GET_CURRENT_MEMBERSHIP:"/users/:id/membership",
+      GET_ALL_QUITPAN_OF_USER:"/users/:id/quit-plans",
+      GET_USER_BY_ID:"/users/:id",
+      DELETE_USER:"/users/:id"
+    },
+    USERMEMBERSHIP:{
+      GET_CURRENT_USERMEMBERSHIP:"/user-membership/me",
+      GET_HISTORY:"/user-membership/me/history",
+      GET_ALL_USERMEMBERSHIP:"/user-membership"
+
+    },
+    ADMIN: {
+
+    },
+    BADGES:{
+      GET_ALL_BADGES:"/badges",
+      CREATE_BADGES:"/badges",
+      GET_BADGES_BY_ID:"/badges/:id",
+      UPDATE_BADGES:"/badges/:id",
+      DELETE_BADGES:"/badges/:id"
+    },
+    MEMBERSHIP:{
+      CREATE_MEMBERSHIP:"/memberships",
+      GET_ALL_MEMBERSHIP:"/memberships",
+      GET_MEMBERSHIP_BY_ID:"/memberships/:id",
+      UPDATE_MEMBERSHIP:"/memberships/:id",
+      DELETE_MEMBERSHIP:"memberships/:id"
+    },
+    PAYMENT:{
+      CREATE_ORDER_PAYPAL:"/payments/paypal/create",
+      ACCECPT_PAYPAL:"/payments/paypal/capture",
+      GET_FOR_USER:"/transactions/me",
+      GET_ALL_TRANSACTION:"/admin/transactions"
+    },
+    QUITPLAN:{
+      CREATE_QUIT_PLAN:"/quit-plans",
+      GET_QUIT_PLAN_OF_USER:"/quit-plans/:id",
+      GET_DETAIL_QUITPLAN_OF_USER:"/quit-plans/:id",
+      UPDATE_QUITPLAN:"/quit-plans/:id/status"
+    },
+    QUITPLANPROGRESS:{
+      RECORD_PROGRESS:"/quit-plans/:id/stages/:id/progress",
+      GET_ALL_PROGRESS:"/quit-plans/:id/stages/:id/progress",
+    },
+    QUITSTAGE:{
+      GET_ALL_STAGE_OF_QUITPLAN:"/quit-plans/:id/stages"
+    },
+    SMOKINGSTATUS:{
+      RECORD_SMOKING:"/quit-plan/:id/stages/:id/status",
+      GET_ALL_SMOKING:"/quit-plan/:id/stages/:id/status"
+    }
+  };
