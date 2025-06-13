@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './NotificationSettings.scss'; // Import the SCSS file
+import React, { useState } from "react";
+import "./NotificationSettings.scss"; // Import the SCSS file
 import { IoIosNotificationsOutline } from "react-icons/io";
 
 const NotificationSettings = () => {
@@ -14,23 +14,19 @@ const NotificationSettings = () => {
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
-    setSettings(prevState => ({
+    setSettings((prevState) => ({
       ...prevState,
-      [name]: checked
+      [name]: checked,
     }));
-  };
-
-  const handleSavePlan = () => {
-    console.log('Saving settings:', settings);
-    // Add logic here to save settings, e.g., send to an API
   };
 
   return (
     <div className="notification-settings-container">
       <div className="settings-header">
         {/* Replace with an actual bell icon */}
-        <span className="bell-icon"><IoIosNotificationsOutline />
-        </span> 
+        <span className="bell-icon">
+          <IoIosNotificationsOutline />
+        </span>
         <h2>Set up notifications</h2>
       </div>
       <div className="settings-content">
@@ -66,7 +62,7 @@ const NotificationSettings = () => {
         </div>
         <div className="achievements-section">
           <h3>Achievements</h3>
-           <label>
+          <label>
             <input
               type="checkbox"
               name="achievementsNewBadge"
@@ -95,9 +91,8 @@ const NotificationSettings = () => {
           </label>
         </div>
       </div>
-      <button className="save-button" onClick={handleSavePlan}>Save plan</button>
     </div>
   );
 };
 
-export default NotificationSettings; 
+export default NotificationSettings;

@@ -1,62 +1,65 @@
 import React, { useState, useEffect } from "react";
 import "./StatusPage.scss";
 import { FaSmoking } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { SmokingStatusService } from "../../services/smokingStatus.service";
+import { useNavigate } from "react-router-dom";
 
 const StatusPage = () => {
-  // State variables for input fields
   const [cigarettesPerDay, setCigarettesPerDay] = useState("");
-  const [suctionFrequency, setSuctionFrequency] = useState(""); // Assuming this might be a number input later or has numerical value
+  const [suctionFrequency, setSuctionFrequency] = useState("");
   const [pricePerPackage, setPricePerPackage] = useState("");
   const [packsPerWeek, setPacksPerWeek] = useState("");
 
-  // State variables for calculated outputs
   const [monthlyExpenses, setMonthlyExpenses] = useState("0");
   const [annualCosts, setAnnualCosts] = useState("0");
   const [cigarettesPerYear, setCigarettesPerYear] = useState("0");
 
-  // Recalculate outputs whenever inputs change
+  const navigate = useNavigate();
+
   useEffect(() => {
     const numCigarettesPerDay = parseFloat(cigarettesPerDay) || 0;
     const numPricePerPackage = parseFloat(pricePerPackage) || 0;
     const numPacksPerWeek = parseFloat(packsPerWeek) || 0;
 
-    // Assuming 20 cigarettes per package for calculation
+    const monthly = numPacksPerWeek * numPricePerPackage;
+    const annual = monthly * 12;
+    const yearlyCigs = numCigarettesPerDay * 365;
 
-    // Calculations
-    const calculatedMonthlyExpenses = numPacksPerWeek * numPricePerPackage;
-    const calculatedAnnualCosts = numPacksPerWeek * numPricePerPackage * 52;
-    const calculatedCigarettesPerYear = numCigarettesPerDay * 365;
-
-    // Format outputs
-    const formattedMonthlyExpenses = calculatedMonthlyExpenses.toLocaleString(
-      "vi-VN",
-      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+    setMonthlyExpenses(
+      monthly.toLocaleString("vi-VN", { minimumFractionDigits: 2 })
     );
-    const formattedAnnualCosts = calculatedAnnualCosts.toLocaleString("vi-VN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    const formattedCigarettesPerYear =
-      calculatedCigarettesPerYear.toLocaleString("vi-VN", {
-        maximumFractionDigits: 0,
-      });
+    setAnnualCosts(
+      annual.toLocaleString("vi-VN", { minimumFractionDigits: 2 })
+    );
+    setCigarettesPerYear(
+      yearlyCigs.toLocaleString("vi-VN", { maximumFractionDigits: 0 })
+    );
+  }, [cigarettesPerDay, pricePerPackage, packsPerWeek]);
 
-    setMonthlyExpenses(formattedMonthlyExpenses);
-    setAnnualCosts(formattedAnnualCosts);
-    setCigarettesPerYear(formattedCigarettesPerYear);
-  }, [cigarettesPerDay, pricePerPackage, packsPerWeek]); // Dependencies array
-
-  // Check if all required fields are filled
   const isFormValid = () => {
-    // Check if the state variables for required inputs have values
-    // Assuming cigarettesPerDay, suctionFrequency, pricePerPackage, and packsPerWeek are required
     return (
-      cigarettesPerDay !== "" &&
-      suctionFrequency !== "" &&
-      pricePerPackage !== "" &&
-      packsPerWeek !== ""
+      cigarettesPerDay && suctionFrequency && pricePerPackage && packsPerWeek
     );
+  };
+
+  const handleSubmit = async () => {
+    const cigarette_count = parseInt(cigarettesPerDay);
+    const money_spent =
+      parseFloat(pricePerPackage) * parseFloat(packsPerWeek) || 0;
+
+    try {
+      await SmokingStatusService.recordInitialSmokingStatus({
+        cigarette_count,
+        money_spent,
+        time_of_smoking: new Date().toISOString(),
+        suction_frequency: suctionFrequency, // light | medium | heavy
+        health_note: "",
+      });
+      navigate("/quit-plan");
+    } catch (error) {
+      console.error("❌ Failed to record initial smoking status:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -66,13 +69,15 @@ const StatusPage = () => {
         Record and track smoking habits to create an effective smoking cessation
         plan
       </p>
+
       <div className="info-card">
         <div className="info-header">
-          <span role="img" aria-label="smoke" className="icon">
+          <span className="icon" role="img" aria-label="smoke">
             <FaSmoking />
           </span>
           <span className="info-title">Current information</span>
         </div>
+
         <div className="info-form">
           <div className="form-group">
             <label>Number of cigarettes/day</label>
@@ -83,38 +88,36 @@ const StatusPage = () => {
               onChange={(e) => setCigarettesPerDay(e.target.value)}
             />
           </div>
+
           <div className="form-group">
             <label>Suction frequency</label>
-            {/* Assuming this select will eventually map to a numerical value for calculations */}
             <select
               value={suctionFrequency}
               onChange={(e) => setSuctionFrequency(e.target.value)}
             >
-              {/* Replace these example options with your actual frequency categories and numerical values */}
               <option value="">Select Frequency</option>
-              <option value="1">Light</option>
-              <option value="2">Medium</option>
-              <option value="3">Heavy</option>
+              <option value="light">Light</option>
+              <option value="medium">Medium</option>
+              <option value="heavy">Heavy</option>
             </select>
           </div>
+
           <div className="form-group">
-            <label>Price/package(VND)</label>
+            <label>Price/package (VND)</label>
             <input
               type="text"
               placeholder="25.000"
               value={
                 pricePerPackage === ""
                   ? ""
-                  : parseFloat(pricePerPackage).toLocaleString("vi-VN", {
-                      maximumFractionDigits: 0,
-                    })
+                  : parseFloat(pricePerPackage).toLocaleString("vi-VN")
               }
-              onChange={(e) => {
-                const rawValue = e.target.value.replace(/\./g, "");
-                setPricePerPackage(rawValue);
-              }}
+              onChange={(e) =>
+                setPricePerPackage(e.target.value.replace(/\./g, ""))
+              }
             />
           </div>
+
           <div className="form-group">
             <label>Number of packs/week</label>
             <input
@@ -125,12 +128,16 @@ const StatusPage = () => {
             />
           </div>
         </div>
-        <Link to="/quit-plan">
-          <button className="plan-btn" disabled={!isFormValid()}>
-            Make a Plan
-          </button>
-        </Link>
+
+        <button
+          className="plan-btn"
+          disabled={!isFormValid()}
+          onClick={handleSubmit}
+        >
+          Make a Plan
+        </button>
       </div>
+
       <div className="summary-row">
         <div className="summary-box">
           <div>Monthly expenses</div>

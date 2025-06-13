@@ -10,7 +10,7 @@ export const ROUTER_URL = {
     HOME:"/",
     COMMUNITY:"/community",
     ACHIEVEMENTS:"/achievements",
-    TRACKPROGRESS:"/progress",
+    TRACKPROGRESS:"/progress/:plandId",
     STATUS:"/status",
     COACH:"/coach",
     QUITPLAN:"/quit-plan",

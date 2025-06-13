@@ -73,7 +73,30 @@
       margin-bottom: 5px;
     }
   }
-
+    .stage-row {
+      display: flex;
+      flex-wrap: wrap; 
+      gap: 16px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+  
+    .stage-box {
+      flex: 1 1 300px;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+    }
+        .stage-description {
+          text-align: left; 
+          font-size: 0.95em;
+          line-height: 1.8;
+          max-height: 500px;
+          overflow-y: auto;
+          white-space: normal;   }
+  
   button {
     padding: 10px;
     border: none;

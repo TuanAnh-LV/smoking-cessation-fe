@@ -1,68 +1,71 @@
-import React from 'react'
-import styles from './ProgressPage.module.css'
-import StatCards from '../../components/StatCards'
-import { IoCheckmarkCircleOutline } from 'react-icons/io5';
+// ProgressPage.jsx
+import React, { useEffect, useState } from "react";
+import StatCards from "../../components/StartCards/StatCards";
+import QuitPlanStages from "../../components/progressTracking/QuitPlanStages";
+import { QuitPlanService } from "../../services/quitPlan.service";
+import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import styles from "./ProgressPage.module.css";
 
 const ProgressPage = () => {
-  // Sample data - replace with data from API call later
-  const noSmokingData = { value: '15',icon: IoCheckmarkCircleOutline, label: 'No smoking day' };
-  const savingsData = { value: '450.000 VNĐ',icon: IoCheckmarkCircleOutline, label: 'Save money' };
-  const healthData = { value: '85%',icon: IoCheckmarkCircleOutline, label: 'Sức khỏe cải thiện' };
+  const [summary, setSummary] = useState(null);
+  const planId = localStorage.getItem("currentPlanId");
+
+  const fetchSummary = async () => {
+    try {
+      const res = await QuitPlanService.getPlanSummary(planId);
+      setSummary(res.data);
+    } catch (err) {
+      console.error("Lỗi khi tải dữ liệu tóm tắt", err);
+    }
+  };
+
+  useEffect(() => {
+    if (planId) fetchSummary();
+  }, [planId]);
+
+  const statData = summary
+    ? {
+        noSmokingData: {
+          value: `${summary.progress_days || 0} ngày`,
+          icon: IoCheckmarkCircleOutline,
+          label: "Số ngày ghi nhận",
+        },
+        savingsData: {
+          value: `${
+            summary.total_money_spent?.toLocaleString("vi-VN") || 0
+          } VNĐ`,
+          icon: IoCheckmarkCircleOutline,
+          label: "Tiền đã tiết kiệm",
+        },
+        healthData: {
+          value: `${summary.completion_rate || 0}%`,
+          icon: IoCheckmarkCircleOutline,
+          label: "Mức hoàn thành",
+        },
+      }
+    : {};
 
   return (
-    <div className={styles['progress-page-container']}>
+    <div className={styles["progress-page-container"]}>
       <header>
-        <h1>Smoking withdrawal process</h1>
-        <p>Monitor details of the smoking cessation process and positive improvements</p>
+        <h1>📈 Theo dõi tiến trình cai thuốc</h1>
+        <p>Cập nhật hàng ngày và theo dõi sự tiến bộ</p>
       </header>
 
-      <StatCards 
-        noSmokingData={noSmokingData}
-        savingsData={savingsData}
-        healthData={healthData}
-      />
+      {summary && (
+        <StatCards
+          noSmokingData={statData.noSmokingData}
+          savingsData={statData.savingsData}
+          healthData={statData.healthData}
+        />
+      )}
 
-      <section className={styles['progress-section']}>
-        <h2>Progress by week</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>No smoking day</th>
-              <th>Savings money</th>
-              <th>Mood</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Week 1</td>
-              <td><span className={styles['day-badge']}>7 days</span></td>
-              <td>87.500 VNĐ</td>
-              <td><span className={styles['hard']}>hard</span></td>
-            </tr>
-            <tr>
-              <td>Week 2</td>
-              <td><span className={styles['day-badge']}>7 days</span></td>
-              <td>175.000 VNĐ</td>
-              <td><span className={styles['Better']}>Better</span></td>
-            </tr>
-            <tr>
-              <td>Week 3</td>
-              <td><span className={styles['day-badge']}>1 day</span></td>
-              <td>262.500 VNĐ</td>
-              <td><span className={styles['Positive']}>Positive</span></td>
-            </tr>
-            {/* Add more rows as needed */}
-          </tbody>
-        </table>
-
-        <div className={styles['date-info']}>
-          <p>Start date: 20-6-2025</p>
-          <p>End date: 27-6-2025</p>
-        </div>
+      <section className={styles["progress-section"]}>
+        <h2>🗓️ Giai đoạn và ghi nhận hàng ngày</h2>
+        <QuitPlanStages planId={planId} onProgressRecorded={fetchSummary} />
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default ProgressPage
+export default ProgressPage;
