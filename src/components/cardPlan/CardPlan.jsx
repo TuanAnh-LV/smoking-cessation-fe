@@ -1,53 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./CardPlan.scss";
 import { GrPlan } from "react-icons/gr";
+import { QuitPlanService } from "../../services/quitPlan.service";
 
-const CardPlan = () => {
-  const [selectedPlanId, setSelectedPlanId] = React.useState(null);
+const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
+  const [suggestedStages, setSuggestedStages] = useState([]);
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
+
+  useEffect(() => {
+    if (!selectedStartDate) {
+      setSuggestedStages([]); // reset nếu chưa chọn ngày
+      return;
+    }
+
+    const formatDateDMY = (date) => {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0); // đảm bảo không bị lệch múi giờ
+      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+
+    QuitPlanService.getSuggestedQuitPlan()
+      .then((res) => {
+        const today = new Date(selectedStartDate);
+        today.setHours(0, 0, 0, 0);
+
+        const stages = res.suggested_stages || res.data?.suggested_stages || [];
+
+        const simulatedStages = stages.map((stage, index) => {
+          const start = new Date(today);
+          start.setDate(start.getDate() + index * 7);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 6);
+
+          return {
+            ...stage,
+            start_date: formatDateDMY(start),
+            end_date: formatDateDMY(end),
+          };
+        });
+
+        setSuggestedStages(simulatedStages);
+
+        if (simulatedStages.length > 0 && onLastStageEndDate) {
+          const last = simulatedStages[simulatedStages.length - 1];
+          const [dd, mm, yyyy] = last.end_date.split("/");
+          const parsedEndDate = new Date(`${yyyy}-${mm}-${dd}`);
+          parsedEndDate.setHours(0, 0, 0, 0);
+          onLastStageEndDate(parsedEndDate);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch suggested stages", err);
+      });
+  }, [selectedStartDate]);
 
   const handlePlanSelect = (planId) => {
     setSelectedPlanId(planId);
     console.log("Plan selected with ID:", planId);
   };
-
-  const plansData = [
-    {
-      id: 1,
-      title: "Tapering plan",
-      time: "4 weeks",
-      description: "25% reduction in medication quantity per week",
-      stages: [
-        "Week 1: 25% reduction (7-8 cigarettes/day)",
-        "Week 2: 50% off (5 cigarettes/day)",
-        "Week 3: Reduce 75% (2-3 cigarettes/day)",
-        "Week 4: Completely quit",
-      ],
-    },
-    {
-      id: 2,
-      title: "Sudden withdrawal plan",
-      time: "1 day",
-      description: "Stop smoking completely from day one",
-      stages: [
-        "Chuẩn bị tinh thần",
-        "Loại bỏ tất cả thuốc lá",
-        "Bắt đầu kế hoạch hỗ trợ",
-        "Theo dõi và kiên trì",
-      ],
-    },
-    {
-      id: 3,
-      title: "Step by step plan",
-      time: "8 weeks",
-      description: "Reduce slowly with specific goals",
-      stages: [
-        "Week 1-2: Reduce smoking time",
-        "Week 3-4: Reduce quantity",
-        "Week 5-6: Only smoke at certain times",
-        "Week 7-8: Completely quit",
-      ],
-    },
-  ];
 
   return (
     <div className="plan-container">
@@ -55,32 +68,63 @@ const CardPlan = () => {
         <span className="calendar-icon">
           <GrPlan />
         </span>
-        <h2>Choose a plan</h2>
+        <h2>Suggested Plan Based on Your Smoking Data</h2>
       </div>
-      <div className="plan-cards row">
-        {plansData.map((plan) => (
-          <div className="card col-lg-4 col-md-6 col-sm-12" key={plan.id}>
-            <h3>{plan.title}</h3>
-            <div className="content-card">
-              <p className="time">Time: {plan.time}</p>
-              <p>{plan.description}</p>
+      <div className="plan-cards">
+        <div
+          className="card full-width"
+          style={{ maxWidth: "1000px", width: "100%", margin: "0 auto" }}
+        >
+          <h3>Personalized Quit Plan</h3>
+          {!selectedStartDate ? (
+            <p className="text-center text-gray-500">
+              Please select a start date to view your personalized plan.
+            </p>
+          ) : (
+            <>
+              <p className="time">
+                Estimated duration: {suggestedStages.length * 7} days
+              </p>
+
+              <p>
+                This plan is tailored to your smoking status and quitting goal.
+              </p>
               <h4>Stages:</h4>
-              <ul>
-                {plan.stages.map((stage, index) => (
-                  <li key={index}>{stage}</li>
+              <ul
+                className="stage-row"
+                style={{ justifyContent: "space-between" }}
+              >
+                {suggestedStages.map((stage, index) => (
+                  <li className="stage-box" key={index}>
+                    <div className="stage-item">
+                      <div className="stage-name">
+                        <strong>{stage.name}</strong>
+                      </div>
+                      <div className="stage-date">
+                        ({stage.start_date} → {stage.end_date})
+                      </div>
+                      <div className="stage-description">
+                        {stage.description.split("\n").map((line, i) => (
+                          <div key={i}>{line}</div>
+                        ))}
+                      </div>
+                    </div>
+                  </li>
                 ))}
               </ul>
-            </div>
-            <button
-              className={`button ${
-                selectedPlanId === plan.id ? "selected" : ""
-              }`}
-              onClick={() => handlePlanSelect(plan.id)}
-            >
-              Choose this plan
-            </button>
-          </div>
-        ))}
+              <div className="text-center mt-4">
+                <button
+                  className={`button ${
+                    selectedPlanId === 99 ? "selected" : ""
+                  }`}
+                  onClick={() => handlePlanSelect(99)}
+                >
+                  Choose this plan
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

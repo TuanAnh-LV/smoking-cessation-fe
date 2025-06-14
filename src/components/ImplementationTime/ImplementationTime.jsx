@@ -4,9 +4,16 @@ import { MdDateRange } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const ImplementationTime = () => {
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+const ImplementationTime = ({ startDate, setStartDate, endDate }) => {
+  // Hàm định dạng dd/mm/yyyy
+  const formatDMY = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <div className="implementation-time-container">
@@ -21,21 +28,23 @@ const ImplementationTime = () => {
               onChange={(date) => setStartDate(date)}
               dateFormat="dd/MM/yyyy"
               placeholderText="dd/mm/yyyy"
+              minDate={new Date(new Date().setHours(0, 0, 0, 0))}
               className="date-input"
             />
+
             <MdDateRange className="calendar-icon-2" />
           </div>
         </div>
+
         <div className="date-input-group">
           <label htmlFor="endDate">Ngày dự kiến hoàn thành</label>
           <div className="input-icon-container">
-            <DatePicker
+            <input
               id="endDate"
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="dd/mm/yyyy"
+              value={formatDMY(endDate)}
+              readOnly
               className="date-input"
+              placeholder="dd/mm/yyyy"
             />
             <MdDateRange className="calendar-icon-2" />
           </div>

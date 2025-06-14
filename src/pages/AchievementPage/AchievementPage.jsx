@@ -1,5 +1,5 @@
 import React from "react";
-import StatCards from "../../components/StatCards";
+import StatCards from "../../components/StartCards/StatCards";
 import "../AchievementPage/AchievementPage.scss";
 // Import icons based on the image
 import { IoLogoNoSmoking, IoMedalOutline, IoStar } from "react-icons/io5"; // Trophy icon

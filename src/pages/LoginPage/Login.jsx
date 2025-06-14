@@ -1,50 +1,58 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./Login.scss"; // Import the SCSS file
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa"; // Assuming react-icons is installed
-import { FcGoogle } from "react-icons/fc"; // Assuming react-icons is installed
-import authService from "../../services/auth";
+import "./Login.scss";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { AuthService } from "../../services/auth.service";
+import { signInWithPopup } from "firebase/auth";
+import { useAuth } from "../../context/authContext";
+import { auth, provider } from "../../config/firebase.config";
+import { ROUTER_URL } from "../../const/router.const";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { loginGoogle, handleLogin } = useAuth();
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+      await loginGoogle(idToken);
+      toast.success("Successfully signed in with Google!");
+      navigate(ROUTER_URL.COMMON.HOME);
+    } catch {
+      toast.error("Google sign-in failed.");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("preventDefault called");
-    console.log("handleSubmit started"); // Log 1
-    setError("");
     setLoading(true);
-
     try {
-      console.log("Calling authService.login"); // Log 2
-      await authService.login(formData.email, formData.password);
-      console.log("authService.login finished successfully"); // Log 3
-      console.log("Login successful, attempting to navigate...");
-      // Dispatch custom event to notify about login status change
-      window.dispatchEvent(new Event("authStateChange"));
-      navigate("/"); // Chuyển hướng về trang chủ sau khi đăng nhập thành công
-    } catch (error) {
-      console.error("Login error caught in handleSubmit:", error); // Log 4
-      setError(
-        error.response?.data?.message || "Đăng nhập thất bại. Vui lòng thử lại."
-      );
+      const response = await AuthService.login({
+        email: formData.email,
+        password: formData.password,
+      });
+      if (response?.data?.token && response?.data?.user) {
+        await handleLogin(response.data.token, response.data.user);
+        toast.success("Login successful!");
+        navigate(ROUTER_URL.COMMON.HOME);
+      } else {
+        toast.error("Invalid login response.");
+      }
+    } catch {
+      toast.error("Login failed. Please check your credentials.");
     } finally {
-      console.log("handleSubmit finished"); // Log 5
       setLoading(false);
     }
   };
@@ -60,8 +68,6 @@ const LoginPage = () => {
         <p className="subtitle">
           Welcome to Moca! Wishing you a happy and healthy day!
         </p>
-
-        {error && <div className="error-message">{error}</div>}
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -84,7 +90,7 @@ const LoginPage = () => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                placeholder="Vui lòng điền mật khẩu"
+                placeholder="Please enter your password"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -100,14 +106,18 @@ const LoginPage = () => {
           </Link>
 
           <button type="submit" className="login-button" disabled={loading}>
-            {loading ? "Đang đăng nhập..." : "Sign In"}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
 
           <div className="social-login-divider">
-            <span>Sign In with</span>
+            <span>Or sign in with</span>
           </div>
 
-          <button type="button" className="google-login-button">
+          <button
+            type="button"
+            className="google-login-button"
+            onClick={handleGoogleLogin}
+          >
             <FcGoogle className="google-icon" />
           </button>
 

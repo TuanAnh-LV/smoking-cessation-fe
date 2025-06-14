@@ -18,7 +18,7 @@ export const AuthService = {
   },
   getUserRole: () => {
     return BaseService.get({
-      url: API.AUTH.GET_CURRENT_USER_INFO,
+      url: API.USER.GET_CURRENT_USER_INFO,
       isLoading: true,
     });
   },

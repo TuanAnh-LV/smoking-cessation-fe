@@ -29,34 +29,41 @@ header p {
 }
 
 .stat-card {
-  background-color: #ffebee; /* Approximate card background color */
-  border-radius: 10px;
+  background-color: #f9fafb;
+  border-radius: 12px;
   padding: 20px;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   flex: 1;
   margin: 0 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-decoration: none; /* Remove underline */
-  color: inherit; /* Inherit text color to avoid default blue link color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: #111827;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card h2 {
-  font-size: 1.8em;
-  margin-bottom: 5px;
-  color: BLACK; /* Approximate number color */
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: #111827;
+  font-weight: 700;
 }
 
-.stat-card:nth-child(2) h2 {
-    color: BLACK;
-}
-
+.stat-card:nth-child(2) h2,
 .stat-card:nth-child(3) h2 {
-    color: BLACK;
+  color: #111827;
 }
 
 .stat-card p {
-  color: BLACK;
-  font-size: 1em;
+  color: #374151;
+  font-size: 1rem;
+  margin: 0;
 }
 
 .progress-section {

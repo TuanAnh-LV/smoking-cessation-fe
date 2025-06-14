@@ -4,7 +4,7 @@ export const API = {
     },
     AUTH: {
       LOGIN: "/auth/login",
-      LOGIN_GOOGLE: "/auth/google-login",
+      LOGIN_GOOGLE: "/auth/login/google",
       REGISTER: "/auth/register",
       CHANGE_PASSWORD: "/auth/change-password",
       RESET_PASSWORD: "/auth/reset-password",
@@ -52,19 +52,26 @@ export const API = {
     },
     QUITPLAN:{
       CREATE_QUIT_PLAN:"/quit-plans",
-      GET_QUIT_PLAN_OF_USER:"/quit-plans/:id",
-      GET_DETAIL_QUITPLAN_OF_USER:"/quit-plans/:id",
-      UPDATE_QUITPLAN:"/quit-plans/:id/status"
+      GET_SUGGESTED_QUITPLAN:"/quit-plans/stage-suggestion",
+      GET_QUIT_PLAN_OF_USER:"/quit-plans/user/:id",
+      GET_DETAIL_QUITPLAN:"/quit-plans/:id",
+      UPDATE_QUITPLAN:"/quit-plans/:id/status",
+      GET_QUITPLAN_SUMMARY:"/quit-plans/:id/summary"
     },
     QUITPLANPROGRESS:{
       RECORD_PROGRESS:"/quit-plans/:id/stages/:id/progress",
       GET_ALL_PROGRESS:"/quit-plans/:id/stages/:id/progress",
     },
     QUITSTAGE:{
-      GET_ALL_STAGE_OF_QUITPLAN:"/quit-plans/:id/stages"
+      GET_ALL_STAGE_OF_QUITPLAN:"/quit-plans/:id/stages",
+      CREATE_QUITSTATE:"/quit-plans/:id/stages",
+      UPDATE_QUITSTATE:"/quit-plans/:id/stages/:id",
+      DELETE_QUITSTATE:"/quit-plans/:id/stages/:id"
     },
     SMOKINGSTATUS:{
       RECORD_SMOKING:"/quit-plan/:id/stages/:id/status",
-      GET_ALL_SMOKING:"/quit-plan/:id/stages/:id/status"
+      GET_ALL_SMOKING:"/quit-plan/:id/stages/:id/status",
+      RECORD_INITIAL:"/smoking-status/pre-plan",
+      GET_LAST_SMOKING_STATUS:"/smoking-status/pre-plan/latest"
     }
   };
