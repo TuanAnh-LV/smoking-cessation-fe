@@ -5,7 +5,7 @@ import "./CommunityPage.scss";
 
 const CommunityPage = () => {
   const [socket, setSocket] = useState(null);
-  const [messages, setMessages] = useState([]); // luôn khởi tạo array
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
   const messagesEndRef = useRef(null);
@@ -16,11 +16,12 @@ const CommunityPage = () => {
 
     const decoded = JSON.parse(atob(token.split('.')[1]));
     setCurrentUserId(decoded.id);
+    console.log("Current user ID:", decoded.id);
 
     // Load history messages
     CommunityService.getMessages()
       .then((res) => {
-        console.log("Messages API response", res);
+        console.log("Messages API response:", res);
         if (Array.isArray(res)) {
           setMessages(res);
         } else if (res.data && Array.isArray(res.data)) {
@@ -35,13 +36,22 @@ const CommunityPage = () => {
         setMessages([]);
       });
 
-    const newSocket = io("http://localhost:3000", {
+    const newSocket = io("https://smoking-cessation-backend.onrender.com", {
       auth: { token }
     });
     setSocket(newSocket);
 
+    newSocket.on("connect", () => {
+      console.log("Socket connected:", newSocket.id);
+    });
+
     newSocket.on("chat message", (data) => {
+      console.log("Socket message received:", data);
       setMessages(prev => [...prev, data]);
+    });
+
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
     });
 
     return () => {
@@ -50,11 +60,13 @@ const CommunityPage = () => {
   }, []);
 
   useEffect(() => {
+    console.log("Messages state updated:", messages);
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
+    console.log("Sending message:", inputMessage);
     socket.emit("chat message", { message: inputMessage });
     setInputMessage("");
   };
@@ -88,6 +100,11 @@ const CommunityPage = () => {
             </div>
             <div className="community-chat__messages">
               {messages.map((msg, index) => {
+                if (!msg.author_id) {
+                  console.warn("Message missing author_id:", msg);
+                  return null;
+                }
+
                 const isOwn = msg.author_id._id === currentUserId;
                 const avatarText = msg.author_id.full_name
                   ? msg.author_id.full_name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase()
@@ -95,7 +112,7 @@ const CommunityPage = () => {
 
                 return (
                   <div
-                    key={msg._id}
+                    key={msg._id || index}
                     className={`chat-message ${isOwn ? "chat-message--own" : ""}`}
                   >
                     <span className="chat-message__avatar">{avatarText}</span>
@@ -106,7 +123,6 @@ const CommunityPage = () => {
                   </div>
                 );
               })}
-
               <div ref={messagesEndRef} />
             </div>
             <div className="community-chat__input">
