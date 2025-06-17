@@ -41,4 +41,25 @@ export const BadgeService = {
       isAuth: true,
     });
   },
+  getUserBadges: () => {
+    return BaseService.get({
+      url: API.BADGES.GET_USER_BADGES,
+      isLoading: true,
+      isAuth: true
+    });
+  },
+  getUpcomingBadges: () => {
+    return BaseService.get({
+      url: API.BADGES.GET_UPCOMING_BADGES, 
+      isLoading: true,
+      isAuth: true
+    });
+  },
+  getBadgeSummary: () => {
+    return BaseService.get({
+      url: API.BADGES.GET_BADGE_SUMMARY,
+      isLoading: true,
+      isAuth: true
+    });
+  }
 };

@@ -3,7 +3,7 @@ import { QuitStageService } from "../../services/quitState.service";
 import { QuitPlanProgressService } from "../../services/quitPlanProgress.service";
 import { toast } from "react-toastify";
 
-const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("vi-VN");
+const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("en-GB");
 
 const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   const [stages, setStages] = useState([]);
@@ -24,7 +24,6 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         today.setHours(0, 0, 0, 0);
         const statusMap = {};
 
-        // Chỉ gọi API progress nếu stage đã bắt đầu
         await Promise.all(
           stageList.map(async (stage) => {
             const stageStart = new Date(stage.start_date);
@@ -54,7 +53,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
 
         setRecordedToday(statusMap);
       } catch (err) {
-        toast.error("Không thể tải giai đoạn hoặc tiến trình");
+        toast.error("Failed to load stages or progress data");
       }
     };
 
@@ -81,18 +80,18 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         date: todayStr,
       });
 
-      toast.success("Đã ghi nhận số điếu thuốc hôm nay!");
+      toast.success("Today's cigarette count recorded successfully!");
       setRecordedToday((prev) => ({ ...prev, [stageId]: true }));
 
       if (onProgressRecorded) onProgressRecorded();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Ghi tiến trình thất bại");
+      toast.error(err?.response?.data?.message || "Failed to record progress");
     }
   };
 
   return (
     <div>
-      <h2>📋 Giai đoạn kế hoạch cai thuốc</h2>
+      <h2>📋 Quit Plan Stages</h2>
       {stages.map((stage) => {
         const now = new Date();
         const vnNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
@@ -116,10 +115,10 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         const isCurrentStage = !isFutureStage && !isPastStage;
 
         const stageStatusLabel = isFutureStage
-          ? "⏳ Chưa đến"
+          ? " Upcoming"
           : isPastStage
-          ? "✅ Đã kết thúc"
-          : "🔵 Đang diễn ra";
+          ? " Completed"
+          : " Ongoing";
 
         const disabled = recordedToday[stage._id] || !isCurrentStage;
         const input = inputData[stage._id] || {};
@@ -129,22 +128,22 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
             key={stage._id}
             className={`p-5 rounded-xl shadow-md mb-5 ring-1 ring-inset
               ${
-                stageStatusLabel === "🔵 Đang diễn ra"
+                stageStatusLabel === " Ongoing"
                   ? "bg-blue-50 ring-blue-200"
-                  : stageStatusLabel === "✅ Đã kết thúc"
+                  : stageStatusLabel === " Completed"
                   ? "bg-gray-100 ring-gray-300"
                   : "bg-yellow-50 ring-yellow-200"
               }`}
           >
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                📌 {stage.name}
+                {stage.name}
               </h3>
               <span
                 className={`px-3 py-1 text-xs rounded-full font-medium ${
-                  stageStatusLabel === "🔵 Đang diễn ra"
+                  stageStatusLabel === " Ongoing"
                     ? "bg-blue-100 text-blue-700"
-                    : stageStatusLabel === "✅ Đã kết thúc"
+                    : stageStatusLabel === " Completed"
                     ? "bg-gray-200 text-gray-700"
                     : "bg-yellow-100 text-yellow-700"
                 }`}
@@ -158,7 +157,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
             </p>
 
             <p className="text-sm text-gray-600 mb-3">
-              📅 <strong>{formatDate(stage.start_date)}</strong> →{" "}
+              <strong>{formatDate(stage.start_date)}</strong> →{" "}
               <strong>{formatDate(stage.end_date)}</strong>
             </p>
 
@@ -166,7 +165,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <input
                   type="number"
-                  placeholder="Số điếu thuốc hôm nay"
+                  placeholder="Today's cigarette count"
                   disabled={disabled}
                   value={input.cigarette_count || ""}
                   onChange={(e) =>
@@ -188,7 +187,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
                       : "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
                 >
-                  {disabled ? "Đã ghi hôm nay" : "Ghi tiến trình"}
+                  {disabled ? "Recorded today" : "Record progress"}
                 </button>
               </div>
             )}

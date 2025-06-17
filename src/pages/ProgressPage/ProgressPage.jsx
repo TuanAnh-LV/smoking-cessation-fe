@@ -15,7 +15,7 @@ const ProgressPage = () => {
       const res = await QuitPlanService.getPlanSummary(planId);
       setSummary(res.data);
     } catch (err) {
-      console.error("Lỗi khi tải dữ liệu tóm tắt", err);
+      console.error("Error loading summary data", err);
     }
   };
 
@@ -26,21 +26,21 @@ const ProgressPage = () => {
   const statData = summary
     ? {
         noSmokingData: {
-          value: `${summary.progress_days || 0} ngày`,
+          value: `${summary.progress_days || 0} days`,
           icon: IoCheckmarkCircleOutline,
-          label: "Số ngày ghi nhận",
+          label: "Recorded days",
         },
         savingsData: {
           value: `${
             summary.total_money_spent?.toLocaleString("vi-VN") || 0
-          } VNĐ`,
+          } VND`,
           icon: IoCheckmarkCircleOutline,
-          label: "Tiền đã tiết kiệm",
+          label: "Money saved",
         },
         healthData: {
           value: `${summary.completion_rate || 0}%`,
           icon: IoCheckmarkCircleOutline,
-          label: "Mức hoàn thành",
+          label: "Completion rate",
         },
       }
     : {};
@@ -48,8 +48,8 @@ const ProgressPage = () => {
   return (
     <div className={styles["progress-page-container"]}>
       <header>
-        <h1>📈 Theo dõi tiến trình cai thuốc</h1>
-        <p>Cập nhật hàng ngày và theo dõi sự tiến bộ</p>
+        <h1>Quit Smoking Progress Tracking</h1>
+        <p>Update daily and monitor your improvement</p>
       </header>
 
       {summary && (
@@ -61,7 +61,7 @@ const ProgressPage = () => {
       )}
 
       <section className={styles["progress-section"]}>
-        <h2>🗓️ Giai đoạn và ghi nhận hàng ngày</h2>
+        <h2> Stages and Daily Records</h2>
         <QuitPlanStages planId={planId} onProgressRecorded={fetchSummary} />
       </section>
     </div>
