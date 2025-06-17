@@ -32,10 +32,13 @@ export const API = {
     },
     BADGES:{
       GET_ALL_BADGES:"/badges",
+      GET_USER_BADGES:"/badges/user",
+      GET_UPCOMING_BADGES:"/badges/upcoming",
       CREATE_BADGES:"/badges",
       GET_BADGES_BY_ID:"/badges/:id",
       UPDATE_BADGES:"/badges/:id",
-      DELETE_BADGES:"/badges/:id"
+      DELETE_BADGES:"/badges/:id",
+      GET_BADGE_SUMMARY: "/badges/summary"
     },
     MEMBERSHIP:{
       CREATE_MEMBERSHIP:"/memberships",
