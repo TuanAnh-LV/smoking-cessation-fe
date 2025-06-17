@@ -76,5 +76,8 @@ export const API = {
       GET_ALL_SMOKING:"/quit-plan/:id/stages/:id/status",
       RECORD_INITIAL:"/smoking-status/pre-plan",
       GET_LAST_SMOKING_STATUS:"/smoking-status/pre-plan/latest"
-    }
+    },
+    COMMUNITY: {
+      MESSAGES: "/community/messages"
+    },
   };
