@@ -16,7 +16,8 @@ export const ROUTER_URL = {
     QUITPLAN:"/quit-plan",
     PROFILE:"/profile",
     PROFILE_COACH:"/profile-coach",
-    PAYMENT:"/payment"
+    PAYMENT:"/payment",
+    PAYMENT_SUCCESS:"payment-success"
   },
   USER: {
     GET_CURRENT_USER_INFO: "/users/me",
