@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./header.scss";
 import LogoBlack from "../../assets/LogoBlack.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,7 +15,26 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { token, logout } = useAuth();
   const isLoggedIn = !!token;
-  const planId = localStorage.getItem("currentPlanId");
+  const [planId, setPlanId] = useState(localStorage.getItem("currentPlanId"));
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileRef = useRef();
+
+  useEffect(() => {
+    const handler = () => setPlanId(localStorage.getItem("currentPlanId"));
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleLogout = () => {
     logout();
     toast.success("Logout successful!");
@@ -58,14 +77,27 @@ const Header = () => {
 
       {/* User section */}
       {isLoggedIn ? (
-        <div className="logged-in-icons">
+        <div className="logged-in-icons" ref={profileRef}>
           <button className="notification-button">
             <IoMdNotificationsOutline className="icon" />
             <span className="notification-badge">3</span>
           </button>
-          <div className="user-avatar">
-            <FaRegUserCircle className="icon" />
-            {/* Optionally show: <span>{userInfo?.full_name}</span> */}
+          <div className="user-avatar relative">
+            <FaRegUserCircle
+              className="icon cursor-pointer"
+              onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+            />
+            {isProfileDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setIsProfileDropdownOpen(false)}
+                >
+                  Profile
+                </Link>
+              </div>
+            )}
           </div>
           <button onClick={handleLogout} className="logout-button">
             <FiLogOut className="icon" />

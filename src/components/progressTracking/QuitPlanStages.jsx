@@ -1,64 +1,109 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { QuitStageService } from "../../services/quitState.service";
 import { QuitPlanProgressService } from "../../services/quitPlanProgress.service";
 import { toast } from "react-toastify";
 
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("en-GB");
 
+const getTodayVN = () => {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now;
+};
+
+const useDayChange = (callback, lastCheckedDateRef, onDayChanged) => {
+  useEffect(() => {
+    const scheduleNextCheck = () => {
+      const now = new Date();
+      const nextDay = new Date(now);
+      nextDay.setDate(now.getDate() + 1);
+      nextDay.setHours(0, 0, 0, 0);
+      const delay = nextDay.getTime() - now.getTime();
+      return setTimeout(() => {
+        callback();
+        if (onDayChanged) onDayChanged();
+        lastCheckedDateRef.current = getTodayVN();
+        scheduleNextCheck();
+      }, delay);
+    };
+
+    const timer = scheduleNextCheck();
+
+    return () => clearTimeout(timer);
+  }, [callback, lastCheckedDateRef, onDayChanged]);
+};
+
 const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   const [stages, setStages] = useState([]);
   const [inputData, setInputData] = useState({});
   const [recordedToday, setRecordedToday] = useState({});
+  const lastCheckedDateRef = useRef(null);
+
+  const fetchStagesAndCheckProgress = async () => {
+    try {
+      const stageRes = await QuitStageService.getAllStagesOfPlan(planId);
+      const stageList = stageRes.data || [];
+      setStages(stageList);
+
+      const today = getTodayVN();
+      lastCheckedDateRef.current = today;
+
+      const statusMap = {};
+
+      await Promise.all(
+        stageList.map(async (stage) => {
+          const stageStart = new Date(stage.start_date);
+          stageStart.setHours(0, 0, 0, 0);
+
+          if (stageStart > today) {
+            statusMap[stage._id] = false;
+            return;
+          }
+
+          try {
+            const res = await QuitPlanProgressService.getAllProgress(
+              planId,
+              stage._id
+            );
+            const found = res.data?.some((r) => {
+              const date = new Date(r.date);
+              const localDate = new Date(
+                date.getTime() + date.getTimezoneOffset() * 60000
+              );
+              localDate.setHours(0, 0, 0, 0);
+
+              console.log(
+                "✅ Progress Record Date:",
+                r.date,
+                " → Local:",
+                localDate,
+                localDate.getTime()
+              );
+              console.log("✅ Today Local:", today, today.getTime());
+
+              return Math.abs(localDate.getTime() - today.getTime()) < 1000;
+            });
+            statusMap[stage._id] = !!found;
+          } catch {
+            statusMap[stage._id] = false;
+          }
+        })
+      );
+
+      setRecordedToday(statusMap);
+    } catch (err) {
+      console.error("[fetchStagesAndCheckProgress]", err);
+      toast.error("Failed to load stages or progress data");
+    }
+  };
 
   useEffect(() => {
     if (!planId) return;
-
-    const fetchStagesAndCheckProgress = async () => {
-      try {
-        const stageRes = await QuitStageService.getAllStagesOfPlan(planId);
-        const stageList = stageRes.data || [];
-        setStages(stageList);
-
-        const vnNow = new Date(new Date().getTime() + 7 * 60 * 60 * 1000);
-        const today = new Date(vnNow);
-        today.setHours(0, 0, 0, 0);
-        const statusMap = {};
-
-        await Promise.all(
-          stageList.map(async (stage) => {
-            const stageStart = new Date(stage.start_date);
-            stageStart.setHours(0, 0, 0, 0);
-
-            if (stageStart > today) {
-              statusMap[stage._id] = false;
-              return;
-            }
-
-            try {
-              const res = await QuitPlanProgressService.getAllProgress(
-                planId,
-                stage._id
-              );
-              const found = res.data?.some((r) => {
-                const date = new Date(r.date);
-                date.setHours(0, 0, 0, 0);
-                return date.getTime() === today.getTime();
-              });
-              statusMap[stage._id] = !!found;
-            } catch {
-              statusMap[stage._id] = false;
-            }
-          })
-        );
-
-        setRecordedToday(statusMap);
-      } catch (err) {
-        toast.error("Failed to load stages or progress data");
-      }
-    };
-
     fetchStagesAndCheckProgress();
   }, [planId]);
+
+  // Gọi custom hook để auto detect ngày mới
+  useDayChange(fetchStagesAndCheckProgress, lastCheckedDateRef);
 
   const handleInputChange = (stageId, field, value) => {
     setInputData((prev) => ({
@@ -93,25 +138,15 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
     <div>
       <h2>📋 Quit Plan Stages</h2>
       {stages.map((stage) => {
-        const now = new Date();
-        const vnNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-
-        const today = new Date(vnNow);
-        today.setHours(0, 0, 0, 0);
+        const today = getTodayVN();
 
         const stageStart = new Date(stage.start_date);
         const stageEnd = new Date(stage.end_date);
+        stageStart.setHours(0, 0, 0, 0);
+        stageEnd.setHours(0, 0, 0, 0);
 
-        const stageStartVN = new Date(
-          stageStart.getTime() + 7 * 60 * 60 * 1000
-        );
-        const stageEndVN = new Date(stageEnd.getTime() + 7 * 60 * 60 * 1000);
-
-        stageStartVN.setHours(0, 0, 0, 0);
-        stageEndVN.setHours(0, 0, 0, 0);
-
-        const isFutureStage = stageStartVN > today;
-        const isPastStage = stageEndVN < today;
+        const isFutureStage = stageStart > today;
+        const isPastStage = stageEnd < today;
         const isCurrentStage = !isFutureStage && !isPastStage;
 
         const stageStatusLabel = isFutureStage

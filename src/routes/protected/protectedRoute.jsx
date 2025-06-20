@@ -8,7 +8,7 @@ const ProtectedRoute = ({ allowedRoles, children }) => {
   if (!allowedRoles.includes(role))
     return <Navigate to="/unauthorize" replace />;
 
-  return children;
+  return children ? children : <Outlet />;
 };
 
 export default ProtectedRoute;

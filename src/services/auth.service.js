@@ -62,4 +62,19 @@ export const AuthService = {
       isLoading: true,
     });
   },
+  inviteCoach: (payload) => {
+    return BaseService.post({
+      url: API.AUTH.INVITE_COACH,
+      payload,
+      isAuth: true,
+      isLoading: true,
+    });
+  },
+  confirmCoachInvite: (payload) => {
+    return BaseService.post({
+      url: API.AUTH.CONFIRM_COACH,
+      payload,
+      isLoading: true,
+    });
+  }
 };

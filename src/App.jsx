@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { BrowserRouter as Router, useRoutes } from "react-router-dom";
 import routes from "./routes/routes";
-// import Loading from "./app/Loading";
-// import { useSelector } from "react-redux";
+import PlanChecker from "./app/PlanChecker";
+import { useAuth } from "./context/authContext";
 
 function AppRoutes() {
   const routing = useRoutes(routes);
@@ -10,12 +10,12 @@ function AppRoutes() {
 }
 
 function App() {
-  // const isLoading = useSelector((state) => state.loading);
+  const { token, userInfo } = useAuth();
 
   return (
     <Router>
-      {/* {isLoading && <Loading />} */}
       <Suspense fallback={<div>Đang tải...</div>}>
+        {token && userInfo && <PlanChecker key={token} />}
         <AppRoutes />
       </Suspense>
     </Router>
