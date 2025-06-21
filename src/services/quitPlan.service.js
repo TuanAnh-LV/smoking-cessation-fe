@@ -26,7 +26,7 @@ export const QuitPlanService = {
 
   getQuitPlanDetail: (id) => {
     return BaseService.get({
-      url: API.QUITPLAN.GET_DETAIL_QUITPLAN_OF_USER.replace(":id", id),
+      url: API.QUITPLAN.GET_DETAIL_QUITPLAN.replace(":id", id),
       isLoading: true,
     });
   },
@@ -46,4 +46,11 @@ export const QuitPlanService = {
       isAuth: true,
     });
   },
+  getAllQuitPlans: () => {
+    return BaseService.get({
+      url: API.QUITPLAN.GET_ALL_QUITPLAN,
+      isLoading: true,
+      isAuth: true,
+    });
+  }
 };

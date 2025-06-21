@@ -10,7 +10,9 @@ export const API = {
       RESET_PASSWORD: "/auth/reset-password",
       FORGOT_PASSWORD: "/auth/forgot-password",
       VERIFY_NEW_EMAIL: "/auth/verify-email",
-      GET_ALL_USER:"/users"
+      GET_ALL_USER:"/users",
+      INVITE_COACH:"/auth/invite-coach",
+      CONFIRM_COACH:"/auth/coach-invite/confirm"
     },
     USER: {
       GET_CURRENT_USER_INFO: "/users/me",
@@ -27,8 +29,17 @@ export const API = {
       GET_ALL_USERMEMBERSHIP:"/user-membership"
 
     },
-    ADMIN: {
-
+    COACH: {
+      CREATE_COACH:"/coaches",
+      GET_COACH_RELATIONSHIP:"/coaches",
+      UPDATE_COACH:"/coaches/:id",
+      DELETE_COACH:"/coaches/:id"
+    },
+    COACH_USER: {
+      CREATE_COACH:"/coach-users",
+      GET_ALL_COACH:"/coach-users",
+      UPDATE_COACH:"/coach-users/:id",
+      DELETE_COACH:"/coach-users/:id"
     },
     BADGES:{
       GET_ALL_BADGES:"/badges",
@@ -54,6 +65,7 @@ export const API = {
       GET_ALL_TRANSACTION:"/admin/transactions"
     },
     QUITPLAN:{
+      GET_ALL_QUITPLAN:"/quit-plans",
       CREATE_QUIT_PLAN:"/quit-plans",
       GET_SUGGESTED_QUITPLAN:"/quit-plans/stage-suggestion",
       GET_QUIT_PLAN_OF_USER:"/quit-plans/user/:id",

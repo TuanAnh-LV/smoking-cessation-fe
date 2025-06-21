@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import apiClient from "../../services/api";
 import "./ProfilePage.scss"; // Tạo file này để chứa CSS đẹp
 import TransactionHistory from "../../components/TransactionHistory/TransactionHistory";
-
+import { UserService } from "../../services/user.service";
+import { useAuth } from "../../context/authContext";
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
-
+  const { userInfo } = useAuth();
   useEffect(() => {
-    // Giả sử userId là "1", bạn có thể lấy từ localStorage hoặc context nếu có đăng nhập
-    const userId = "1";
-    apiClient
-      .get(`/users/${userId}`)
-      .then((data) => setUser(data))
+    UserService.getCurrentUser()
+      .then((res) => {
+        console.log("User data:", res);
+        setUser(res.data);
+      })
       .catch((err) => console.error("Lỗi lấy user:", err));
-  }, []);
+  }, [userInfo]);
 
   if (!user) return <div className="profile-section">Loading...</div>;
 
@@ -21,9 +21,13 @@ const ProfilePage = () => {
     <div>
       <div className="profile-section">
         <div className="profile-card">
-          <img src={user.avatar} alt="avatar" className="profile-avatar" />
+          <img
+            src={user.avatar || "/default-avatar.png"}
+            alt="avatar"
+            className="profile-avatar"
+          />
           <h2 className="profile-name">{user.full_name}</h2>
-          <p className="profile-username">@{user.username}</p>
+          <p className="profile-username">@{user.full_name}</p>
           <div className="profile-info">
             <div>
               <span>
@@ -32,17 +36,13 @@ const ProfilePage = () => {
             </div>
             <div>
               <span>
-                Birth date:<p>{user.birth_date}</p>
+                Birth date:
+                <p>{new Date(user.birth_date).toLocaleDateString()}</p>
               </span>
             </div>
             <div>
               <span>
                 Gender: <p>{user.gender}</p>
-              </span>
-            </div>
-            <div>
-              <span>
-                Role: <p>{user.role}</p>
               </span>
             </div>
             <div>

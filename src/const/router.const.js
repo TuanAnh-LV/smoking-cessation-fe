@@ -10,7 +10,7 @@ export const ROUTER_URL = {
     HOME:"/",
     COMMUNITY:"/community",
     ACHIEVEMENTS:"/achievements",
-    TRACKPROGRESS:"/progress/:plandId",
+    TRACKPROGRESS:"/progress/:id",
     STATUS:"/status",
     COACH:"/coach",
     QUITPLAN:"/quit-plan",
@@ -35,7 +35,13 @@ export const ROUTER_URL = {
 
   },
   ADMIN: {
-    GET_ALL_USER:"/users"
+    MANAGE_DASHBOARD:"",
+    MANAGE_BADGE:"badges",
+    MANAGE_COACH:"coaches",
+    MANAGE_MEMBERSHIP:"memberships",
+    MANAGE_QUITPLAN:"quit-plans",
+    MANAGE_TRANSACTION:"transactions",
+    MANAGE_USER:"users",
   },
   BADGES:{
     GET_ALL_BADGES:"/badges",

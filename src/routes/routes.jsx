@@ -24,6 +24,26 @@ const PaymentSuccess = lazy(() =>
 const CoachPage = lazy(() => import("../pages/CoachPage/CoachPage"));
 const ProfileCoach = lazy(() => import("../pages/ProfileCoach/ProfileCoach"));
 
+const AdminDashboard = lazy(() => import("../components/admin/AdminDashboard"));
+const BadgesManagement = lazy(() =>
+  import("../components/admin/BadgesManagement")
+);
+const CoachesManagement = lazy(() =>
+  import("../components/admin/CoachesManagement")
+);
+const MembershipsManagement = lazy(() =>
+  import("../components/admin/MembershipsManagement")
+);
+const QuitPlansManagement = lazy(() =>
+  import("../components/admin/QuitPlansManagement")
+);
+const TransactionsManagement = lazy(() =>
+  import("../components/admin/TransactionsManagement")
+);
+const UsersManagement = lazy(() =>
+  import("../components/admin/UsersManagement")
+);
+
 const routes = [
   // Public routes
   {
@@ -52,10 +72,18 @@ const routes = [
     path: "/admin",
     element: (
       <ProtectedRoute allowedRoles={["admin"]}>
-        <DashboardLayout />
+        <DashboardLayout role="admin" />
       </ProtectedRoute>
     ),
-    // children: [{ path: "", element: <AdminDashboard /> }],
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: "badges", element: <BadgesManagement /> },
+      { path: "coaches", element: <CoachesManagement /> },
+      { path: "memberships", element: <MembershipsManagement /> },
+      { path: "quit-plans", element: <QuitPlansManagement /> },
+      { path: "transactions", element: <TransactionsManagement /> },
+      { path: "users", element: <UsersManagement /> },
+    ],
   },
 
   // Seller route with DashboardLayout
@@ -63,7 +91,7 @@ const routes = [
     path: "/coach",
     element: (
       <ProtectedRoute allowedRoles={["coach"]}>
-        <DashboardLayout />
+        <DashboardLayout role="coach" />
       </ProtectedRoute>
     ),
     // children: [{ path: "dashboard", element: <SellerDashboard /> }],

@@ -8,7 +8,13 @@ import styles from "./ProgressPage.module.css";
 
 const ProgressPage = () => {
   const [summary, setSummary] = useState(null);
-  const planId = localStorage.getItem("currentPlanId");
+  const [planId, setPlanId] = useState(localStorage.getItem("currentPlanId"));
+
+  useEffect(() => {
+    const handler = () => setPlanId(localStorage.getItem("currentPlanId"));
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
 
   const fetchSummary = async () => {
     try {
