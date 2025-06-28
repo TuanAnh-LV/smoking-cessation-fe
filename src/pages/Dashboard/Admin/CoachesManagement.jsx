@@ -42,16 +42,18 @@ export default function CoachesManagement() {
           <button className="flex items-center border rounded px-3 py-1 text-sm hover:bg-gray-100">
             <Mail className="h-4 w-4 mr-1" /> Invite Coach
           </button>
-          <button className="flex items-center bg-blue-600 text-white rounded px-3 py-1 text-sm hover:bg-blue-700">
-            <Plus className="h-4 w-4 mr-1" /> Add Coach
+          <button className="flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800">
+            <Plus className="h-4 w-4 mr-2" /> Add Coach
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
+      <div className="bg-white rounded shadow p-7">
         <div className="flex justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-lg">All Coaches</h2>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">
+              All Coaches
+            </h2>
             <p className="text-sm text-gray-500">
               A list of all coaches in your system
             </p>
@@ -64,17 +66,17 @@ export default function CoachesManagement() {
                 placeholder="Search coaches..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded pl-8 pr-2 py-1 text-sm"
+                className="border rounded pl-10 h-[40px] w-[300px] pr-2 py-1 text-sm"
               />
             </div>
-            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100">
+            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100 h-[40px]">
               <Filter className="h-4 w-4 mr-1" /> Filter
             </button>
           </div>
         </div>
 
         <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-50">
+          <thead className="border-b border-b-gray-200">
             <tr>
               <th className="p-2 text-left">Coach</th>
               <th className="p-2 text-left">Email</th>
@@ -86,8 +88,8 @@ export default function CoachesManagement() {
           </thead>
           <tbody>
             {filteredCoaches.map((coach) => (
-              <tr key={coach.id} className="border-b">
-                <td className="p-2 flex items-center gap-2">
+              <tr key={coach.id} className="border-b border-b-gray-200">
+                <td className="p-5 flex items-center gap-2">
                   <img
                     src={coach.avatar}
                     alt="avatar"
@@ -100,7 +102,7 @@ export default function CoachesManagement() {
                 <td className="p-2">{coach.experience}</td>
                 <td className="p-2">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs ${
+                    className={`px-2 py-0.5 rounded-3xl text-xs ${
                       coach.status === "active"
                         ? "bg-green-100 text-green-600"
                         : "bg-gray-100 text-gray-600"

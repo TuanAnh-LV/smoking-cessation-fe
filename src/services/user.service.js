@@ -2,6 +2,14 @@ import { BaseService } from "../config/basic.service";
 import { API } from "../const/path.api";
 
 export const UserService = {
+  getAllUsers: () => {
+    return BaseService.get({
+      url: API.AUTH.GET_ALL_USER,
+      isLoading: true,
+      isAuth: true,
+    });
+  },
+  
   getCurrentUser: () => {
     return BaseService.get({
       url: API.USER.GET_CURRENT_USER_INFO,

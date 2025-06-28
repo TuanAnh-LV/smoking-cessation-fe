@@ -26,8 +26,8 @@ export const API = {
   USERMEMBERSHIP: {
     GET_CURRENT_USERMEMBERSHIP: "/user-membership/me",
     GET_HISTORY: "/user-membership/me/history",
-    GET_ALL_USERMEMBERSHIP: "/user-membership"
-
+    GET_ALL_USERMEMBERSHIP: "/user-membership",
+    GET_MEMBERSHIP_BY_USER_ID: "/user-membership/admin/:id"
   },
   COACH: {
     CREATE_COACH: "/coaches",
@@ -101,4 +101,7 @@ export const API = {
     CREATE_USER: "/video/create-user",
     GET_TOKEN: "/video/token",
   },
+  ADMIN: {
+    GET_DASHBOARD: "/admin/dashboard",
+  }
 };

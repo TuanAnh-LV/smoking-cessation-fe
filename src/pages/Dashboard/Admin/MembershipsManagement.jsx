@@ -61,20 +61,24 @@ export default function MembershipsManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Memberships Management</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Memberships Management
+          </h1>
+          <p className="text-gray-500 mt-2">
             Manage subscription plans and pricing
           </p>
         </div>
-        <button className="flex items-center gap-1 bg-blue-600 text-white rounded px-3 py-1 hover:bg-blue-700">
-          <Plus className="h-4 w-4" /> Create Plan
+        <button className="flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800">
+          <Plus className="h-4 w-4 mr-2" /> Create Plan
         </button>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
+      <div className="bg-white rounded shadow p-7">
         <div className="flex justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-lg">All Membership Plans</h2>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">
+              All Membership Plans
+            </h2>
             <p className="text-sm text-gray-500">
               A list of all subscription plans in your system
             </p>
@@ -87,17 +91,17 @@ export default function MembershipsManagement() {
                 placeholder="Search plans..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded pl-8 pr-2 py-1 text-sm"
+                className="border rounded pl-10 h-[40px] w-[300px] pr-2 py-1 text-sm"
               />
             </div>
-            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100">
+            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100 h-[40px]">
               <Filter className="h-4 w-4 mr-1" /> Filter
             </button>
           </div>
         </div>
 
         <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-50">
+          <thead className="border-b border-b-gray-200">
             <tr>
               <th className="p-2 text-left">Plan Name</th>
               <th className="p-2 text-left">Price</th>
@@ -110,14 +114,14 @@ export default function MembershipsManagement() {
           </thead>
           <tbody>
             {filteredMemberships.map((m) => (
-              <tr key={m.id} className="border-b">
-                <td className="p-2 flex gap-2 items-center">
+              <tr key={m.id} className="border-b border-b-gray-200">
+                <td className="p-5 flex gap-2 items-center">
                   <CreditCard className="h-4 w-4 text-gray-400" />
                   {m.name}
                 </td>
                 <td className="p-2 font-mono">${m.price}</td>
                 <td className="p-2">
-                  <span className="border rounded px-2 py-0.5 text-xs">
+                  <span className="border rounded-3xl px-2 py-0.5 text-xs">
                     {m.duration}
                   </span>
                 </td>
@@ -127,7 +131,7 @@ export default function MembershipsManagement() {
                 <td className="p-2">{m.userCount} users</td>
                 <td className="p-2">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs ${
+                    className={`px-2 py-0.5 rounded-3xl text-xs ${
                       m.status === "active"
                         ? "bg-green-100 text-green-600"
                         : "bg-gray-100 text-gray-600"
@@ -138,13 +142,13 @@ export default function MembershipsManagement() {
                 </td>
                 <td className="p-2 text-right">
                   <div className="inline-flex gap-1">
-                    <button className="border rounded px-1 hover:bg-gray-100">
+                    <button className="rounded px-1 hover:bg-gray-100">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button className="border rounded px-1 hover:bg-gray-100">
+                    <button className="rounded px-1 hover:bg-gray-100">
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button className="border rounded px-1 text-red-600 hover:bg-gray-100">
+                    <button className="rounded px-1 text-red-600 hover:bg-gray-100">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
