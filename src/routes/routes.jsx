@@ -24,24 +24,26 @@ const PaymentSuccess = lazy(() =>
 const CoachPage = lazy(() => import("../pages/CoachPage/CoachPage"));
 const ProfileCoach = lazy(() => import("../pages/ProfileCoach/ProfileCoach"));
 
-const AdminDashboard = lazy(() => import("../components/admin/AdminDashboard"));
+const AdminDashboard = lazy(() =>
+  import("../pages/Dashboard/Admin/AdminDashboard")
+);
 const BadgesManagement = lazy(() =>
-  import("../components/admin/BadgesManagement")
+  import("../pages/Dashboard/Admin/BadgesManagement")
 );
 const CoachesManagement = lazy(() =>
-  import("../components/admin/CoachesManagement")
+  import("../pages/Dashboard/Admin/CoachesManagement")
 );
 const MembershipsManagement = lazy(() =>
-  import("../components/admin/MembershipsManagement")
+  import("../pages/Dashboard/Admin/MembershipsManagement")
 );
 const QuitPlansManagement = lazy(() =>
-  import("../components/admin/QuitPlansManagement")
+  import("../pages/Dashboard/Admin/QuitPlansManagement")
 );
 const TransactionsManagement = lazy(() =>
-  import("../components/admin/TransactionsManagement")
+  import("../pages/Dashboard/Admin/TransactionsManagement")
 );
 const UsersManagement = lazy(() =>
-  import("../components/admin/UsersManagement")
+  import("../pages/Dashboard/Admin/UsersManagement")
 );
 
 const routes = [

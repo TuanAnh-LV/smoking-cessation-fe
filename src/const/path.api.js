@@ -26,8 +26,8 @@ export const API = {
     USERMEMBERSHIP:{
       GET_CURRENT_USERMEMBERSHIP:"/user-membership/me",
       GET_HISTORY:"/user-membership/me/history",
-      GET_ALL_USERMEMBERSHIP:"/user-membership"
-
+      GET_ALL_USERMEMBERSHIP:"/user-membership",
+      GET_MEMBERSHIP_BY_USER_ID: "/user-membership/admin/:id",
     },
     COACH: {
       CREATE_COACH:"/coaches",
@@ -89,7 +89,12 @@ export const API = {
       RECORD_INITIAL:"/smoking-status/pre-plan",
       GET_LAST_SMOKING_STATUS:"/smoking-status/pre-plan/latest"
     },
+
+    ADMIN: {
+      GET_DASHBOARD: "/admin/dashboard",
+
     COMMUNITY: {
       MESSAGES: "/community/messages"
+
     },
   };
