@@ -4,6 +4,7 @@ import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./protected/protectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 
+
 const HomePage = lazy(() => import("../pages/HomePage/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage/Login"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/Register"));
@@ -18,6 +19,8 @@ const CommunityPage = lazy(() =>
 );
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
 const PaymentPage = lazy(() => import("../pages/PaymentPage/PaymentPage"));
+const PaymentSuccess = lazy(() =>
+  import("../pages/PaymentPage/PaymentSuccess"));
 const CoachPage = lazy(() => import("../pages/CoachPage/CoachPage"));
 const ProfileCoach = lazy(() => import("../pages/ProfileCoach/ProfileCoach"));
 
@@ -60,6 +63,8 @@ const routes = [
       { path: ROUTER_URL.COMMON.PROFILE, element: <ProfilePage /> },
       { path: ROUTER_URL.COMMON.PROFILE_COACH, element: <ProfileCoach /> },
       { path: ROUTER_URL.COMMON.PAYMENT, element: <PaymentPage /> },
+      { path: ROUTER_URL.COMMON.PAYMENT_SUCCESS, element: <PaymentSuccess /> },
+
     ],
   },
 
