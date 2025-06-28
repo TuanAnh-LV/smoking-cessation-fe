@@ -23,8 +23,8 @@ const sidebarConfig = {
   ],
   coach: [
     { title: "Dashboard", path: "/coach", icon: LayoutDashboard },
-    { title: "My Clients", path: "/coach/clients", icon: Users },
-    { title: "Quit Plans", path: "/coach/quit-plans", icon: ClipboardList },
+    { title: "Chat Message", path: "/coach/chat", icon: Users },
+    { title: "Quit Plans", path: "/coach/quitplan-coach", icon: ClipboardList },
     { title: "Settings", path: "/coach/settings", icon: Settings },
   ],
 };

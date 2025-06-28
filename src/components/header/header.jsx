@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 const Header = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { token, logout } = useAuth();
+  const { token, logout, role } = useAuth();
   const isLoggedIn = !!token;
   const [planId, setPlanId] = useState(localStorage.getItem("currentPlanId"));
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -23,16 +23,6 @@ const Header = () => {
     const handler = () => setPlanId(localStorage.getItem("currentPlanId"));
     window.addEventListener("storage", handler);
     return () => window.removeEventListener("storage", handler);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
@@ -88,7 +78,7 @@ const Header = () => {
               onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
             />
             {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10 p-2 space-y-1">
                 <Link
                   to="/profile"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -96,6 +86,25 @@ const Header = () => {
                 >
                   Profile
                 </Link>
+
+                {role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsProfileDropdownOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
+                {role === "coach" && (
+                  <Link
+                    to="/coach"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsProfileDropdownOpen(false)}
+                  >
+                    Coach Dashboard
+                  </Link>
+                )}
               </div>
             )}
           </div>

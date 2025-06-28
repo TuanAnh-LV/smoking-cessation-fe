@@ -4,6 +4,7 @@ import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./protected/protectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 
+//Common
 const HomePage = lazy(() => import("../pages/HomePage/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage/Login"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/Register"));
@@ -21,6 +22,7 @@ const PaymentPage = lazy(() => import("../pages/PaymentPage/PaymentPage"));
 const CoachPage = lazy(() => import("../pages/CoachPage/CoachPage"));
 const ProfileCoach = lazy(() => import("../pages/ProfileCoach/ProfileCoach"));
 
+//Admin
 const AdminDashboard = lazy(() =>
   import("../pages/Dashboard/Admin/AdminDashboard")
 );
@@ -43,6 +45,14 @@ const UsersManagement = lazy(() =>
   import("../pages/Dashboard/Admin/UsersManagement")
 );
 
+//Coach
+const CoachDashboard = lazy(() =>
+  import("../pages/Dashboard/Coach/CoachDashboard")
+);
+const ChatMessage = lazy(() => import("../pages/Dashboard/Coach/ChatMessage"));
+const QuitPlansCoach = lazy(() =>
+  import("../pages/Dashboard/Coach/QuitPlansCoach")
+);
 const routes = [
   // Public routes
   {
@@ -91,7 +101,11 @@ const routes = [
         <DashboardLayout role="coach" />
       </ProtectedRoute>
     ),
-    // children: [{ path: "dashboard", element: <SellerDashboard /> }],
+    children: [
+      { index: true, element: <CoachDashboard /> },
+      { path: "chat", element: <ChatMessage /> },
+      { path: "quitplan-coach", element: <QuitPlansCoach /> },
+    ],
   },
 
   {
