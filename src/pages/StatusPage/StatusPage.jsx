@@ -15,6 +15,16 @@ const StatusPage = () => {
   const [cigarettesPerYear, setCigarettesPerYear] = useState("0");
 
   const navigate = useNavigate();
+  useEffect(() => {
+    const count = parseInt(cigarettesPerDay);
+    if (!isNaN(count)) {
+      if (count <= 5) setSuctionFrequency("light");
+      else if (count <= 15) setSuctionFrequency("medium");
+      else setSuctionFrequency("heavy");
+    } else {
+      setSuctionFrequency("");
+    }
+  }, [cigarettesPerDay]);
 
   useEffect(() => {
     const numCigarettesPerDay = parseFloat(cigarettesPerDay) || 0;
@@ -91,10 +101,7 @@ const StatusPage = () => {
 
           <div className="form-group">
             <label>Suction frequency</label>
-            <select
-              value={suctionFrequency}
-              onChange={(e) => setSuctionFrequency(e.target.value)}
-            >
+            <select value={suctionFrequency} disabled>
               <option value="">Select Frequency</option>
               <option value="light">Light</option>
               <option value="medium">Medium</option>

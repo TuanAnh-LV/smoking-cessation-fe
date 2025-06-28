@@ -1,7 +1,8 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { AuthService } from "../services/auth.service";
 import { HttpException } from "../app/toastException/http.exception";
-
+import socket from "../utils/socket";
+// import { toast } from "react-toastify";
 // HTTP status codes
 const HTTP_STATUS = {
   BADREQUEST: 400,
@@ -88,6 +89,8 @@ export const AuthProvider = ({ children }) => {
       setRole(userData.role);
       localStorage.setItem("userInfo", JSON.stringify(userData));
       localStorage.setItem("role", userData.role);
+      socket.connect();
+      socket.emit("join", userData._id);
     } catch (error) {
       console.error("Failed to get user info:", error);
       throw error instanceof HttpException
@@ -103,8 +106,28 @@ export const AuthProvider = ({ children }) => {
     setRole(null);
     setUserInfo(null);
     localStorage.clear();
+    socket.disconnect();
   };
 
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (token && userInfo?._id) {
+      socket.connect();
+      socket.emit("join", userInfo._id);
+
+      socket.on("newNotification", (noti) => {
+        setNotifications((prev) => [noti, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+        // toast.info(`🔔 ${noti.title}: ${noti.content}`);
+      });
+    }
+
+    return () => {
+      socket.off("newNotification");
+    };
+  }, [token, userInfo?._id]);
   //   const forgotPassword = async (params) => {
   //     try {
   //       const response = await AuthService.forgotPassword(params.email);
@@ -149,6 +172,10 @@ export const AuthProvider = ({ children }) => {
         // forgotPassword,
         // getCurrentUser,
         loginGoogle,
+        notifications,
+        setNotifications,
+        unreadCount,
+        setUnreadCount,
       }}
     >
       {children}

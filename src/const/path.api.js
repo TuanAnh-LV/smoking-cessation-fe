@@ -92,9 +92,14 @@ export const API = {
 
     ADMIN: {
       GET_DASHBOARD: "/admin/dashboard",
-
+    },
     COMMUNITY: {
       MESSAGES: "/community/messages"
-
     },
+    NOTIFICATION: {
+      GET_ALL: "/notifications",
+      MARK_AS_READ: "/notifications/:id/read",
+      MARK_ALL_AS_READ: "/notifications/mark-all-read",
+      DELETE: "/notifications/:id"
+    }
   };
