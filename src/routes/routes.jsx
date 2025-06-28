@@ -21,9 +21,10 @@ const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
 const PaymentPage = lazy(() => import("../pages/PaymentPage/PaymentPage"));
 const PaymentSuccess = lazy(() =>
   import("../pages/PaymentPage/PaymentSuccess"));
+const BlogPage = lazy(() => import("../pages/BlogPage/BlogPage"));
 const CoachPage = lazy(() => import("../pages/CoachPage/CoachPage"));
 const ProfileCoach = lazy(() => import("../pages/ProfileCoach/ProfileCoach"));
-
+const CallPage = lazy(() => import("../pages/CallPage/CallPage"));
 const AdminDashboard = lazy(() =>
   import("../pages/Dashboard/Admin/AdminDashboard")
 );
@@ -64,7 +65,8 @@ const routes = [
       { path: ROUTER_URL.COMMON.PROFILE_COACH, element: <ProfileCoach /> },
       { path: ROUTER_URL.COMMON.PAYMENT, element: <PaymentPage /> },
       { path: ROUTER_URL.COMMON.PAYMENT_SUCCESS, element: <PaymentSuccess /> },
-
+      { path: ROUTER_URL.COMMON.BLOG, element: <BlogPage /> },
+      { path: ROUTER_URL.COMMON.CALL_PAGE, element: <CallPage /> },
     ],
   },
 

@@ -9,6 +9,7 @@ export const ROUTER_URL = {
     VERIFY_NEW_EMAIL: "/verify-email",
     HOME:"/",
     COMMUNITY:"/community",
+    BLOG:"/blog",
     ACHIEVEMENTS:"/achievements",
     TRACKPROGRESS:"/progress/:id",
     STATUS:"/status",
@@ -17,7 +18,8 @@ export const ROUTER_URL = {
     PROFILE:"/profile",
     PROFILE_COACH:"/profile-coach",
     PAYMENT:"/payment",
-    PAYMENT_SUCCESS:"payment-success"
+    PAYMENT_SUCCESS:"payment-success",
+    CALL_PAGE:"/call/:id",
   },
   USER: {
     GET_CURRENT_USER_INFO: "/users/me",

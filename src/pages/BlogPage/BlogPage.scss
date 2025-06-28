@@ -1,0 +1,245 @@
+.blog-page {
+  padding: 50px 50px;
+  min-height: 100vh;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+    }
+  }
+
+  &__content {
+    display: flex;
+    gap: 32px;
+  }
+
+  &__left {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  .post {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    &__avatar {
+      width: 44px;
+      height: 44px;
+      background: #ede0cf;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    &__content {
+      flex: 1;
+    }
+
+    &__content--new {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+
+      .post__author {
+        font-weight: 600;
+        color: #22223b;
+      }
+
+      .post__badge {
+        background: #ede0cf;
+        color: #b45309;
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .post__time {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-left: auto;
+      }
+    }
+
+    &__achievement {
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      font-size: 0.97rem;
+      color: #b45309;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    &__text {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    &__actions {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      font-size: 0.95rem;
+
+      .post__encourage {
+        color: #9c7055;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+
+    &__comments {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .post__comment-item {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+
+        .post__comment-avatar {
+          width: 28px;
+          height: 28px;
+          background: #ede0cf;
+          font-weight: bold;
+          font-size: 0.85rem;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .post__comment-content {
+          background: #f3f4f6;
+          padding: 6px 10px;
+          border-radius: 6px;
+          max-width: 300px;
+
+          .post__comment-author {
+            font-weight: 600;
+            margin-bottom: 2px;
+            font-size: 0.9rem;
+          }
+
+          .post__comment-text {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    &__comment-form {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .post__comment-avatar {
+        width: 28px;
+        height: 28px;
+        background: #ede0cf;
+        font-weight: bold;
+        font-size: 0.85rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      input {
+        flex: 1;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
+
+      button {
+        background: #9c7055;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #64391e;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .post--highlight {
+    border: 2px solid #ede0cf;
+    background: #fffbe9;
+  }
+
+  .post--new {
+    flex-direction: row;
+    align-items: flex-start;
+
+    textarea {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.95rem;
+      min-height: 60px;
+    }
+
+    button {
+      align-self: flex-end;
+      background: #9c7055;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #64391e;
+      }
+    }
+  }
+}
