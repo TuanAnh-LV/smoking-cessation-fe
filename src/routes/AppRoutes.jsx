@@ -10,6 +10,7 @@ import AchievementPage from "../pages/AchievementPage/AchievementPage";
 import CommunityPage from "../pages/CommunityPage/CommunityPage";
 import ProfilePage from "../pages/ProfilePage/ProfilePage";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
+import PaymentSuccess from "../pages/PaymentPage/PaymentSuccess";
 import Coach from "../pages/CoachPage/CoachPage";
 import CoachPage from "../pages/CoachPage/CoachPage";
 import ProfileCoach from "../pages/ProfileCoach/ProfileCoach";
@@ -30,6 +31,7 @@ const AppRoutes = () => {
       <Route path="/community" element={<CommunityPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/payment" element={<PaymentPage />} />
+      <Route path="payment-success" element={<PaymentSuccess />} />
       <Route path="/coach" element={<CoachPage/>} />
       <Route path="/profile-coach" element={<ProfileCoach/>} />
     </Routes>

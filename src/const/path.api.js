@@ -89,7 +89,12 @@ export const API = {
       RECORD_INITIAL:"/smoking-status/pre-plan",
       GET_LAST_SMOKING_STATUS:"/smoking-status/pre-plan/latest"
     },
+
     ADMIN: {
       GET_DASHBOARD: "/admin/dashboard",
+
+    COMMUNITY: {
+      MESSAGES: "/community/messages"
+
     },
   };

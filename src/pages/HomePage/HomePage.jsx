@@ -95,7 +95,7 @@ const styles = {
   },
   heading: {
     fontSize: "70px",
-    fontWeight: "400",
+    fontWeight: "700",
     lineHeight: "1.2",
     marginBottom: "20px",
     color: "#804622",
