@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { UserService } from "../../../services/user.service";
+import { UserMembershipService } from "../../../services/userMembership.service";
 import {
   Search,
   Plus,
@@ -13,43 +15,40 @@ import {
   Users,
 } from "lucide-react";
 
-const mockUsers = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@email.com",
-    status: "active",
-    membership: "Premium",
-    joinDate: "2024-01-15",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: 2,
-    name: "Sarah Wilson",
-    email: "sarah.wilson@email.com",
-    status: "active",
-    membership: "Basic",
-    joinDate: "2024-02-20",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    email: "mike.johnson@email.com",
-    status: "inactive",
-    membership: "Premium",
-    joinDate: "2024-01-08",
-    avatar: "/placeholder.svg",
-  },
-];
-
 export default function UsersManagement() {
+  const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredUsers = mockUsers.filter(
+  useEffect(() => {
+    UserService.getAllUsers()
+      .then(async (res) => {
+        const users = res.data;
+
+        const usersWithMembership = await Promise.all(
+          users.map(async (user) => {
+            try {
+              const memRes = await UserMembershipService.getByUserId(user._id);
+              return {
+                ...user,
+                membership: memRes?.data?.package_id?.name || "None",
+              };
+            } catch (err) {
+              return { ...user, membership: "None" };
+            }
+          })
+        );
+
+        setUsers(usersWithMembership);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch users:", err);
+      });
+  }, []);
+
+  const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -61,20 +60,19 @@ export default function UsersManagement() {
             Manage user accounts and their information
           </p>
         </div>
-        <button className="flex items-center gap-1 bg-blue-600 text-white rounded px-3 py-1 hover:bg-blue-700">
-          <Plus className="h-4 w-4" /> Add User
-        </button>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
+      <div className="bg-white rounded shadow p-7">
         <div className="flex justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-lg">All Users</h2>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">
+              All Users
+            </h2>
             <p className="text-sm text-gray-500">
               A list of all users in your system
             </p>
           </div>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-3 items-center">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
               <input
@@ -82,17 +80,17 @@ export default function UsersManagement() {
                 placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded pl-8 pr-2 py-1 text-sm"
+                className="border rounded pl-10 h-[40px] w-[300px] pr-2 py-1 text-sm"
               />
             </div>
-            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100">
-              <Filter className="h-4 w-4 mr-1" /> Filter
+            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100 h-[40px]">
+              <Filter className="h-4 w-4 mr-2" /> Filter
             </button>
           </div>
         </div>
 
         <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-50">
+          <thead className="border-b border-b-gray-200">
             <tr>
               <th className="p-2 text-left">User</th>
               <th className="p-2 text-left">Email</th>
@@ -104,19 +102,19 @@ export default function UsersManagement() {
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="border-b">
-                <td className="p-2 flex items-center gap-2">
+              <tr key={user._id} className="border-b border-b-gray-200 p-7">
+                <td className="p-5 flex items-center gap-2">
                   <img
-                    src={user.avatar}
+                    src={user.avatar || "/placeholder.svg"}
                     alt="avatar"
                     className="w-8 h-8 rounded-full"
                   />
-                  <span className="font-medium">{user.name}</span>
+                  <span className="font-medium">{user.full_name}</span>
                 </td>
                 <td className="p-2 text-gray-500">{user.email}</td>
                 <td className="p-2">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs ${
+                    className={`px-2 py-0.5 rounded-3xl text-xs ${
                       user.status === "active"
                         ? "bg-green-100 text-green-600"
                         : "bg-gray-100 text-gray-600"
@@ -126,20 +124,22 @@ export default function UsersManagement() {
                   </span>
                 </td>
                 <td className="p-2">
-                  <span className="border rounded px-2 py-0.5 text-xs">
-                    {user.membership}
+                  <span className="border rounded-3xl px-2 py-0.5 text-xs">
+                    {user.membership || "-"}
                   </span>
                 </td>
-                <td className="p-2 text-gray-500">{user.joinDate}</td>
+                <td className="p-2 text-gray-500">
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </td>
                 <td className="p-2 text-right">
                   <div className="inline-flex gap-1">
-                    <button className="border rounded px-1 py-0.5 hover:bg-gray-100">
+                    <button className="rounded px-1 py-0.5 hover:bg-gray-100">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button className="border rounded px-1 py-0.5 hover:bg-gray-100">
+                    <button className="rounded px-1 py-0.5 hover:bg-gray-100">
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button className="border rounded px-1 py-0.5 text-red-600 hover:bg-gray-100">
+                    <button className="rounded px-1 py-0.5 text-red-600 hover:bg-gray-100">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
