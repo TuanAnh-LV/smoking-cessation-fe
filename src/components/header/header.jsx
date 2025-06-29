@@ -152,6 +152,9 @@ const Header = () => {
         <Link to="/coach">
           <p>Coach</p>
         </Link>
+        <Link to="/blog">
+          <p>Blogs</p>
+        </Link>
       </div>
 
       {isLoggedIn ? (

@@ -1,10 +1,12 @@
 .community-page {
-  padding: 50px;
+  padding: 0px !important;
   min-height: 100vh;
 
   &__tabs {
     display: flex;
     gap: 10px;
+    justify-content: center;
+    margin-top: 50px;
     margin-bottom: 16px;
     border-bottom: 2px solid #e5e7eb;
 
@@ -98,20 +100,22 @@
 }
 
 .community-chat {
+  display: flex;
+  flex-direction: column;
+  height: 75vh;
+  width: 100%;
+  max-width: 1020px;
+
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  padding: 18px 16px;
-  display: flex;
-  flex-direction: column;
-  min-height: 480px;
 
   &__header {
+    padding: 18px 16px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
-    margin-bottom: 10px;
 
     .community-chat__online {
       color: #9c7055;
@@ -120,24 +124,26 @@
   }
 
   &__messages {
-    flex: 1;
+    flex: 1;                 /* Chiếm hết khoảng còn lại */
     overflow-y: auto;
-    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: 320px;
+    margin-bottom: 0;        /* Bỏ margin dưới */
   }
 
   &__input {
     display: flex;
+    align-items: center;
     gap: 8px;
+    padding: 10px 16px 16px; /* Có padding trên + dưới vừa phải */
+    /* Không có margin, để sát đáy */
 
     input {
       flex: 1;
       border-radius: 6px;
       border: 1px solid #e5e7eb;
-      padding: 8px 12px;
+      padding: 10px 12px;
       font-size: 1rem;
     }
 
@@ -146,7 +152,7 @@
       color: #fff;
       border: none;
       border-radius: 6px;
-      padding: 8px 18px;
+      padding: 10px 18px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
@@ -156,67 +162,18 @@
       }
     }
   }
+}
 
-  .chat-message {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-
-    &__avatar {
-      width: 32px;
-      height: 32px;
-      background: #ede0cf;
-      font-weight: bold;
-      font-size: 1rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 2px;
-    }
-
-    &__content {
-      background: #f3f4f6;
-      border-radius: 8px;
-      padding: 6px 12px;
-      min-width: 120px;
-      max-width: 220px;
-      word-wrap: break-word;
-    }
-
-    &__author {
-      font-weight: 600;
-      margin-right: 6px;
-    }
-  }
-
-  .chat-message--own {
-    justify-content: flex-end;
-    text-align: right;
-
-    .chat-message__content {
-      background: #d1f7c4;
-    }
-
-    .chat-message__avatar {
-      background: #9c7055;
-      color: #fff;
-    }
-  }
+.coach-chat-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
 }
 
 .community-chat-wrapper {
   display: flex;
   justify-content: center;
   padding: 24px;
-}
-
-.community-chat {
-  width: 100%;
-  max-width: 1020px;
-  height: 75vh; // tăng chiều cao cho khung chat
-  display: flex;
-  flex-direction: column;
 }
 
 @media (max-width: 768px) {

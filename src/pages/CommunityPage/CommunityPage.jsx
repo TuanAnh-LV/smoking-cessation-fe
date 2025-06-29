@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { CommunityService } from "../../services/community.service";
+import { ChatService } from "../../services/chat.service";
+import CoachChat from "../../components/Community/CoachChat";
 import "./CommunityPage.scss";
 
 const CommunityPage = () => {
@@ -8,6 +10,7 @@ const CommunityPage = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [activeTab, setActiveTab] = useState("community");
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -16,129 +19,104 @@ const CommunityPage = () => {
 
     const decoded = JSON.parse(atob(token.split('.')[1]));
     setCurrentUserId(decoded.id);
-    console.log("Current user ID:", decoded.id);
 
-    // Load history messages
     CommunityService.getMessages()
       .then((res) => {
-        console.log("Messages API response:", res);
         if (Array.isArray(res)) {
           setMessages(res);
         } else if (res.data && Array.isArray(res.data)) {
           setMessages(res.data);
         } else {
-          console.warn("API returned invalid format, setting empty messages");
           setMessages([]);
         }
       })
-      .catch((err) => {
-        console.error("Failed to load messages", err);
-        setMessages([]);
-      });
+      .catch(() => setMessages([]));
 
-    const newSocket = io("https://smoking-cessation-backend.onrender.com", {
+    const newSocket = io("http://localhost:3000/community", {
       auth: { token }
     });
     setSocket(newSocket);
 
-    newSocket.on("connect", () => {
-      console.log("Socket connected:", newSocket.id);
-    });
-
     newSocket.on("chat message", (data) => {
-      console.log("Socket message received:", data);
       setMessages(prev => [...prev, data]);
     });
 
-    newSocket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
-
-    return () => {
-      newSocket.disconnect();
-    };
+    return () => newSocket.disconnect();
   }, []);
 
   useEffect(() => {
-    console.log("Messages state updated:", messages);
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
-    console.log("Sending message:", inputMessage);
     socket.emit("chat message", { message: inputMessage });
     setInputMessage("");
   };
 
   return (
     <div className="community-page">
-      <div className="community-page__header">
-        <h1>Community</h1>
-        <button className="community-page__join-btn">Join the support group</button>
+      <div className="community-page__tabs">
+        <button
+          className={activeTab === "community" ? "active" : ""}
+          onClick={() => setActiveTab("community")}
+        >
+          Cộng đồng
+        </button>
+        <button
+          className={activeTab === "coach" ? "active" : ""}
+          onClick={() => setActiveTab("coach")}
+        >
+          Coach
+        </button>
       </div>
-      <div className="community-page__content">
-        <div className="community-page__left">
-          <div className="share-story">
-            <h2>Share your story</h2>
-            <textarea placeholder="Share your progress, feelings or tips with the community..." />
-            <div className="achievement-list">
-              <div className="achievement-item">🏆 1 month of perseverance</div>
-              <div className="achievement-item">⭐ 1 week clean</div>
-              <div className="achievement-item">❤️ Encourager</div>
-              <div className="achievement-item">🥈 Take a deep breath</div>
-            </div>
-            <button className="share-story__btn">Post</button>
-          </div>
-        </div>
 
-        <div className="community-page__right">
-          <div className="community-chat">
-            <div className="community-chat__header">
-              <span>Chat cộng đồng</span>
-              <span className="community-chat__online">Đang online</span>
-            </div>
-            <div className="community-chat__messages">
-              {messages.map((msg, index) => {
-                if (!msg.author_id) {
-                  console.warn("Message missing author_id:", msg);
-                  return null;
-                }
-
-                const isOwn = msg.author_id._id === currentUserId;
-                const avatarText = msg.author_id.full_name
-                  ? msg.author_id.full_name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase()
-                  : "??";
-
-                return (
-                  <div
-                    key={msg._id || index}
-                    className={`chat-message ${isOwn ? "chat-message--own" : ""}`}
-                  >
-                    <span className="chat-message__avatar">{avatarText}</span>
-                    <div className="chat-message__content">
-                      <span className="chat-message__author">{msg.author_id.full_name}</span>
-                      <div>{msg.content}</div>
+      <div className="community-page__chat-wrapper">
+        {activeTab === "community" && (
+          <div className="community-chat-wrapper">
+            <div className="community-chat">
+              <div className="community-chat__header">
+                <span>Chat cộng đồng</span>
+              </div>
+              <div className="community-chat__messages">
+                {messages.map((msg, index) => {
+                  if (!msg.author_id) return null;
+                  const isOwn = msg.author_id.id === currentUserId || msg.author_id._id === currentUserId;
+                  const avatarText = msg.author_id.full_name
+                    ? msg.author_id.full_name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase()
+                    : "??";
+                  return (
+                    <div
+                      key={msg.id || msg._id || index}
+                      className={`chat-message ${isOwn ? "chat-message--own" : ""}`}
+                    >
+                      <span className="chat-message__avatar">{avatarText}</span>
+                      <div className="chat-message__content">
+                        <span className="chat-message__author">{msg.author_id.full_name}</span>
+                        <div>{msg.content}</div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
-            <div className="community-chat__input">
-              <input
-                type="text"
-                placeholder="Nhập tin nhắn của bạn..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              />
-              <button className="community-chat__send-btn" onClick={sendMessage}>
-                Gửi
-              </button>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
+              <div className="community-chat__input">
+                <input
+                  type="text"
+                  placeholder="Nhập tin nhắn của bạn..."
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                />
+                <button className="community-chat__send-btn" onClick={sendMessage}>
+                  Gửi
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {activeTab === "coach" && <CoachChat userId={currentUserId} />}
       </div>
     </div>
   );
