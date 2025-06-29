@@ -107,6 +107,18 @@ export const BaseService = {
     checkLoading(isLoading);
     return axiosInstance.get(url, { params: payload, headers });
   },
+  patch({ url, isLoading = true, payload = {}, headers = {} }) {
+    checkLoading(isLoading);
+
+    const isFormData = payload instanceof FormData;
+    const finalHeaders = {
+      ...headers,
+      ...(isFormData ? { 'Content-Type': 'multipart/form-data' } : {})
+    };
+
+    return axiosInstance.patch(url, payload, { headers: finalHeaders });
+  },
+
 
   uploadMedia(url, file, isMultiple = false, isLoading = true) {
     const formData = new FormData();

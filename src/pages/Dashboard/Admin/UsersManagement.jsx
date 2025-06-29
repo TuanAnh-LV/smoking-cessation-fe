@@ -1,19 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { UserService } from "../../../services/user.service";
 import { UserMembershipService } from "../../../services/userMembership.service";
-import {
-  Search,
-  Plus,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye,
-  Filter,
-  UserCheck,
-  Award,
-  CreditCard,
-  Users,
-} from "lucide-react";
+import { Search, Edit, Trash2, Eye, Filter } from "lucide-react";
 
 export default function UsersManagement() {
   const [users, setUsers] = useState([]);
@@ -94,7 +82,6 @@ export default function UsersManagement() {
             <tr>
               <th className="p-2 text-left">User</th>
               <th className="p-2 text-left">Email</th>
-              <th className="p-2 text-left">Status</th>
               <th className="p-2 text-left">Membership</th>
               <th className="p-2 text-left">Join Date</th>
               <th className="p-2 text-right">Actions</th>
@@ -104,32 +91,16 @@ export default function UsersManagement() {
             {filteredUsers.map((user) => (
               <tr key={user._id} className="border-b border-b-gray-200 p-7">
                 <td className="p-5 flex items-center gap-2">
-                  <img
-                    src={user.avatar || "/placeholder.svg"}
-                    alt="avatar"
-                    className="w-8 h-8 rounded-full"
-                  />
                   <span className="font-medium">{user.full_name}</span>
                 </td>
                 <td className="p-2 text-gray-500">{user.email}</td>
-                <td className="p-2">
-                  <span
-                    className={`px-2 py-0.5 rounded-3xl text-xs ${
-                      user.status === "active"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {user.status}
-                  </span>
-                </td>
                 <td className="p-2">
                   <span className="border rounded-3xl px-2 py-0.5 text-xs">
                     {user.membership || "-"}
                   </span>
                 </td>
                 <td className="p-2 text-gray-500">
-                  {new Date(user.createdAt).toLocaleDateString()}
+                  {new Date(user.created_at).toLocaleDateString()}
                 </td>
                 <td className="p-2 text-right">
                   <div className="inline-flex gap-1">
