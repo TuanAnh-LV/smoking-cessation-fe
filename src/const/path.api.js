@@ -96,6 +96,15 @@ export const API = {
     COMMUNITY: {
       MESSAGES: "/community/messages"
     },
+        CHAT: {
+    GET_OR_CREATE_SESSION: "/chat/session",
+    GET_MESSAGES: "/chat/messages/:sessionId",
+    CLOSE_SESSION: "/chat/session/:sessionId/close",
+  },
+  VIDEO: {
+    CREATE_USER: "/video/create-user",
+    GET_TOKEN: "/video/token",
+  },
     NOTIFICATION: {
       GET_ALL: "/notifications",
       MARK_AS_READ: "/notifications/:id/read",
