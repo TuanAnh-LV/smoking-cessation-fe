@@ -71,16 +71,6 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
                 date.getTime() + date.getTimezoneOffset() * 60000
               );
               localDate.setHours(0, 0, 0, 0);
-
-              console.log(
-                "✅ Progress Record Date:",
-                r.date,
-                " → Local:",
-                localDate,
-                localDate.getTime()
-              );
-              console.log("✅ Today Local:", today, today.getTime());
-
               return Math.abs(localDate.getTime() - today.getTime()) < 1000;
             });
             statusMap[stage._id] = !!found;

@@ -101,5 +101,10 @@ export const API = {
       MARK_AS_READ: "/notifications/:id/read",
       MARK_ALL_AS_READ: "/notifications/mark-all-read",
       DELETE: "/notifications/:id"
+    },
+    REMINDER:{
+      GET_REMINDER_OF_USER:"/reminders",
+      CREATE_REMINDER:"/reminders",
+      DELETE_REMINDER:"/reminders/:id"
     }
   };

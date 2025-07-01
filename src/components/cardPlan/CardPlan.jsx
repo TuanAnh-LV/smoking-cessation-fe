@@ -59,7 +59,6 @@ const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
 
   const handlePlanSelect = (planId) => {
     setSelectedPlanId(planId);
-    console.log("Plan selected with ID:", planId);
   };
 
   return (

@@ -12,7 +12,6 @@ const CardMemberSection = () => {
   useEffect(() => {
     MembershipService.getAllMemberships()
       .then((res) => {
-        console.log("Memberships:", res);
         if (Array.isArray(res)) {
           setMembership(res);
         } else if (res.data && Array.isArray(res.data)) {
@@ -25,7 +24,7 @@ const CardMemberSection = () => {
       .catch((err) => {
         console.error("Failed to fetch memberships:", err);
       });
-  }, [])
+  }, []);
 
   const handleUpgrade = (packageInfo) => {
     navigate("/payment", { state: packageInfo });
@@ -37,15 +36,13 @@ const CardMemberSection = () => {
         <h2>Upgrade now</h2>
         <div className="cards-container">
           {/* Gói Tiêu Chuẩn */}
-          {membership.map(item => (
+          {membership.map((item) => (
             <div key={item._id} className="member-card standard">
               <div className="package-header">
                 <span className="package-title">{item.name}</span>
               </div>
               <div className="package-price free">{item.price} VNĐ</div>
-              <p className="package-description">
-                {item.description}
-              </p>
+              <p className="package-description">{item.description}</p>
               <ul className="package-features">
                 <li>
                   <FaCheck className="check-icon" /> ........
@@ -60,7 +57,8 @@ const CardMemberSection = () => {
                   <FaCheck className="check-icon" /> .....................
                 </li>
               </ul>
-              <button className="package-button"
+              <button
+                className="package-button"
                 onClick={() =>
                   handleUpgrade({
                     _id: item._id,
@@ -68,13 +66,13 @@ const CardMemberSection = () => {
                     price: item.price,
                     desc: item.description,
                     date: new Date().toLocaleDateString("vi-VN"),
-                  })}
+                  })
+                }
               >
                 {item.price == 0 ? "Free" : "Upgrade now"}
               </button>
             </div>
           ))}
-
 
           {/* Gói 12 tháng */}
           {/* <div className="member-card yearly">

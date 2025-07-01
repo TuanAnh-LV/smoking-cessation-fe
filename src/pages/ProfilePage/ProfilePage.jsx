@@ -9,7 +9,6 @@ const ProfilePage = () => {
   useEffect(() => {
     UserService.getCurrentUser()
       .then((res) => {
-        console.log("User data:", res);
         setUser(res.data);
       })
       .catch((err) => console.error("Lỗi lấy user:", err));

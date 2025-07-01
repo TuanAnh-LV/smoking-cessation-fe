@@ -8,7 +8,7 @@ import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
-// import socket from "../../utils/socket";
+import socket from "../../utils/socket";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
 
@@ -35,15 +35,12 @@ const Header = () => {
 
   const profileRef = useRef();
   const dropdownRef = useRef();
-  // Gọi API lấy tất cả thông báo khi login
-  console.log("📌 Header is rendered");
 
   useEffect(() => {
     if (!isLoggedIn || !userInfo?._id) return;
 
     NotificationService.getAll().then((res) => {
-      const data = res.data; // 👈 Lấy ra mảng từ res
-      console.log("✅ Notifications:", data);
+      const data = res.data;
       if (Array.isArray(data)) {
         setNotifications(data);
         setUnreadCount(data.filter((n) => !n.is_read).length);
@@ -53,25 +50,6 @@ const Header = () => {
       }
     });
   }, [isLoggedIn, userInfo?._id]);
-
-  // Thiết lập socket
-  // useEffect(() => {
-  //   if (!isLoggedIn || !userInfo?._id) return;
-
-  //   socket.connect();
-  //   socket.emit("join", userInfo._id);
-
-  //   socket.on("newNotification", (noti) => {
-  //     setNotifications((prev) => [noti, ...prev]);
-  //     setUnreadCount((prev) => prev + 1);
-  //     toast.info(`🔔 ${noti.title}`);
-  //   });
-
-  //   return () => {
-  //     socket.off("newNotification");
-  //     socket.disconnect();
-  //   };
-  // }, [isLoggedIn, userInfo?._id]);
 
   // Lấy planId khi localStorage thay đổi
   useEffect(() => {
@@ -87,9 +65,8 @@ const Header = () => {
       await NotificationService.deleteAll();
       setNotifications([]);
       setUnreadCount(0);
-      console.log("🧹 Tất cả thông báo đã được xoá.");
     } catch (err) {
-      console.error("❌ Xóa tất thất bại:", err);
+      console.error("Xóa tất thất bại:", err);
     }
   };
 
@@ -101,7 +78,6 @@ const Header = () => {
       );
       setUnreadCount((prev) => Math.max(prev - 1, 0));
     }
-    console.log("🔔 Clicked:", noti);
   };
   useEffect(() => {
     const handleClickOutside = (event) => {

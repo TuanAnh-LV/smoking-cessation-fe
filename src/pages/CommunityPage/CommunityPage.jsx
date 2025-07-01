@@ -14,14 +14,12 @@ const CommunityPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const decoded = JSON.parse(atob(token.split('.')[1]));
+    const decoded = JSON.parse(atob(token.split(".")[1]));
     setCurrentUserId(decoded.id);
-    console.log("Current user ID:", decoded.id);
 
     // Load history messages
     CommunityService.getMessages()
       .then((res) => {
-        console.log("Messages API response:", res);
         if (Array.isArray(res)) {
           setMessages(res);
         } else if (res.data && Array.isArray(res.data)) {
@@ -37,22 +35,17 @@ const CommunityPage = () => {
       });
 
     const newSocket = io("https://smoking-cessation-backend.onrender.com", {
-      auth: { token }
+      auth: { token },
     });
     setSocket(newSocket);
 
-    newSocket.on("connect", () => {
-      console.log("Socket connected:", newSocket.id);
-    });
+    newSocket.on("connect", () => {});
 
     newSocket.on("chat message", (data) => {
-      console.log("Socket message received:", data);
-      setMessages(prev => [...prev, data]);
+      setMessages((prev) => [...prev, data]);
     });
 
-    newSocket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+    newSocket.on("disconnect", () => {});
 
     return () => {
       newSocket.disconnect();
@@ -60,13 +53,12 @@ const CommunityPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Messages state updated:", messages);
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
-    console.log("Sending message:", inputMessage);
+
     socket.emit("chat message", { message: inputMessage });
     setInputMessage("");
   };
@@ -75,7 +67,9 @@ const CommunityPage = () => {
     <div className="community-page">
       <div className="community-page__header">
         <h1>Community</h1>
-        <button className="community-page__join-btn">Join the support group</button>
+        <button className="community-page__join-btn">
+          Join the support group
+        </button>
       </div>
       <div className="community-page__content">
         <div className="community-page__left">
@@ -107,17 +101,26 @@ const CommunityPage = () => {
 
                 const isOwn = msg.author_id._id === currentUserId;
                 const avatarText = msg.author_id.full_name
-                  ? msg.author_id.full_name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase()
+                  ? msg.author_id.full_name
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")
+                      .substring(0, 2)
+                      .toUpperCase()
                   : "??";
 
                 return (
                   <div
                     key={msg._id || index}
-                    className={`chat-message ${isOwn ? "chat-message--own" : ""}`}
+                    className={`chat-message ${
+                      isOwn ? "chat-message--own" : ""
+                    }`}
                   >
                     <span className="chat-message__avatar">{avatarText}</span>
                     <div className="chat-message__content">
-                      <span className="chat-message__author">{msg.author_id.full_name}</span>
+                      <span className="chat-message__author">
+                        {msg.author_id.full_name}
+                      </span>
                       <div>{msg.content}</div>
                     </div>
                   </div>
@@ -133,7 +136,10 @@ const CommunityPage = () => {
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               />
-              <button className="community-chat__send-btn" onClick={sendMessage}>
+              <button
+                className="community-chat__send-btn"
+                onClick={sendMessage}
+              >
                 Gửi
               </button>
             </div>

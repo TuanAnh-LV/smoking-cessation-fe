@@ -17,10 +17,6 @@ const PlanChecker = () => {
       console.log("PlanChecker đợi token + userInfo hoặc đã checked...");
       return;
     }
-    // if (!location.pathname.startsWith("/progress")) {
-    //   setChecked(true);
-    //   return;
-    // }
     const verifyPlan = async () => {
       const storedPlanId = localStorage.getItem("currentPlanId");
 
