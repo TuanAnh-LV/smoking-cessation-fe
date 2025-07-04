@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
-  StreamVideoClient,
+  StreamVideo,
   StreamCall,
-  StreamVideoProvider,
   CallControls,
-  CallParticipantsList,
   SpeakerLayout,
+  StreamTheme,
+  CallingState,
+  useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import axios from "axios";
+import { StreamVideoClient } from "@stream-io/video-react-sdk"; // Đảm bảo import đúng cách
 
 const CoachVideoCall = () => {
   const [client, setClient] = useState(null);
@@ -29,6 +31,7 @@ const CoachVideoCall = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        // Khởi tạo StreamVideoClient bằng từ khóa `new`
         const streamClient = new StreamVideoClient({
           apiKey: import.meta.env.VITE_STREAM_API_KEY,
           user: { id: userId, name: full_name },
@@ -60,13 +63,14 @@ const CoachVideoCall = () => {
   if (!client || !call) return <div>Không thể thiết lập cuộc gọi.</div>;
 
   return (
-    <StreamVideoProvider client={client}>
-      <StreamCall call={call}>
-        <SpeakerLayout />
-        <CallControls />
-        <CallParticipantsList />
-      </StreamCall>
-    </StreamVideoProvider>
+    <StreamTheme>
+      <StreamVideo>
+        <StreamCall call={call}>
+          <SpeakerLayout />
+          <CallControls />
+        </StreamCall>
+      </StreamVideo>
+    </StreamTheme>  
   );
 };
 

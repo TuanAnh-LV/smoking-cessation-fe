@@ -1,82 +1,80 @@
 import React, { useEffect, useState } from "react";
 import {
   StreamVideo,
-  StreamVideoClient,
   StreamCall,
-  SpeakerLayout,
   CallControls,
+  SpeakerLayout,
   StreamTheme,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
-
-const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
+import { useParams } from "react-router-dom";  // Sử dụng useParams để lấy callId từ URL
+import { StreamVideoClient } from "@stream-io/video-react-sdk";
 
 const CallPage = () => {
-  const { callId } = useParams(); // /call/:callId
+  const { id } = useParams();  // Lấy callId từ URL
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
-
-  const [authUser, setAuthUser] = useState(null); // ví dụ mày lưu user login ở localStorage
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("userInfo")); // hoặc context / zustand...
-    setAuthUser(user);
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initCall = async () => {
-      if (!authUser || !callId) return;
-
+    const setupCall = async () => {
       try {
-        // 1. Gọi BE lấy token
-        const res = await axios.get("/api/video/token", {
-          headers: {
-            Authorization: `Bearer ${authUser.token}`,
-          },
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Không tìm thấy token");
+
+        // Giải mã token và lấy thông tin người dùng
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const full_name = decoded.full_name || "User";
+        const userIdFromToken = decoded.id;
+
+        if (!userIdFromToken) throw new Error("Không tìm thấy userId trong token");
+
+        const res = await axios.get("http://localhost:3000/api/video/token", {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        const token = res.data.token;
-
-        // 2. Init client
-        const client = new StreamVideoClient({
-          apiKey: STREAM_API_KEY,
-          user: {
-            id: authUser.id,
-            name: authUser.full_name,
-            image: "", // nếu có avatar thì gắn
-          },
-          token,
+        // Khởi tạo StreamVideoClient với userId từ token
+        const streamClient = new StreamVideoClient({
+          apiKey: import.meta.env.VITE_STREAM_API_KEY,
+          user: { id: userIdFromToken, name: full_name },  // Sử dụng userId từ token
+          token: res.data.token,
         });
 
-        // 3. Join room
-        const call = client.call("default", callId);
-        await call.join({ create: true });
+        // Tạo cuộc gọi video với callId duy nhất từ URL
+        const callInstance = streamClient.call("default", id);
+        await callInstance.getOrCreate();  // Tạo cuộc gọi nếu chưa tồn tại
+        await callInstance.join();  // Tham gia vào cuộc gọi
 
-        setClient(client);
-        setCall(call);
+        setClient(streamClient);
+        setCall(callInstance);
+        setLoading(false);
       } catch (err) {
-        toast.error("Không thể join call");
-        console.error(err);
+        console.error("Lỗi khi kết nối video call:", err);
+        setLoading(false);
       }
     };
 
-    initCall();
-  }, [authUser, callId]);
+    setupCall();
 
-  if (!client || !call) return <div>Đang kết nối video call...</div>;
+    return () => {
+      call?.leave?.();
+      client?.disconnectUser?.();
+    };
+  }, [id]);  // Chạy lại khi callId (id) thay đổi
+
+  if (loading) return <div style={{ padding: "1rem" }}>🔄 Đang kết nối cuộc gọi...</div>;
+  if (!client || !call) return <div>Không thể thiết lập cuộc gọi.</div>;
 
   return (
-    <StreamVideo client={client}>
-      <StreamCall call={call}>
-        <StreamTheme>
+    <StreamTheme>
+      <StreamVideo>
+        <StreamCall call={call}>
           <SpeakerLayout />
           <CallControls />
-        </StreamTheme>
-      </StreamCall>
-    </StreamVideo>
+        </StreamCall>
+      </StreamVideo>
+    </StreamTheme>
   );
 };
 

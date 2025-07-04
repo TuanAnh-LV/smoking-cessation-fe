@@ -5,7 +5,6 @@ import {
   Typography,
   Input,
   Button,
-  Modal,
   List,
   Badge,
   Divider,
@@ -18,7 +17,6 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { io } from "socket.io-client";
-import CoachVideoCall from "../../../components/Community/CoachVideoCall";
 import { ChatService } from "../../../services/chat.service";
 
 const { Title, Text } = Typography;
@@ -29,7 +27,6 @@ const ChatMessage = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const socketRef = useRef(null);
   const token = localStorage.getItem("token");
   const [currentCoachId, setCurrentCoachId] = useState(null);
@@ -91,6 +88,17 @@ const ChatMessage = () => {
     setInput("");
   };
 
+  const handleVideoCall = () => {
+    // Tạo đường link video call chung cho cả user và coach
+    const callLink = `http://localhost:5173/call/${selectedChat?.user_id?._id}-${currentCoachId}`;
+
+    // Gửi đường link video call vào tin nhắn
+    socketRef.current.emit("sendMessage", {
+      sessionId: selectedChat._id,
+      content: `Hãy tham gia cuộc gọi video chung tại: ${callLink}`,
+    });
+  };
+
   return (
     <div className="flex h-screen">
       <div className="w-72 bg-white border-r overflow-y-auto p-4">
@@ -146,7 +154,7 @@ const ChatMessage = () => {
                 </div>
                 <Button
                   icon={<VideoCameraOutlined />}
-                  onClick={() => setIsVideoModalOpen(true)}
+                  onClick={handleVideoCall}  // Gửi đường link video call
                   className="rounded-xl"
                 >
                   Gọi video
@@ -204,16 +212,6 @@ const ChatMessage = () => {
           </Card>
         )}
       </div>
-
-      <Modal
-        title={`Cuộc gọi video với ${selectedChat?.user_id.full_name}`}
-        open={isVideoModalOpen}
-        onCancel={() => setIsVideoModalOpen(false)}
-        footer={null}
-        centered
-      >
-        <CoachVideoCall userId={selectedChat?.user_id?._id} />
-      </Modal>
     </div>
   );
 };
