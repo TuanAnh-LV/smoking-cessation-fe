@@ -8,7 +8,7 @@ import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
-import socket from "../../utils/socket";
+// import socket from "../../utils/socket";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
 
