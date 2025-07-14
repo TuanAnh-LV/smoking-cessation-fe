@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { ChatService } from "../../services/chat.service";
-import CoachVideoCall from "./CoachVideoCall";
 import { VideoIcon } from "lucide-react";
-import "./CoachChat.scss"; // nếu style nằm riêng
-// hoặc dùng lại CommunityPage.scss nếu chung class
+import "./CoachChat.scss";
 
 const CoachChat = ({ userId }) => {
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
   const [input, setInput] = useState("");
-  const [showCall, setShowCall] = useState(false);
+  const [coachName, setCoachName] = useState("Coach");
+  const [coachId, setCoachId] = useState(null);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
 
@@ -26,6 +25,8 @@ const CoachChat = ({ userId }) => {
         if (!sid) return;
 
         setSessionId(sid);
+        setCoachId(sessionData?.coach_id?._id);
+        setCoachName(sessionData?.coach_id?.full_name || "Coach");
 
         const msgRes = await ChatService.getMessages(sid);
         setMessages(msgRes?.data?.data || []);
@@ -47,12 +48,11 @@ const CoachChat = ({ userId }) => {
     };
 
     setupChat();
-    return () => socketRef.current?.disconnect();
-  }, []);
 
-  useEffect(() => {
-    // messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
 
   const sendMessage = () => {
     if (!input.trim() || !socketRef.current || !sessionId) return;
@@ -60,8 +60,18 @@ const CoachChat = ({ userId }) => {
     setInput("");
   };
 
+  const handleVideoCall = () => {
+    if (!sessionId || !userId || !coachId) return;
+
+    const callLink = `http://localhost:5173/call/${userId}-${coachId}`;
+    socketRef.current.emit("sendMessage", {
+      sessionId,
+      content: `Hãy tham gia cuộc gọi video chung tại: ${callLink}`,
+    });
+  };
+
   const getAvatarText = (name = "") => {
-    const words = name.split(" ");
+    const words = name.trim().split(" ");
     if (words.length === 0) return "??";
     if (words.length === 1) return words[0][0].toUpperCase();
     return (words[0][0] + words[1][0]).toUpperCase();
@@ -71,17 +81,19 @@ const CoachChat = ({ userId }) => {
     <div className="community-page">
       <div className="coach-chat-wrapper">
         <div className="community-chat">
+          {/* Header hiển thị tên coach */}
           <div className="community-chat__header">
-            <span>Chat với Coach</span>
+            <span>Đang trò chuyện với <strong>{coachName}</strong></span>
             <button
-              onClick={() => setShowCall(true)}
+              onClick={handleVideoCall}
               className="community-chat__video-btn"
             >
               <VideoIcon className="video-icon" />
-              Gọi video
+              Gửi link video
             </button>
           </div>
 
+          {/* Danh sách tin nhắn */}
           <div className="community-chat__messages">
             {messages.map((msg, idx) => {
               const senderId = msg.user_id?._id || msg.user_id || msg.author?._id;
@@ -97,7 +109,18 @@ const CoachChat = ({ userId }) => {
                   <span className="chat-message__avatar">{avatar}</span>
                   <div className="chat-message__content">
                     <span className="chat-message__author">{senderName}</span>
-                    <div>{msg.content}</div>
+                    {msg.content.includes("call/") ? (
+                      <a
+                        href={msg.content.split("tại: ")[1]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline break-all"
+                      >
+                        {msg.content.split("tại: ")[1]}
+                      </a>
+                    ) : (
+                      <div>{msg.content}</div>
+                    )}
                   </div>
                 </div>
               );
@@ -105,6 +128,7 @@ const CoachChat = ({ userId }) => {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Input gửi tin nhắn */}
           <div className="community-chat__input">
             <input
               type="text"
@@ -119,24 +143,8 @@ const CoachChat = ({ userId }) => {
           </div>
         </div>
       </div>
-
-      {showCall && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
-          <div className="w-full h-full max-w-screen-lg bg-zinc-900 shadow-lg relative">
-            <button
-              onClick={() => setShowCall(false)}
-              className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded"
-            >
-              Đóng
-            </button>
-            <CoachVideoCall />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default CoachChat;
-
-
