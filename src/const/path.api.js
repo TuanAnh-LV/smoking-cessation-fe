@@ -16,7 +16,7 @@ export const API = {
   },
   USER: {
     GET_CURRENT_USER_INFO: "/users/me",
-    UPDATE_CURRENT_USER: "/users",
+    UPDATE_CURRENT_USER: "/users/me",
     GET_COACH_OF_USER: "/users/:id/coach",
     GET_CURRENT_MEMBERSHIP: "/users/:id/membership",
     GET_ALL_QUITPAN_OF_USER: "/users/:id/quit-plans",
