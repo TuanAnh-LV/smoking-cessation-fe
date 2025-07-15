@@ -31,7 +31,7 @@ const CoachChat = ({ userId }) => {
         const msgRes = await ChatService.getMessages(sid);
         setMessages(msgRes?.data?.data || []);
 
-        socketRef.current = io("http://localhost:3000/coach", {
+        socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/coach`, {
           auth: { token },
         });
 
@@ -83,7 +83,9 @@ const CoachChat = ({ userId }) => {
         <div className="community-chat">
           {/* Header hiển thị tên coach */}
           <div className="community-chat__header">
-            <span>Đang trò chuyện với <strong>{coachName}</strong></span>
+            <span>
+              Đang trò chuyện với <strong>{coachName}</strong>
+            </span>
             <button
               onClick={handleVideoCall}
               className="community-chat__video-btn"
@@ -96,8 +98,10 @@ const CoachChat = ({ userId }) => {
           {/* Danh sách tin nhắn */}
           <div className="community-chat__messages">
             {messages.map((msg, idx) => {
-              const senderId = msg.user_id?._id || msg.user_id || msg.author?._id;
-              const senderName = msg.author?.full_name || msg.user_id?.full_name || "Coach";
+              const senderId =
+                msg.user_id?._id || msg.user_id || msg.author?._id;
+              const senderName =
+                msg.author?.full_name || msg.user_id?.full_name || "Coach";
               const isOwn = String(senderId) === String(userId);
               const avatar = getAvatarText(senderName);
 

@@ -32,7 +32,7 @@ const CommunityPage = () => {
       })
       .catch(() => setMessages([]));
 
-    const newSocket = io("http://localhost:3000/community", {
+    const newSocket = io(`${import.meta.env.VITE_SOCKET_URL}/community`, {
       auth: { token },
     });
     setSocket(newSocket);

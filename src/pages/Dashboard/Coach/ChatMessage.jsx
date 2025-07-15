@@ -8,7 +8,7 @@ import {
   List,
   Badge,
   Divider,
-  message as AntMessage
+  message as AntMessage,
 } from "antd";
 import {
   SendOutlined,
@@ -37,7 +37,7 @@ const ChatMessage = () => {
     const decoded = JSON.parse(atob(token.split(".")[1]));
     setCurrentCoachId(decoded.id);
 
-    socketRef.current = io("http://localhost:3000/coach", {
+    socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/coach`, {
       auth: { token },
     });
 
@@ -109,7 +109,9 @@ const ChatMessage = () => {
           dataSource={chatList}
           renderItem={(item) => (
             <List.Item
-              className={`cursor-pointer rounded-lg px-2 py-2 ${selectedChat?._id === item._id ? "bg-blue-100" : ""}`}
+              className={`cursor-pointer rounded-lg px-2 py-2 ${
+                selectedChat?._id === item._id ? "bg-blue-100" : ""
+              }`}
               onClick={() => selectChat(item)}
             >
               <List.Item.Meta
@@ -118,7 +120,9 @@ const ChatMessage = () => {
                     src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${item.user_id.full_name}`}
                   />
                 }
-                title={<Text className="font-medium">{item.user_id.full_name}</Text>}
+                title={
+                  <Text className="font-medium">{item.user_id.full_name}</Text>
+                }
                 description={<Text type="secondary">{item.user_id.email}</Text>}
               />
             </List.Item>
@@ -154,7 +158,7 @@ const ChatMessage = () => {
                 </div>
                 <Button
                   icon={<VideoCameraOutlined />}
-                  onClick={handleVideoCall}  // Gửi đường link video call
+                  onClick={handleVideoCall} // Gửi đường link video call
                   className="rounded-xl"
                 >
                   Gọi video
@@ -164,7 +168,9 @@ const ChatMessage = () => {
           >
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 px-2">
               {messages.map((msg) => {
-                const isMe = msg.user_id === currentCoachId || msg.user_id?._id === currentCoachId;
+                const isMe =
+                  msg.user_id === currentCoachId ||
+                  msg.user_id?._id === currentCoachId;
                 return (
                   <div
                     key={msg._id || msg.id}
@@ -173,14 +179,18 @@ const ChatMessage = () => {
                     <div className="max-w-[70%]">
                       <div
                         className={`px-4 py-2 rounded-xl ${
-                          isMe ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
+                          isMe
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-100 text-black"
                         }`}
                       >
                         <Text>{msg.content}</Text>
                       </div>
                       <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                         <ClockCircleOutlined className="text-[10px]" />
-                        <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
+                        <span>
+                          {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
+                        </span>
                       </div>
                     </div>
                   </div>
