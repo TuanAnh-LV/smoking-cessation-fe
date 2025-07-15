@@ -8,7 +8,6 @@ import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
-// import socket from "../../utils/socket";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
 
@@ -35,7 +34,7 @@ const Header = () => {
 
   const profileRef = useRef();
   const dropdownRef = useRef();
-
+  const profileDropdownRef = useRef();
   useEffect(() => {
     if (!isLoggedIn || !userInfo?._id) return;
 
@@ -45,7 +44,7 @@ const Header = () => {
         setNotifications(data);
         setUnreadCount(data.filter((n) => !n.is_read).length);
       } else {
-        console.warn("⚠️ Không phải mảng:", data);
+        console.warn("Không phải mảng:", data);
         setNotifications([]);
       }
     });
@@ -97,7 +96,18 @@ const Header = () => {
     toast.success("Logout successful!");
     navigate("/login");
   };
-
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(e.target)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <div className="header">
       <img src={LogoBlack} alt="Quit Smoking Logo" className="logo" />
@@ -163,16 +173,16 @@ const Header = () => {
             )}
           </div>
 
-          <div className="user-avatar relative">
+          <div className="relative" ref={profileDropdownRef}>
             <FaRegUserCircle
-              className="icon cursor-pointer"
+              className="icon cursor-pointer text-xl hover:text-black transition"
               onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
             />
             {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10 p-2 space-y-1">
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50 p-2 space-y-1">
                 <Link
                   to="/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                   onClick={() => setIsProfileDropdownOpen(false)}
                 >
                   Profile
@@ -180,7 +190,7 @@ const Header = () => {
                 {role === "admin" && (
                   <Link
                     to="/admin"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                     onClick={() => setIsProfileDropdownOpen(false)}
                   >
                     Admin Dashboard
@@ -189,7 +199,7 @@ const Header = () => {
                 {role === "coach" && (
                   <Link
                     to="/coach"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                     onClick={() => setIsProfileDropdownOpen(false)}
                   >
                     Coach Dashboard
