@@ -14,12 +14,12 @@ const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
     }
 
     const formatDateDMY = (date) => {
-      const d = new Date(date);
-      d.setHours(0, 0, 0, 0); // đảm bảo không bị lệch múi giờ
-      const day = String(d.getDate()).padStart(2, "0");
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const year = d.getFullYear();
-      return `${day}/${month}/${year}`;
+      if (!date) return "";
+      return new Date(date).toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
     };
 
     QuitPlanService.getSuggestedQuitPlan()

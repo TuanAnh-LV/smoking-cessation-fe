@@ -113,15 +113,21 @@ const Header = () => {
         <Link to="/">
           <p>Home</p>
         </Link>
-        <Link to="/community">
-          <p>Community</p>
-        </Link>
-        <Link to="/achievements">
-          <p>Achievements</p>
-        </Link>
-        <Link to={planId ? `/progress/${planId}` : "/status"}>
-          Track Progress
-        </Link>
+
+        {isLoggedIn && (
+          <>
+            <Link to="/community">
+              <p>Community</p>
+            </Link>
+            <Link to="/achievements">
+              <p>Achievements</p>
+            </Link>
+            <Link to={planId ? `/progress/${planId}` : "/status"}>
+              Track Progress
+            </Link>
+          </>
+        )}
+
         <Link to="/status">
           <p>Quit Plan</p>
         </Link>

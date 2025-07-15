@@ -56,6 +56,18 @@ const ProgressPage = () => {
       <header>
         <h1>Quit Smoking Progress Tracking</h1>
         <p>Update daily and monitor your improvement</p>
+        {summary?.latest_progress_date && (
+          <p style={{ fontStyle: "italic", color: "#666" }}>
+            Last update:{" "}
+            {new Date(summary.latest_progress_date).toLocaleString("vi-VN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </p>
+        )}
       </header>
 
       {summary && (

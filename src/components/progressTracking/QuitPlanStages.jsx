@@ -7,8 +7,10 @@ const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("en-GB");
 
 const getTodayVN = () => {
   const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  return now;
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const vn = new Date(utc + 7 * 60 * 60 * 1000);
+  vn.setHours(0, 0, 0, 0);
+  return vn;
 };
 
 const useDayChange = (callback, lastCheckedDateRef, onDayChanged) => {
@@ -66,13 +68,14 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
               stage._id
             );
             const found = res.data?.some((r) => {
-              const date = new Date(r.date);
-              const localDate = new Date(
-                date.getTime() + date.getTimezoneOffset() * 60000
+              const recordDateUTC = new Date(r.date);
+              const vnDate = new Date(
+                recordDateUTC.getTime() + 7 * 60 * 60 * 1000
               );
-              localDate.setHours(0, 0, 0, 0);
-              return Math.abs(localDate.getTime() - today.getTime()) < 1000;
+              vnDate.setHours(0, 0, 0, 0);
+              return vnDate.getTime() === today.getTime();
             });
+
             statusMap[stage._id] = !!found;
           } catch {
             statusMap[stage._id] = false;
