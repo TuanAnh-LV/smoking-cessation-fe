@@ -13,19 +13,17 @@ const PaymentPage = () => {
     title: "Membership Package",
     price: 0,
     desc: "",
-    date: ""
+    date: "",
   };
 
   const handleCreatePaypalOrder = async () => {
     try {
       const res = await PaymentService.createPaypalOrder({
-        package_id: packageInfo._id
+        package_id: packageInfo._id,
       });
-      console.log("Send package_id:", packageInfo._id);
-      console.log("Paypal order created:", res);
 
       if (res.data && res.data.approveUrl) {
-        window.location.href = res.data.approveUrl;  // Redirect to PayPal
+        window.location.href = res.data.approveUrl; // Redirect to PayPal
       } else {
         console.error("No approveUrl received");
       }
@@ -35,10 +33,8 @@ const PaymentPage = () => {
   };
 
   return (
-
     <div className="payment-page">
       <div className="payment-container">
-
         {/* Payment Information */}
         {/* <div className="payment-info-card">
           <h2 className="section-title">Payment information</h2>
@@ -72,8 +68,9 @@ const PaymentPage = () => {
           <h2 className="section-title">Payment method</h2>
           <div className="payment-method-options">
             <label
-              className={`method-option ${paymentMethod === "card" ? "selected" : ""
-                }`}
+              className={`method-option ${
+                paymentMethod === "card" ? "selected" : ""
+              }`}
             >
               <input
                 type="radio"
@@ -88,8 +85,9 @@ const PaymentPage = () => {
               </span>
             </label>
             <label
-              className={`method-option ${paymentMethod === "momo" ? "selected" : ""
-                }`}
+              className={`method-option ${
+                paymentMethod === "momo" ? "selected" : ""
+              }`}
             >
               <input
                 type="radio"
@@ -113,7 +111,9 @@ const PaymentPage = () => {
           <h2 className="section-title">Order details</h2>
           <div className="membership-package">
             <div className="package-info">
-              <span className="package-title">{packageInfo.title.toUpperCase()}</span>
+              <span className="package-title">
+                {packageInfo.title.toUpperCase()}
+              </span>
               <span className="package-price">
                 {packageInfo.price.toLocaleString()} VND
               </span>
@@ -131,7 +131,10 @@ const PaymentPage = () => {
               {packageInfo.price.toLocaleString()} VND
             </span>
           </div>
-          <button className="confirm-payment-btn" onClick={handleCreatePaypalOrder}>
+          <button
+            className="confirm-payment-btn"
+            onClick={handleCreatePaypalOrder}
+          >
             Confirmation and Payment
           </button>
           <div className="order-note">

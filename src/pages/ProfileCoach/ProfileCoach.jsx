@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import './ProfileCoach.scss';
-import apiClient from '../../services/api';
+import React, { useState } from "react";
+import "./ProfileCoach.scss";
+import apiClient from "../../services/api";
 
 const ProfileCoach = () => {
   const [showChat, setShowChat] = useState(false);
@@ -9,33 +9,32 @@ const ProfileCoach = () => {
   const [sessionError, setSessionError] = useState(null);
 
   const handleBookClick = async () => {
-    const currentUserId = 'user123';
-    const coachId = 'coach456';
+    const currentUserId = "user123";
+    const coachId = "coach456";
 
     setLoadingSession(true);
     setSessionError(null);
 
     try {
-      const existingSession = await apiClient.get(`/api/chat/sessions?userId=${currentUserId}&coachId=${coachId}`);
+      const existingSession = await apiClient.get(
+        `/api/chat/sessions?userId=${currentUserId}&coachId=${coachId}`
+      );
       setSessionId(existingSession.session_id);
-      console.log('Existing session found:', existingSession);
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        console.log('No existing session, creating a new one...');
         try {
-          const newSession = await apiClient.post('/api/chat/sessions', {
+          const newSession = await apiClient.post("/api/chat/sessions", {
             user_id: currentUserId,
             coach_id: coachId,
           });
           setSessionId(newSession.session_id);
-          console.log('New session created:', newSession);
         } catch (createError) {
-          console.error('Error creating chat session:', createError);
-          setSessionError('Không thể tạo phiên chat.');
+          console.error("Error creating chat session:", createError);
+          setSessionError("Không thể tạo phiên chat.");
         }
       } else {
-        console.error('Error fetching chat session:', error);
-        setSessionError('Không thể tải phiên chat.');
+        console.error("Error fetching chat session:", error);
+        setSessionError("Không thể tải phiên chat.");
       }
     } finally {
       setLoadingSession(false);
@@ -53,60 +52,113 @@ const ProfileCoach = () => {
     <div className="profile-coach-container">
       <div className="profile-header">
         <div className="profile-image-container">
-          <img src="https://images2.thanhnien.vn/528068263637045248/2023/5/27/john-wick-16851763995361259524053.jpg" alt="Coach Profile" className="profile-image" />
+          <img
+            src="https://images2.thanhnien.vn/528068263637045248/2023/5/27/john-wick-16851763995361259524053.jpg"
+            alt="Coach Profile"
+            className="profile-image"
+          />
         </div>
         <div className="profile-info">
           <h1 className="coach-name">TS. Nguyễn Văn A</h1>
-          <p className="coach-detail">Area of expertise: <span className="highlight">cai Nghiện Thuốc Lá</span></p>
-          <p className="coach-detail">Working unit: <span className="highlight">Tư nhân</span></p>
-          <p className="coach-detail">Experiences: <span className="highlight">100 năm</span></p>
-          <p className="coach-detail">Field: <span className="highlight">Hành vi nghiện thuốc</span></p>
+          <p className="coach-detail">
+            Area of expertise:{" "}
+            <span className="highlight">cai Nghiện Thuốc Lá</span>
+          </p>
+          <p className="coach-detail">
+            Working unit: <span className="highlight">Tư nhân</span>
+          </p>
+          <p className="coach-detail">
+            Experiences: <span className="highlight">100 năm</span>
+          </p>
+          <p className="coach-detail">
+            Field: <span className="highlight">Hành vi nghiện thuốc</span>
+          </p>
           <div className="coach-rating">
             <span>★☆☆☆☆</span> <span>1/5</span>
           </div>
-          <button className="book-button" onClick={handleBookClick} disabled={loadingSession}>
-            {loadingSession ? 'Đang kết nối...' : 'Book'}
+          <button
+            className="book-button"
+            onClick={handleBookClick}
+            disabled={loadingSession}
+          >
+            {loadingSession ? "Đang kết nối..." : "Book"}
           </button>
-          {sessionError && <p style={{ color: 'red' }}>{sessionError}</p>}
+          {sessionError && <p style={{ color: "red" }}>{sessionError}</p>}
         </div>
       </div>
 
       <div className="profile-description">
-        <p>I am Nguyen Van A, currently a coach supporting smoking cessation with the desire to accompany you on the journey to regain health and quality of life. With professional knowledge and practical experience from those who have overcome nicotine temptation, I am committed to bringing you a clear, suitable and inspiring roadmap. Quitting smoking is not just about quitting a bad habit, but also the beginning of a new life. I believe that as long as you are determined, I will always be here to support, listen and help you reach the same goal.</p>
-        <p>Let's start this journey together - for health, for loved ones, and for yourself!</p>
+        <p>
+          I am Nguyen Van A, currently a coach supporting smoking cessation with
+          the desire to accompany you on the journey to regain health and
+          quality of life. With professional knowledge and practical experience
+          from those who have overcome nicotine temptation, I am committed to
+          bringing you a clear, suitable and inspiring roadmap. Quitting smoking
+          is not just about quitting a bad habit, but also the beginning of a
+          new life. I believe that as long as you are determined, I will always
+          be here to support, listen and help you reach the same goal.
+        </p>
+        <p>
+          Let's start this journey together - for health, for loved ones, and
+          for yourself!
+        </p>
       </div>
 
       <div className="suggested-coaches-section">
         <h2 className="suggested-heading">Gợi ý bác sĩ</h2>
         <div className="suggested-coaches-grid">
           <div className="coach-card">
-            <img src="https://via.placeholder.com/200" alt="Suggested Coach" className="coach-image"/>
+            <img
+              src="https://via.placeholder.com/200"
+              alt="Suggested Coach"
+              className="coach-image"
+            />
             <h3 className="coach-name">TS. Nguyễn Văn A</h3>
-            <p className="coach-title">Master's in Tobacco Research and Tobacco Behavior...</p>
+            <p className="coach-title">
+              Master's in Tobacco Research and Tobacco Behavior...
+            </p>
             <div className="coach-rating">
               <span>★☆☆☆☆</span> <span>1/5</span>
             </div>
           </div>
-           <div className="coach-card">
-            <img src="https://via.placeholder.com/200" alt="Suggested Coach" className="coach-image"/>
+          <div className="coach-card">
+            <img
+              src="https://via.placeholder.com/200"
+              alt="Suggested Coach"
+              className="coach-image"
+            />
             <h3 className="coach-name">TS. Nguyễn Văn A</h3>
-            <p className="coach-title">Master's in Tobacco Research and Tobacco Behavior...</p>
+            <p className="coach-title">
+              Master's in Tobacco Research and Tobacco Behavior...
+            </p>
             <div className="coach-rating">
               <span>★☆☆☆☆</span> <span>1/5</span>
             </div>
           </div>
-           <div className="coach-card">
-            <img src="https://via.placeholder.com/200" alt="Suggested Coach" className="coach-image"/>
+          <div className="coach-card">
+            <img
+              src="https://via.placeholder.com/200"
+              alt="Suggested Coach"
+              className="coach-image"
+            />
             <h3 className="coach-name">TS. Nguyễn Văn A</h3>
-            <p className="coach-title">Master's in Tobacco Research and Tobacco Behavior...</p>
+            <p className="coach-title">
+              Master's in Tobacco Research and Tobacco Behavior...
+            </p>
             <div className="coach-rating">
               <span>★☆☆☆☆</span> <span>1/5</span>
             </div>
           </div>
-           <div className="coach-card">
-            <img src="https://via.placeholder.com/200" alt="Suggested Coach" className="coach-image"/>
+          <div className="coach-card">
+            <img
+              src="https://via.placeholder.com/200"
+              alt="Suggested Coach"
+              className="coach-image"
+            />
             <h3 className="coach-name">TS. Nguyễn Văn A</h3>
-            <p className="coach-title">Master's in Tobacco Research and Tobacco Behavior...</p>
+            <p className="coach-title">
+              Master's in Tobacco Research and Tobacco Behavior...
+            </p>
             <div className="coach-rating">
               <span>★☆☆☆☆</span> <span>1/5</span>
             </div>

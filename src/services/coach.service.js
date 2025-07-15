@@ -12,7 +12,7 @@ export const CoachService = {
   },
   getAllCoaches: () => {
     return BaseService.get({
-      url: API.COACH.GET_ALL_COACH,
+      url: API.COACH.GET_COACH_RELATIONSHIP,
       isAuth: true,
       isLoading: true,
     });

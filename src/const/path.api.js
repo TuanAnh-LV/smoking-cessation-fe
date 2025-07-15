@@ -106,10 +106,15 @@ export const API = {
     CREATE_USER: "/video/create-user",
     GET_TOKEN: "/video/token",
   },
-  NOTIFICATION: {
-    GET_ALL: "/notifications",
-    MARK_AS_READ: "/notifications/:id/read",
-    MARK_ALL_AS_READ: "/notifications/mark-all-read",
-    DELETE: "/notifications/:id"
-  }
-};
+    NOTIFICATION: {
+      GET_ALL: "/notifications",
+      MARK_AS_READ: "/notifications/:id/read",
+      MARK_ALL_AS_READ: "/notifications/mark-all-read",
+      DELETE: "/notifications/:id"
+    },
+    REMINDER:{
+      GET_REMINDER_OF_USER:"/reminders",
+      CREATE_REMINDER:"/reminders",
+      DELETE_REMINDER:"/reminders/:id"
+    }
+  };

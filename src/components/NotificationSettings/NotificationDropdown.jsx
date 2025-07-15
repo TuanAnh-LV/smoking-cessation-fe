@@ -9,7 +9,6 @@ const NotificationDropdown = ({
   setNotifications,
   setUnreadCount,
 }) => {
-  console.log("🧾 [Dropdown] Notifications:", notifications);
   const handleMarkAllAsRead = async () => {
     try {
       await NotificationService.markAllAsRead();
