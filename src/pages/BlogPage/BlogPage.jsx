@@ -1,72 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { BlogService } from "../../services/blog.service";
+import { CommentService } from "../../services/comment.service";
 import "./BlogPage.scss";
 
 const BlogPage = () => {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: "Minh Anh",
-      avatar: "MA",
-      time: "2 giờ trước",
-      text: "Hôm nay tròn 2 tuần không hút thuốc! Cảm ơn mọi người đã động viên mình! 💪"
-    },
-    {
-      id: 2,
-      author: "Hoàng Nam",
-      avatar: "HN",
-      time: "5 giờ trước",
-      text: "Chia sẻ tip: Mỗi khi thèm thuốc, mình lại uống một ly nước và đi bộ 5 phút. Rất hiệu quả!"
-    },
-    {
-      id: 3,
-      author: "Thu Hằng",
-      avatar: "TH",
-      badge: "1 tháng kiên trì",
-      time: "1 ngày trước",
-      achievement: "🏆 Đạt được huy hiệu: 1 tháng kiên trì",
-      text: "Vừa nhận được huy hiệu 1 tháng! Cảm ơn coach Linh đã hỗ trợ tận tình ❤️"
-    }
-  ]);
-
-  const [comments, setComments] = useState({
-    1: [{ name: "An", text: "Cố lên bạn!" }],
-    2: [{ name: "Nam", text: "Tip hay quá!" }],
-    3: [{ name: "Hà", text: "Chúc mừng nhé!" }]
-  });
-
+  const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState({});
   const [newPost, setNewPost] = useState("");
   const [newComment, setNewComment] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleAddPost = () => {
-    const text = newPost.trim();
-    if (!text) return;
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
-    const newId = posts.length ? posts[posts.length - 1].id + 1 : 1;
-    const newPostData = {
-      id: newId,
-      author: "S",
-      avatar: "S",
-      time: "Vừa xong",
-      text
-    };
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      const res = await BlogService.getAllBlogs();
+      console.log("API response:", res);
+      const blogList = res.data.blogs || [];
 
-    setPosts((prev) => [...prev, newPostData]);
-    setNewPost("");
+      const commentMap = {};
+
+      await Promise.all(
+        blogList.map(async (post) => {
+          try {
+            const res = await CommentService.getCommentsByBlog(post._id);
+            commentMap[post._id] = res.data?.comments || [];
+          } catch {
+            commentMap[post._id] = [];
+          }
+        })
+      );
+
+      setPosts(blogList);
+      setComments(commentMap);
+    } catch (err) {
+      console.error("Error loading blogs:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAddComment = (postId) => {
-    const comment = (newComment[postId] || "").trim();
-    if (!comment) return;
+  const handleAddPost = async () => {
+    const content = newPost.trim();
+    if (!content) return;
 
-    setComments((prev) => ({
-      ...prev,
-      [postId]: [...(prev[postId] || []), { name: "S", text: comment }]
-    }));
+    try {
+      await BlogService.createBlog({ title: "Chia sẻ", content });
+      setNewPost("");
+      fetchBlogs();
+    } catch (err) {
+      console.error("Error creating blog:", err.response?.data || err.message);
+    }
+  };
 
-    setNewComment((prev) => ({
-      ...prev,
-      [postId]: ""
-    }));
+  const handleAddComment = async (postId) => {
+    const content = (newComment[postId] || "").trim();
+    if (!content) return;
+
+    try {
+      await CommentService.createComment(postId, content);
+      const res = await CommentService.getCommentsByBlog(postId);
+      setComments((prev) => ({
+        ...prev,
+        [postId]: res.comments || [],
+      }));
+      setNewComment((prev) => ({
+        ...prev,
+        [postId]: "",
+      }));
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    }
+  };
+
+  const handleToggleLike = async (postId, isLiked) => {
+    try {
+      if (isLiked) {
+        await BlogService.unlikeBlog(postId);
+      } else {
+        await BlogService.likeBlog(postId);
+      }
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                isLikedByMe: !isLiked,
+                likeCount: post.likeCount + (isLiked ? -1 : 1),
+              }
+            : post
+        )
+      );
+    } catch (err) {
+      console.error("Error toggling like:", err);
+    }
   };
 
   return (
@@ -74,6 +105,7 @@ const BlogPage = () => {
       <div className="blog-page__header">
         <h1>Blogs</h1>
       </div>
+
       <div className="blog-page__content">
         <div className="blog-page__left">
           <div className="blog-posts">
@@ -89,63 +121,100 @@ const BlogPage = () => {
               </div>
             </div>
 
-            {posts.map((post) => (
-              <div className={`post ${post.badge ? "post--highlight" : ""}`} key={post.id}>
-                <div className="post__avatar">{post.avatar}</div>
-                <div className="post__content">
-                  <div className="post__header">
-                    <span className="post__author">{post.author}</span>
-                    {post.badge && <span className="post__badge">{post.badge}</span>}
-                    <span className="post__time">{post.time}</span>
-                  </div>
-                  {post.achievement && (
-                    <div className="post__achievement">{post.achievement}</div>
-                  )}
-                  <div className="post__text">{post.text}</div>
-                  <div className="post__actions">
-                    <span>{comments[post.id]?.length || 0} bình luận</span>
-                    <span className="post__encourage">Động viên</span>
-                  </div>
-                  <div className="post__comments">
-                    {comments[post.id]?.map((cmt, idx) => (
-                      <div key={idx} className="post__comment-item">
-                        <div className="post__comment-avatar">
-                          {cmt.name.split(" ").map(w => w[0]).join("").substring(0,2).toUpperCase()}
-                        </div>
-                        <div className="post__comment-content">
-                          <div className="post__comment-author">{cmt.name}</div>
-                          <div className="post__comment-text">{cmt.text}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="post__comment-form">
-                    <div className="post__comment-avatar">S</div>
-                    <input
-                      type="text"
-                      placeholder="Viết bình luận..."
-                      value={newComment[post.id] || ""}
-                      onChange={(e) =>
-                        setNewComment((prev) => ({
-                          ...prev,
-                          [post.id]: e.target.value
-                        }))
-                      }
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && handleAddComment(post.id)
-                      }
-                    />
-                    <button
-                      disabled={!(newComment[post.id] || "").trim()}
-                      onClick={() => handleAddComment(post.id)}
-                    >
-                      Gửi
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {loading ? (
+              <p>Đang tải bài viết...</p>
+            ) : posts.length === 0 ? (
+              <p>Chưa có bài viết nào.</p>
+            ) : (
+              posts.map((post) => {
+                const postComments = comments[post._id] || [];
+                const author =
+                  typeof post.author_id === "object"
+                    ? post.author_id?.full_name || "Ẩn danh"
+                    : "Ẩn danh";
+                const avatar =
+                  typeof post.author_id === "object"
+                    ? post.author_id?.full_name?.[0]?.toUpperCase() || "?"
+                    : "?";
 
+                return (
+                  <div className="post" key={post._id}>
+                    <div className="post__avatar">{avatar}</div>
+                    <div className="post__content">
+                      <div className="post__header">
+                        <span className="post__author">{author}</span>
+                        <span className="post__time">
+                          {new Date(post.createdAt).toLocaleString("vi-VN")}
+                        </span>
+                      </div>
+
+                      <div className="post__text">{post.content}</div>
+
+                      <div className="post__actions">
+                        <span>{postComments.length} bình luận</span>
+                        <span
+                          className={`post__encourage ${
+                            post.isLikedByMe ? "liked" : ""
+                          }`}
+                          onClick={() =>
+                            handleToggleLike(post._id, post.isLikedByMe)
+                          }
+                        >
+                          {post.isLikedByMe
+                            ? "💙 Đã động viên"
+                            : "🤍 Động viên"}{" "}
+                          ({post.likeCount})
+                        </span>
+                      </div>
+
+                      <div className="post__comments">
+                        {postComments.map((cmt, idx) => (
+                          <div key={idx} className="post__comment-item">
+                            <div className="post__comment-avatar">
+                              {cmt.user_id?.full_name
+                                ?.slice(0, 2)
+                                .toUpperCase() || "U"}
+                            </div>
+                            <div className="post__comment-content">
+                              <div className="post__comment-author">
+                                {cmt.user_id?.full_name || "Ẩn danh"}
+                              </div>
+                              <div className="post__comment-text">
+                                {cmt.content}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="post__comment-form">
+                        <div className="post__comment-avatar">S</div>
+                        <input
+                          type="text"
+                          placeholder="Viết bình luận..."
+                          value={newComment[post._id] || ""}
+                          onChange={(e) =>
+                            setNewComment((prev) => ({
+                              ...prev,
+                              [post._id]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && handleAddComment(post._id)
+                          }
+                        />
+                        <button
+                          disabled={!(newComment[post._id] || "").trim()}
+                          onClick={() => handleAddComment(post._id)}
+                        >
+                          Gửi
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

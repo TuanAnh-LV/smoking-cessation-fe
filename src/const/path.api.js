@@ -111,5 +111,24 @@ export const API = {
     MARK_AS_READ: "/notifications/:id/read",
     MARK_ALL_AS_READ: "/notifications/mark-all-read",
     DELETE: "/notifications/:id"
+  },
+    BLOG: {
+    CREATE_BLOG: "/blogs",
+    GET_ALL_BLOG: "/blogs",
+    GET_BLOG_BY_ID: "/blogs/:id",
+    UPDATE_BLOG: "/blogs/:id",
+    DELETE_BLOG: "/blogs/:id",
+    LIKE_BLOG: "/blogs/:id/like",
+    UNLIKE_BLOG: "/blogs/:id/unlike",
+    SHARE_BADGES: "/blogs/:id/share-badges"
+  },
+
+  COMMENT: {
+    CREATE_COMMENT: "/blogs/:id/comments",
+    GET_COMMENTS_BY_BLOG: "/blogs/:id/comments",
+    LIKE_COMMENT: "/comments/:id/like",
+    UNLIKE_COMMENT: "/comments/:id/unlike",
+    UPDATE_COMMENT: "/comments/:id",
+    DELETE_COMMENT: "/comments/:id"
   }
 };
