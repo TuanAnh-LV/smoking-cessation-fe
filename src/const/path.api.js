@@ -112,15 +112,20 @@ export const API = {
     MARK_ALL_AS_READ: "/notifications/mark-all-read",
     DELETE: "/notifications/:id"
   },
+  REMINDER: {
+    GET_REMINDER_OF_USER: "/reminders",
+    CREATE_REMINDER: "/reminders",
+    DELETE_REMINDER: "/reminders/:id"
+  },
     BLOG: {
-    CREATE_BLOG: "/blogs",
-    GET_ALL_BLOG: "/blogs",
-    GET_BLOG_BY_ID: "/blogs/:id",
-    UPDATE_BLOG: "/blogs/:id",
-    DELETE_BLOG: "/blogs/:id",
-    LIKE_BLOG: "/blogs/:id/like",
-    UNLIKE_BLOG: "/blogs/:id/unlike",
-    SHARE_BADGES: "/blogs/:id/share-badges"
+      CREATE_BLOG: "/blogs",
+      GET_ALL_BLOG: "/blogs",
+      GET_BLOG_BY_ID: "/blogs/:id",
+      UPDATE_BLOG: "/blogs/:id",
+      DELETE_BLOG: "/blogs/:id",
+      LIKE_BLOG: "/blogs/:id/like",
+      UNLIKE_BLOG: "/blogs/:id/unlike",
+      SHARE_BADGES: "/blogs/:id/share-badges"
   },
 
   COMMENT: {
@@ -129,6 +134,6 @@ export const API = {
     LIKE_COMMENT: "/comments/:id/like",
     UNLIKE_COMMENT: "/comments/:id/unlike",
     UPDATE_COMMENT: "/comments/:id",
-    DELETE_COMMENT: "/comments/:id"
-  }
+    DELETE_COMMENT: "/comments/:id",
+  },
 };
