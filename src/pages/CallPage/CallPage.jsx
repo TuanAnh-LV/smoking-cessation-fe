@@ -8,11 +8,11 @@ import {
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import axios from "axios";
-import { useParams } from "react-router-dom";  // Sử dụng useParams để lấy callId từ URL
+import { useParams } from "react-router-dom"; // Sử dụng useParams để lấy callId từ URL
 import { StreamVideoClient } from "@stream-io/video-react-sdk";
 
 const CallPage = () => {
-  const { id } = useParams();  // Lấy callId từ URL
+  const { id } = useParams(); // Lấy callId từ URL
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,23 +28,27 @@ const CallPage = () => {
         const full_name = decoded.full_name || "User";
         const userIdFromToken = decoded.id;
 
-        if (!userIdFromToken) throw new Error("Không tìm thấy userId trong token");
+        if (!userIdFromToken)
+          throw new Error("Không tìm thấy userId trong token");
 
-        const res = await axios.get("http://localhost:3000/api/video/token", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_SOCKET_URL}/api/video/token`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         // Khởi tạo StreamVideoClient với userId từ token
         const streamClient = new StreamVideoClient({
           apiKey: import.meta.env.VITE_STREAM_API_KEY,
-          user: { id: userIdFromToken, name: full_name },  // Sử dụng userId từ token
+          user: { id: userIdFromToken, name: full_name }, // Sử dụng userId từ token
           token: res.data.token,
         });
 
         // Tạo cuộc gọi video với callId duy nhất từ URL
         const callInstance = streamClient.call("default", id);
-        await callInstance.getOrCreate();  // Tạo cuộc gọi nếu chưa tồn tại
-        await callInstance.join();  // Tham gia vào cuộc gọi
+        await callInstance.getOrCreate(); // Tạo cuộc gọi nếu chưa tồn tại
+        await callInstance.join(); // Tham gia vào cuộc gọi
 
         setClient(streamClient);
         setCall(callInstance);
@@ -61,9 +65,10 @@ const CallPage = () => {
       call?.leave?.();
       client?.disconnectUser?.();
     };
-  }, [id]);  // Chạy lại khi callId (id) thay đổi
+  }, [id]); // Chạy lại khi callId (id) thay đổi
 
-  if (loading) return <div style={{ padding: "1rem" }}>🔄 Đang kết nối cuộc gọi...</div>;
+  if (loading)
+    return <div style={{ padding: "1rem" }}>🔄 Đang kết nối cuộc gọi...</div>;
   if (!client || !call) return <div>Không thể thiết lập cuộc gọi.</div>;
 
   return (

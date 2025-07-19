@@ -1,59 +1,77 @@
 import React, { useEffect, useState } from "react";
-import "./ProfilePage.scss"; // Tạo file này để chứa CSS đẹp
 import TransactionHistory from "../../components/TransactionHistory/TransactionHistory";
 import { UserService } from "../../services/user.service";
 import { useAuth } from "../../context/authContext";
+import EditProfileModal from "./EditProfileModal";
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const { userInfo } = useAuth();
+  const [showEdit, setShowEdit] = useState(false);
   useEffect(() => {
     UserService.getCurrentUser()
-      .then((res) => {
-        console.log("User data:", res);
-        setUser(res.data);
-      })
+      .then((res) => setUser(res.data))
       .catch((err) => console.error("Lỗi lấy user:", err));
   }, [userInfo]);
 
-  if (!user) return <div className="profile-section">Loading...</div>;
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-500 text-lg">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="profile-section">
-        <div className="profile-card">
-          <img
-            src={user.avatar || "/default-avatar.png"}
-            alt="avatar"
-            className="profile-avatar"
-          />
-          <h2 className="profile-name">{user.full_name}</h2>
-          <p className="profile-username">@{user.full_name}</p>
-          <div className="profile-info">
-            <div>
-              <span>
-                Email:<p>{user.email}</p>
-              </span>
-            </div>
-            <div>
-              <span>
-                Birth date:
-                <p>{new Date(user.birth_date).toLocaleDateString()}</p>
-              </span>
-            </div>
-            <div>
-              <span>
-                Gender: <p>{user.gender}</p>
-              </span>
-            </div>
-            <div>
-              <span>
-                Joined: <p>{new Date(user.created_at).toLocaleDateString()}</p>
-              </span>{" "}
-            </div>
+    <div className="mt-5">
+      <div className="bg-white shadow-lg  p-6 mb-8 text-center">
+        <img
+          src={user.avatar || "/default-avatar.png"}
+          alt="avatar"
+          className="w-32 h-32 mx-auto rounded-full border-4 border-gray-200 object-cover mb-4"
+        />
+        <h2 className="text-2xl font-bold mb-4">{user.full_name}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500">Email</p>
+            <p className="font-medium text-gray-800 break-words">
+              {user.email}
+            </p>
           </div>
-          <button className="profile-edit-btn">Edit Profile</button>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500">Birth date</p>
+            <p className="font-medium text-gray-800">
+              {new Date(user.birth_date).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500">Gender</p>
+            <p className="font-medium text-gray-800">{user.gender}</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="text-sm text-gray-500">Joined</p>
+            <p className="font-medium text-gray-800">
+              {new Date(user.created_at).toLocaleDateString()}
+            </p>
+          </div>
         </div>
+        <button
+          className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          onClick={() => setShowEdit(true)}
+        >
+          Edit Profile
+        </button>
+
+        {showEdit && (
+          <EditProfileModal
+            user={user}
+            onClose={() => setShowEdit(false)}
+            onUpdated={() => {
+              UserService.getCurrentUser().then((res) => setUser(res.data));
+            }}
+          />
+        )}
       </div>
+
       <TransactionHistory />
     </div>
   );

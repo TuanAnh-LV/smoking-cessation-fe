@@ -8,7 +8,6 @@ import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
-// import socket from "../../utils/socket";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
 
@@ -35,43 +34,21 @@ const Header = () => {
 
   const profileRef = useRef();
   const dropdownRef = useRef();
-  // Gọi API lấy tất cả thông báo khi login
-  console.log("📌 Header is rendered");
-
+  const profileDropdownRef = useRef();
   useEffect(() => {
     if (!isLoggedIn || !userInfo?._id) return;
 
     NotificationService.getAll().then((res) => {
-      const data = res.data; // 👈 Lấy ra mảng từ res
-      console.log("✅ Notifications:", data);
+      const data = res.data;
       if (Array.isArray(data)) {
         setNotifications(data);
         setUnreadCount(data.filter((n) => !n.is_read).length);
       } else {
-        console.warn("⚠️ Không phải mảng:", data);
+        console.warn("Không phải mảng:", data);
         setNotifications([]);
       }
     });
   }, [isLoggedIn, userInfo?._id]);
-
-  // Thiết lập socket
-  // useEffect(() => {
-  //   if (!isLoggedIn || !userInfo?._id) return;
-
-  //   socket.connect();
-  //   socket.emit("join", userInfo._id);
-
-  //   socket.on("newNotification", (noti) => {
-  //     setNotifications((prev) => [noti, ...prev]);
-  //     setUnreadCount((prev) => prev + 1);
-  //     toast.info(`🔔 ${noti.title}`);
-  //   });
-
-  //   return () => {
-  //     socket.off("newNotification");
-  //     socket.disconnect();
-  //   };
-  // }, [isLoggedIn, userInfo?._id]);
 
   // Lấy planId khi localStorage thay đổi
   useEffect(() => {
@@ -87,9 +64,8 @@ const Header = () => {
       await NotificationService.deleteAll();
       setNotifications([]);
       setUnreadCount(0);
-      console.log("🧹 Tất cả thông báo đã được xoá.");
     } catch (err) {
-      console.error("❌ Xóa tất thất bại:", err);
+      console.error("Xóa tất thất bại:", err);
     }
   };
 
@@ -101,7 +77,6 @@ const Header = () => {
       );
       setUnreadCount((prev) => Math.max(prev - 1, 0));
     }
-    console.log("🔔 Clicked:", noti);
   };
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -121,7 +96,18 @@ const Header = () => {
     toast.success("Logout successful!");
     navigate("/login");
   };
-
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(e.target)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <div className="header">
       <img src={LogoBlack} alt="Quit Smoking Logo" className="logo" />
@@ -137,15 +123,21 @@ const Header = () => {
         <Link to="/">
           <p>Home</p>
         </Link>
-        <Link to="/community">
-          <p>Community</p>
-        </Link>
-        <Link to="/achievements">
-          <p>Achievements</p>
-        </Link>
-        <Link to={planId ? `/progress/${planId}` : "/status"}>
-          Track Progress
-        </Link>
+
+        {isLoggedIn && (
+          <>
+            <Link to="/community">
+              <p>Community</p>
+            </Link>
+            <Link to="/achievements">
+              <p>Achievements</p>
+            </Link>
+            <Link to={planId ? `/progress/${planId}` : "/status"}>
+              Track Progress
+            </Link>
+          </>
+        )}
+
         <Link to="/status">
           <p>Quit Plan</p>
         </Link>
@@ -181,16 +173,16 @@ const Header = () => {
             )}
           </div>
 
-          <div className="user-avatar relative">
+          <div className="relative" ref={profileDropdownRef}>
             <FaRegUserCircle
-              className="icon cursor-pointer"
+              className="icon cursor-pointer text-xl hover:text-black transition"
               onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
             />
             {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10 p-2 space-y-1">
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50 p-2 space-y-1">
                 <Link
                   to="/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                   onClick={() => setIsProfileDropdownOpen(false)}
                 >
                   Profile
@@ -198,7 +190,7 @@ const Header = () => {
                 {role === "admin" && (
                   <Link
                     to="/admin"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                     onClick={() => setIsProfileDropdownOpen(false)}
                   >
                     Admin Dashboard
@@ -207,7 +199,7 @@ const Header = () => {
                 {role === "coach" && (
                   <Link
                     to="/coach"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                     onClick={() => setIsProfileDropdownOpen(false)}
                   >
                     Coach Dashboard

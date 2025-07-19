@@ -38,15 +38,15 @@ export const AuthService = {
       isAuth: true,
     });
   },
-  verifyEmailCode: (payload) => {
-    return BaseService.post({
-      url: API.AUTH.VERIFY_NEW_EMAIL,
-      payload,
+  verifyEmail: (token) => {
+    return BaseService.get({
+      url: `${API.AUTH.VERIFY_NEW_EMAIL}?token=${token}`,
       isLoading: true,
-      isAuth: true,
+      disableToast: true,
     });
   },
-
+  
+ 
   resendEmailCode: () => {
     return BaseService.post({
       url: API.AUTH.RESEND_VERIFICATION_CODE,

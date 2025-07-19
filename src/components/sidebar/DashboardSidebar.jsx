@@ -40,10 +40,7 @@ export function DashboardSidebar({
   const menuItems = sidebarConfig[role] || [];
 
   const handleNavigation = (path) => navigate(path);
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    // thêm logic clear token / redirect nếu cần
-  };
+  const handleLogout = () => {};
 
   return (
     <div className="flex flex-col min-h-screen w-64 border-r border-gray-200 bg-white">

@@ -17,7 +17,7 @@ const CommunityPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const decoded = JSON.parse(atob(token.split('.')[1]));
+    const decoded = JSON.parse(atob(token.split(".")[1]));
     setCurrentUserId(decoded.id);
 
     CommunityService.getMessages()
@@ -32,13 +32,13 @@ const CommunityPage = () => {
       })
       .catch(() => setMessages([]));
 
-    const newSocket = io("http://localhost:3000/community", {
-      auth: { token }
+    const newSocket = io(`${import.meta.env.VITE_SOCKET_URL}/community`, {
+      auth: { token },
     });
     setSocket(newSocket);
 
     newSocket.on("chat message", (data) => {
-      setMessages(prev => [...prev, data]);
+      setMessages((prev) => [...prev, data]);
     });
 
     return () => newSocket.disconnect();
@@ -81,18 +81,29 @@ const CommunityPage = () => {
               <div className="community-chat__messages">
                 {messages.map((msg, index) => {
                   if (!msg.author_id) return null;
-                  const isOwn = msg.author_id.id === currentUserId || msg.author_id._id === currentUserId;
+                  const isOwn =
+                    msg.author_id.id === currentUserId ||
+                    msg.author_id._id === currentUserId;
                   const avatarText = msg.author_id.full_name
-                    ? msg.author_id.full_name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase()
+                    ? msg.author_id.full_name
+                        .split(" ")
+                        .map((w) => w[0])
+                        .join("")
+                        .substring(0, 2)
+                        .toUpperCase()
                     : "??";
                   return (
                     <div
                       key={msg.id || msg._id || index}
-                      className={`chat-message ${isOwn ? "chat-message--own" : ""}`}
+                      className={`chat-message ${
+                        isOwn ? "chat-message--own" : ""
+                      }`}
                     >
                       <span className="chat-message__avatar">{avatarText}</span>
                       <div className="chat-message__content">
-                        <span className="chat-message__author">{msg.author_id.full_name}</span>
+                        <span className="chat-message__author">
+                          {msg.author_id.full_name}
+                        </span>
                         <div>{msg.content}</div>
                       </div>
                     </div>
@@ -108,7 +119,10 @@ const CommunityPage = () => {
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                 />
-                <button className="community-chat__send-btn" onClick={sendMessage}>
+                <button
+                  className="community-chat__send-btn"
+                  onClick={sendMessage}
+                >
                   Gửi
                 </button>
               </div>

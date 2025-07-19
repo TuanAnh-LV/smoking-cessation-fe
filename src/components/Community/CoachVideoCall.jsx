@@ -27,9 +27,12 @@ const CoachVideoCall = () => {
         const userId = decoded.id;
         const full_name = decoded.full_name || "User";
 
-        const res = await axios.get("http://localhost:3000/api/video/token", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_SOCKET_URL}/api/video/token`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         // Khởi tạo StreamVideoClient bằng từ khóa `new`
         const streamClient = new StreamVideoClient({
@@ -39,7 +42,7 @@ const CoachVideoCall = () => {
         });
 
         const callInstance = streamClient.call("default", `coach-${userId}`);
-        await callInstance.getOrCreate(); 
+        await callInstance.getOrCreate();
         await callInstance.join();
 
         setClient(streamClient);
@@ -59,7 +62,8 @@ const CoachVideoCall = () => {
     };
   }, []);
 
-  if (loading) return <div style={{ padding: "1rem" }}>🔄 Đang kết nối cuộc gọi...</div>;
+  if (loading)
+    return <div style={{ padding: "1rem" }}>🔄 Đang kết nối cuộc gọi...</div>;
   if (!client || !call) return <div>Không thể thiết lập cuộc gọi.</div>;
 
   return (
@@ -70,7 +74,7 @@ const CoachVideoCall = () => {
           <CallControls />
         </StreamCall>
       </StreamVideo>
-    </StreamTheme>  
+    </StreamTheme>
   );
 };
 

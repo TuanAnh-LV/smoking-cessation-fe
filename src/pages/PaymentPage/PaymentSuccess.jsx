@@ -10,7 +10,6 @@ const PaymentSuccess = () => {
 
   useEffect(() => {
     if (orderId) {
-      console.log("Received PayPal orderId:", orderId);
       PaymentService.acceptPaypalOrder({ orderId })
         .then((res) => {
           console.log("Capture success:", res);
@@ -33,20 +32,29 @@ const PaymentSuccess = () => {
   return (
     <div className="payment-success-page">
       {status === "processing" && <p>⏳ Processing your payment...</p>}
-      
+
       {status === "success" && (
         <div className="payment-success">
           <h2>🎉 Payment Successful!</h2>
-          <p>Thank you for your purchase. Your membership has been activated.</p>
-          <button onClick={goHome} className="go-home-btn">Go to Home</button>
+          <p>
+            Thank you for your purchase. Your membership has been activated.
+          </p>
+          <button onClick={goHome} className="go-home-btn">
+            Go to Home
+          </button>
         </div>
       )}
 
       {status === "fail" && (
         <div className="payment-fail">
           <h2>❌ Payment Failed</h2>
-          <p>There was a problem completing your payment. Please try again or contact support.</p>
-          <button onClick={goHome} className="go-home-btn">Go to Home</button>
+          <p>
+            There was a problem completing your payment. Please try again or
+            contact support.
+          </p>
+          <button onClick={goHome} className="go-home-btn">
+            Go to Home
+          </button>
         </div>
       )}
     </div>

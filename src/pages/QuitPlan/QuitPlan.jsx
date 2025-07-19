@@ -73,10 +73,10 @@ const QuitPlan = () => {
   useEffect(() => {
     const fetchMembership = async () => {
       try {
-        if (!userInfo?.id) return;
-        const res = await UserService.getUserMembership(userInfo.id);
-        const code = res?.package_id?.code;
-        setMembershipPackageCode(code); // e.g., "default", "pro"
+        if (!userInfo?._id) return;
+        const res = await UserService.getUserMembership(userInfo._id);
+        const code = res?.data?.package_id?.name;
+        setMembershipPackageCode(code);
       } catch (err) {
         console.error("Failed to fetch membership", err);
       }
@@ -108,7 +108,6 @@ const QuitPlan = () => {
       localStorage.setItem("currentPlanId", res.data.plan._id);
       navigate(`/progress/${res.data.plan._id}`);
       toast.success("Quit plan created successfully!");
-      console.log("Created plan:", res.data);
     } catch (err) {
       console.error("Failed to create quit plan", err);
       toast.error("Failed to create quit plan.");
