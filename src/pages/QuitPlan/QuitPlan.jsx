@@ -90,7 +90,15 @@ const QuitPlan = () => {
       toast.error("Please select a valid start date");
       return;
     }
+    if (!goal) {
+      toast.error("Please select your quit goal");
+      return;
+    }
 
+    // (Tùy chọn) Cảnh báo nếu không chọn lý do nào
+    if (reasons.length === 0) {
+      toast.warning("You haven’t selected any reasons for quitting.");
+    }
     try {
       setIsSaving(true);
 
@@ -109,8 +117,9 @@ const QuitPlan = () => {
       navigate(`/progress/${res.data.plan._id}`);
       toast.success("Quit plan created successfully!");
     } catch (err) {
-      console.error("Failed to create quit plan", err);
-      toast.error("Failed to create quit plan.");
+      const message =
+        err?.response?.data?.message || "Failed to create quit plan.";
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
