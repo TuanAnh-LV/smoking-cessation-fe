@@ -131,7 +131,7 @@ const Header = () => {
         {isLoggedIn && (
           <>
             <Link to="/community">
-              <p>Community</p>
+              <p>Chat</p>
             </Link>
             <Link to="/achievements">
               <p>Achievements</p>

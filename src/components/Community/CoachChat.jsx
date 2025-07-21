@@ -63,7 +63,7 @@ const CoachChat = ({ userId }) => {
   const handleVideoCall = () => {
     if (!sessionId || !userId || !coachId) return;
 
-    const callLink = `http://localhost:5173/call/${userId}-${coachId}`;
+    const callLink = `${window.location.origin}/call/${userId}-${coachId}`;
     socketRef.current.emit("sendMessage", {
       sessionId,
       content: `Hãy tham gia cuộc gọi video chung tại: ${callLink}`,
