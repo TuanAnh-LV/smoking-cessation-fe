@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   Avatar,
@@ -114,7 +114,7 @@ const CommunityPage = () => {
 
   const handleVideoCall = () => {
     if (!coachSessionId || !currentUserId || !coachId) return;
-    const callLink = `http://localhost:5173/call/${currentUserId}-${coachId}`;
+    const callLink = `${window.location.origin}/call/${currentUserId}-${coachId}`;
     coachSocketRef.current.emit("sendMessage", {
       sessionId: coachSessionId,
       content: `Hãy tham gia cuộc gọi video tại: ${callLink}`,
