@@ -1,61 +1,66 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { AuthService } from "../../services/auth.service";
 
 function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState("⏳ Đang xác minh email...");
-  const hasRedirected = useRef(false);
-  const done = useRef(false); // ⚠️ Ngăn xử lý sau khi đã xong
+  const navigate = useNavigate();
+  const [status, setStatus] = useState("Verifying your email...");
+  const hasRun = useRef(false);
 
   useEffect(() => {
     const token = searchParams.get("token");
 
     if (!token) {
-      setStatus("❌ Không có token được cung cấp.");
+      setStatus("No token was provided.");
       return;
     }
+
+    if (hasRun.current) return;
+    hasRun.current = true;
 
     const verifyEmail = async () => {
       try {
         const res = await AuthService.verifyEmail(token);
-        const message = res?.message?.toLowerCase();
+        const message = res?.message?.toLowerCase?.() || "";
 
         if (message.includes("verified")) {
-          done.current = true;
-          setStatus("✅ Xác minh thành công! Đang chuyển hướng...");
-          if (!hasRedirected.current) {
-            hasRedirected.current = true;
-            setTimeout(() => {
-              window.location.href = "/login";
-            }, 3000);
-          }
+          setStatus("Email verified successfully. Redirecting to login...");
+        } else if (message.includes("already")) {
+          setStatus("Your email has already been verified. Redirecting...");
         } else {
-          setStatus(
-            "⚠️ " + (res.message || "Email đã được xác minh trước đó.")
-          );
+          setStatus(res.message || "Verification completed.");
         }
+
+        setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 3000);
       } catch (err) {
-        if (done.current) return; // ⚠️ Đã xong, không xử lý lỗi nữa
         const errorMsg =
-          err?.response?.data?.error || err?.message || "❌ Xác minh thất bại.";
-        if (
-          errorMsg.toLowerCase().includes("expired") ||
-          errorMsg.toLowerCase().includes("invalid")
-        ) {
-          setStatus("⚠️ Link đã hết hạn hoặc không hợp lệ.");
+          err?.response?.data?.error ||
+          err?.message ||
+          "Email verification failed.";
+
+        const msg = errorMsg.toLowerCase();
+        if (msg.includes("expired") || msg.includes("invalid")) {
+          setStatus("The verification link is invalid or has expired.");
+        } else if (msg.includes("already")) {
+          setStatus("Your email has already been verified.");
+          setTimeout(() => {
+            navigate("/login", { replace: true });
+          }, 3000);
         } else {
-          setStatus("❌ " + errorMsg);
+          setStatus(errorMsg);
         }
       }
     };
 
     verifyEmail();
-  }, []);
+  }, [searchParams, navigate]);
 
   return (
     <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h2>Xác minh email</h2>
+      <h2>Email Verification</h2>
       <p style={{ fontSize: "1.2rem" }}>{status}</p>
     </div>
   );
