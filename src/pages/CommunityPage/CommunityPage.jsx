@@ -100,9 +100,11 @@ const CommunityPage = () => {
       try {
         const res = await UserService.getUserMembership(userId);
         const permissions = res?.data?.package_id?.permissions || [];
-        if (permissions.includes("can_chat_coach")) {
+        if (res?.data?.package_id?.can_message_coach) {
           setupCoachSocket();
         }
+        console.log("Membership:", res.data.package_id);
+        console.log("Permissions:", permissions);
       } catch (err) {
         console.error("Lỗi khi kiểm tra quyền coach:", err);
       }
@@ -167,9 +169,8 @@ const CommunityPage = () => {
           >
             <div className="max-w-[70%]">
               <div
-                className={`px-4 py-2 rounded-xl ${
-                  isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
-                }`}
+                className={`px-4 py-2 rounded-xl ${isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
+                  }`}
               >
                 <Text>{msg.content}</Text>
               </div>
@@ -194,9 +195,8 @@ const CommunityPage = () => {
         <Divider />
         <List>
           <List.Item
-            className={`cursor-pointer px-2 py-2 rounded-lg ${
-              activeTab === "community" ? "bg-blue-100" : ""
-            }`}
+            className={`cursor-pointer px-2 py-2 rounded-lg ${activeTab === "community" ? "bg-blue-100" : ""
+              }`}
             onClick={() => setActiveTab("community")}
           >
             <List.Item.Meta
@@ -208,9 +208,8 @@ const CommunityPage = () => {
           </List.Item>
           {membershipPackageCode === "pro" && (
             <List.Item
-              className={`cursor-pointer px-2 py-2 rounded-lg ${
-                activeTab === "coach" ? "bg-blue-100" : ""
-              }`}
+              className={`cursor-pointer px-2 py-2 rounded-lg ${activeTab === "coach" ? "bg-blue-100" : ""
+                }`}
               onClick={() => setActiveTab("coach")}
             >
               <List.Item.Meta
