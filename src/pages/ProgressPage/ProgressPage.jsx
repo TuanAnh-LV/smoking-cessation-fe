@@ -5,16 +5,10 @@ import QuitPlanStages from "../../components/progressTracking/QuitPlanStages";
 import { QuitPlanService } from "../../services/quitPlan.service";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import styles from "./ProgressPage.module.css";
-
+import { useParams } from "react-router-dom";
 const ProgressPage = () => {
   const [summary, setSummary] = useState(null);
-  const [planId, setPlanId] = useState(localStorage.getItem("currentPlanId"));
-
-  useEffect(() => {
-    const handler = () => setPlanId(localStorage.getItem("currentPlanId"));
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
+  const { id: planId } = useParams(); // id trong /progress/:id
 
   const fetchSummary = async () => {
     try {

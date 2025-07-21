@@ -54,8 +54,12 @@ const Header = () => {
   useEffect(() => {
     const handler = () => setPlanId(localStorage.getItem("currentPlanId"));
     window.addEventListener("storage", handler);
+
+    // Cập nhật lại planId khi user login (hoặc refresh)
+    setPlanId(localStorage.getItem("currentPlanId"));
+
     return () => window.removeEventListener("storage", handler);
-  }, []);
+  }, [token, userInfo?._id]);
 
   const handleToggleDropdown = () => setShowDropdown(!showDropdown);
 
