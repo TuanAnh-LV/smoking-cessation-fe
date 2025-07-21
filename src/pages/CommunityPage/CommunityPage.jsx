@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { io } from "socket.io-client";
 import { CommunityService } from "../../services/community.service";
 import { ChatService } from "../../services/chat.service";
+import { UserService } from "../../services/user.service";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -35,25 +36,25 @@ const CommunityPage = () => {
   const [coachId, setCoachId] = useState(null);
   const coachSocketRef = useRef(null);
   const [coachInput, setCoachInput] = useState("");
+  const [membershipPackageCode, setMembershipPackageCode] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    const decoded = JSON.parse(atob(token.split(".")[1]));
-    setCurrentUserId(decoded.id);
 
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const userId = decoded.id;
+    setCurrentUserId(userId);
+
+    // 1. Lấy tin nhắn cộng đồng
     CommunityService.getMessages()
       .then((res) => {
-        if (Array.isArray(res)) {
-          setMessages(res);
-        } else if (res.data && Array.isArray(res.data)) {
-          setMessages(res.data);
-        } else {
-          setMessages([]);
-        }
+        const data = Array.isArray(res?.data) ? res.data : res;
+        setMessages(Array.isArray(data) ? data : []);
       })
       .catch(() => setMessages([]));
 
+    // 2. Kết nối socket cộng đồng
     const communitySocket = io(`${import.meta.env.VITE_SOCKET_URL}/community`, {
       auth: { token },
     });
@@ -63,11 +64,13 @@ const CommunityPage = () => {
       setMessages((prev) => [...prev, data]);
     });
 
+    // 3. Tạo socket coach — chỉ khi có quyền
     const setupCoachSocket = async () => {
       try {
         const res = await ChatService.getOrCreateSession();
         const session = res?.data?.data;
         if (!session?._id) return;
+
         setCoachSessionId(session._id);
         setCoachId(session.coach_id?._id);
         setCoachName(session.coach_id?.full_name || "Coach");
@@ -92,13 +95,41 @@ const CommunityPage = () => {
       }
     };
 
-    setupCoachSocket();
+    // 4. Kiểm tra membership
+    const checkMembershipAndSetup = async () => {
+      try {
+        const res = await UserService.getUserMembership(userId);
+        const permissions = res?.data?.package_id?.permissions || [];
+        if (permissions.includes("can_chat_coach")) {
+          setupCoachSocket();
+        }
+      } catch (err) {
+        console.error("Lỗi khi kiểm tra quyền coach:", err);
+      }
+    };
+
+    checkMembershipAndSetup();
 
     return () => {
       communitySocket.disconnect();
       coachSocketRef.current?.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    const fetchMembership = async () => {
+      try {
+        if (!currentUserId) return;
+        const res = await UserService.getUserMembership(currentUserId);
+        const code = res?.data?.package_id?.name;
+        setMembershipPackageCode(code);
+      } catch (err) {
+        console.error("Failed to fetch membership", err);
+      }
+    };
+
+    fetchMembership();
+  }, [currentUserId]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -108,7 +139,10 @@ const CommunityPage = () => {
 
   const sendCoachMessage = () => {
     if (!coachInput.trim() || !coachSessionId) return;
-    coachSocketRef.current.emit("sendMessage", { sessionId: coachSessionId, content: coachInput });
+    coachSocketRef.current.emit("sendMessage", {
+      sessionId: coachSessionId,
+      content: coachInput,
+    });
     setCoachInput("");
   };
 
@@ -141,7 +175,9 @@ const CommunityPage = () => {
               </div>
               <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                 <ClockCircleOutlined className="text-[10px]" />
-                <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
+                <span>
+                  {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
+                </span>
               </div>
             </div>
           </div>
@@ -164,21 +200,27 @@ const CommunityPage = () => {
             onClick={() => setActiveTab("community")}
           >
             <List.Item.Meta
-              avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=community" />}
+              avatar={
+                <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=community" />
+              }
               title={<Text strong>Cộng đồng</Text>}
             />
           </List.Item>
-          <List.Item
-            className={`cursor-pointer px-2 py-2 rounded-lg ${
-              activeTab === "coach" ? "bg-blue-100" : ""
-            }`}
-            onClick={() => setActiveTab("coach")}
-          >
-            <List.Item.Meta
-              avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=coach" />}
-              title={<Text strong>Coach</Text>}
-            />
-          </List.Item>
+          {membershipPackageCode === "pro" && (
+            <List.Item
+              className={`cursor-pointer px-2 py-2 rounded-lg ${
+                activeTab === "coach" ? "bg-blue-100" : ""
+              }`}
+              onClick={() => setActiveTab("coach")}
+            >
+              <List.Item.Meta
+                avatar={
+                  <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=coach" />
+                }
+                title={<Text strong>Coach</Text>}
+              />
+            </List.Item>
+          )}
         </List>
       </div>
 
@@ -222,7 +264,9 @@ const CommunityPage = () => {
               )
             }
           >
-            {renderMessages(activeTab === "community" ? messages : coachMessages)}
+            {renderMessages(
+              activeTab === "community" ? messages : coachMessages
+            )}
             <div className="flex items-center gap-2 mt-2">
               <TextArea
                 rows={1}
@@ -235,14 +279,18 @@ const CommunityPage = () => {
                 }
                 onPressEnter={(e) => {
                   e.preventDefault();
-                  activeTab === "community" ? sendMessage() : sendCoachMessage();
+                  activeTab === "community"
+                    ? sendMessage()
+                    : sendCoachMessage();
                 }}
                 className="flex-1 rounded-lg"
               />
               <Button
                 type="primary"
                 icon={<SendOutlined />}
-                onClick={activeTab === "community" ? sendMessage : sendCoachMessage}
+                onClick={
+                  activeTab === "community" ? sendMessage : sendCoachMessage
+                }
                 className="rounded-lg"
               >
                 Gửi

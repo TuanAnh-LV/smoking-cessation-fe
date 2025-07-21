@@ -1,22 +1,18 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { QuitPlanService } from "../services/quitPlan.service";
 
 const PlanChecker = () => {
   const { userInfo, token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [checked, setChecked] = useState(false);
-  // const location = useLocation();
-  useEffect(() => {
-    setChecked(false);
-  }, [token, userInfo]);
 
   useEffect(() => {
-    if (!token || !userInfo?._id || checked) {
-      console.log("PlanChecker đợi token + userInfo hoặc đã checked...");
-      return;
-    }
+    // Không gọi lại nếu đã kiểm tra hoặc thiếu dữ liệu auth
+    if (!token || !userInfo?._id || checked) return;
+
     const verifyPlan = async () => {
       const storedPlanId = localStorage.getItem("currentPlanId");
 
@@ -41,7 +37,11 @@ const PlanChecker = () => {
         if (activePlan) {
           localStorage.setItem("currentPlanId", activePlan._id);
           window.dispatchEvent(new Event("storage"));
-          navigate(`/progress/${activePlan._id}`);
+
+          // ✅ Chỉ redirect nếu đang ở trang "/"
+          if (location.pathname === "/") {
+            navigate(`/progress/${activePlan._id}`);
+          }
         }
       } catch (err) {
         console.error("Lỗi getUserQuitPlans:", err);
@@ -51,7 +51,7 @@ const PlanChecker = () => {
     };
 
     verifyPlan();
-  }, [token, userInfo, navigate, checked]);
+  }, [token, userInfo, checked, navigate, location.pathname]);
 
   return null;
 };
