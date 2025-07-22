@@ -119,7 +119,8 @@ export const API = {
   REMINDER: {
     GET_REMINDER_OF_USER: "/reminders",
     CREATE_REMINDER: "/reminders",
-    DELETE_REMINDER: "/reminders/:id"
+    DELETE_REMINDER: "/reminders/:id",
+    UPDATE_REMINDER: "/reminders/:id",
   },
     BLOG: {
       CREATE_BLOG: "/blogs",

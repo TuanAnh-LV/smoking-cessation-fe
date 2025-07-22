@@ -3,14 +3,13 @@ import { API } from "../const/path.api";
 
 export const ReminderService = {
 
-  create: (data) =>
+  create: (payload) =>
     BaseService.post({
       url: API.REMINDER.CREATE_REMINDER,
-      data,
+      payload,
       isAuth: true,
       isLoading: true,
     }),
-
 
   getMyReminders: () =>
     BaseService.get({
@@ -18,7 +17,13 @@ export const ReminderService = {
       isAuth: true,
       isLoading: false,
     }),
-
+    update: (id, payload) =>
+      BaseService.put({
+        url: API.REMINDER.UPDATE_REMINDER.replace(":id", id),
+        payload,
+        isAuth: true,
+        isLoading: true,
+      }),
 
   delete: (id) =>
     BaseService.remove({
