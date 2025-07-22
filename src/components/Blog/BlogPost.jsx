@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import CommentItem from "./CommentItem";
 
 const BlogPost = ({
   post,
-  comments,
+  comments = [],
   newComment,
   setNewComment,
   onAddComment,
   onReplyComment,
   onToggleLike,
   onToggleCommentLike,
-  groupComments,
 }) => {
+  const [visibleCount, setVisibleCount] = useState(2); // Hiển thị 2 comment đầu
+
+  const visibleComments = comments.slice(0, visibleCount);
+
   return (
     <div className="post">
       <div className="post__avatar">S</div>
@@ -22,7 +25,7 @@ const BlogPost = ({
             className={`like-btn ${post.isLikedByMe ? "liked" : ""}`}
             onClick={() => onToggleLike(post._id, post.isLikedByMe)}
           >
-          {post.likeCount || 0} like
+            {post.likeCount || 0} like
           </button>
         </div>
 
@@ -36,11 +39,11 @@ const BlogPost = ({
                 setNewComment((prev) => ({ ...prev, [post._id]: e.target.value }))
               }
             />
-            <button onClick={() => onAddComment(post._id)}>Bình luận</button>
+            <button onClick={() => onAddComment(post._id)}>Gửi</button>
           </div>
 
           <div className="comments">
-            {groupComments(comments || []).map((cmt) => (
+            {visibleComments.map((cmt) => (
               <CommentItem
                 key={cmt._id}
                 comment={cmt}
@@ -49,8 +52,18 @@ const BlogPost = ({
                 setNewComment={setNewComment}
                 onReplyComment={onReplyComment}
                 onToggleCommentLike={onToggleCommentLike}
+                // isReplyOpen and toggleReply can be added if you want reply toggle
               />
             ))}
+
+            {comments.length > visibleCount && (
+              <button
+                className="see-more-comments"
+                onClick={() => setVisibleCount((prev) => prev + 5)}
+              >
+                Xem thêm bình luận ({comments.length - visibleCount})
+              </button>
+            )}
           </div>
         </div>
       </div>

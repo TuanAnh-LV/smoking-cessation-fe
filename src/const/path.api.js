@@ -140,5 +140,6 @@ export const API = {
     UNLIKE_COMMENT: "/comments/:id/unlike",
     UPDATE_COMMENT: "/comments/:id",
     DELETE_COMMENT: "/comments/:id",
+    REPLY_COMMENT: "/comments/:id/reply"
   },
 };

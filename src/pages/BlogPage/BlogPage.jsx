@@ -1,5 +1,5 @@
-// BlogPage.jsx (refactored with BlogPost and CommentItem components)
 import React, { useState, useEffect } from "react";
+import { Pagination } from "antd";
 import { BlogService } from "../../services/blog.service";
 import { CommentService } from "../../services/comment.service";
 import { BadgeService } from "../../services/badge.service";
@@ -15,6 +15,10 @@ const BlogPage = () => {
   const [loading, setLoading] = useState(false);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [userBadges, setUserBadges] = useState([]);
+
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
 
   useEffect(() => {
     fetchBlogs();
@@ -47,24 +51,6 @@ const BlogPage = () => {
     }
   };
 
-  const groupComments = (list) => {
-    const map = {};
-    const roots = [];
-    list.forEach((cmt) => {
-      cmt.replies = [];
-      map[cmt._id] = cmt;
-    });
-    list.forEach((cmt) => {
-      if (cmt.parent_id) {
-        const parent = map[cmt.parent_id];
-        if (parent) parent.replies.push(cmt);
-      } else {
-        roots.push(cmt);
-      }
-    });
-    return roots;
-  };
-
   const handleAddPost = async () => {
     const content = newPost.trim();
     if (!content) return;
@@ -77,33 +63,31 @@ const BlogPage = () => {
     }
   };
 
-const handleAddComment = async (postId) => {
-  const content = (newComment[postId] || "").trim();
-  if (!content) return;
-  try {
-    await CommentService.createComment(postId, content);
-    const res = await CommentService.getCommentsByBlog(postId);
-    setComments((prev) => ({ ...prev, [postId]: res.data?.comments || [] }));
-    setNewComment((prev) => ({ ...prev, [postId]: "" }));
-  } catch (err) {
-    console.error("Error posting comment:", err);
-  }
-};
+  const handleAddComment = async (postId) => {
+    const content = (newComment[postId] || "").trim();
+    if (!content) return;
+    try {
+      await CommentService.createComment(postId, content);
+      const res = await CommentService.getCommentsByBlog(postId);
+      setComments((prev) => ({ ...prev, [postId]: res.data?.comments || [] }));
+      setNewComment((prev) => ({ ...prev, [postId]: "" }));
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    }
+  };
 
-
-const handleReplyComment = async (postId, parentId, replyContent) => {
-  const content = replyContent.trim();
-  if (!content) return;
-  try {
-    await CommentService.createComment(postId, content, parentId);
-    const res = await CommentService.getCommentsByBlog(postId);
-    setComments((prev) => ({ ...prev, [postId]: res.data?.comments || [] }));
-    setNewComment((prev) => ({ ...prev, [`${postId}_${parentId}`]: "" }));
-  } catch (err) {
-    console.error("Error replying to comment:", err);
-  }
-};
-
+  const handleReplyComment = async (postId, parentId, replyContent) => {
+    const content = replyContent.trim();
+    if (!content) return;
+    try {
+      await CommentService.replyComment(parentId, content);
+      const res = await CommentService.getCommentsByBlog(postId);
+      setComments((prev) => ({ ...prev, [postId]: res.data?.comments || [] }));
+      setNewComment((prev) => ({ ...prev, [`${postId}_${parentId}`]: "" }));
+    } catch (err) {
+      console.error("Error replying to comment:", err);
+    }
+  };
 
   const handleToggleLike = async (postId, isLiked) => {
     try {
@@ -112,7 +96,11 @@ const handleReplyComment = async (postId, parentId, replyContent) => {
       setPosts((prev) =>
         prev.map((post) =>
           post._id === postId
-            ? { ...post, isLikedByMe: !isLiked, likeCount: post.likeCount + (isLiked ? -1 : 1) }
+            ? {
+                ...post,
+                isLikedByMe: !isLiked,
+                likeCount: post.likeCount + (isLiked ? -1 : 1),
+              }
             : post
         )
       );
@@ -126,7 +114,7 @@ const handleReplyComment = async (postId, parentId, replyContent) => {
       if (isLiked) await CommentService.unlikeComment(commentId);
       else await CommentService.likeComment(commentId);
       const res = await CommentService.getCommentsByBlog(blogId);
-      setComments((prev) => ({ ...prev, [blogId]: res.comments || [] }));
+      setComments((prev) => ({ ...prev, [blogId]: res.data?.comments || [] }));
     } catch (err) {
       console.error("Error liking comment:", err);
     }
@@ -162,7 +150,10 @@ const handleReplyComment = async (postId, parentId, replyContent) => {
 
           {showBadgeModal && (
             <div className="badge-modal">
-              <div className="badge-modal__overlay" onClick={() => setShowBadgeModal(false)}></div>
+              <div
+                className="badge-modal__overlay"
+                onClick={() => setShowBadgeModal(false)}
+              ></div>
               <div className="badge-modal__content">
                 <h3>Chọn huy hiệu để chia sẻ</h3>
                 <div className="badge-list">
@@ -187,7 +178,12 @@ const handleReplyComment = async (postId, parentId, replyContent) => {
 
           <div className="blog-posts">
             <div className="post post--new">
-              <div className="post__avatar">S</div>
+              <div className="post__avatar">
+                {/* Lấy chữ cái đầu tên người đăng bài */}
+                {posts.length > 0 && posts[0].user?.full_name
+                  ? posts[0].user.full_name.charAt(0).toUpperCase()
+                  : "S"}
+              </div>
               <div className="post__content post__content--new">
                 <textarea
                   value={newPost}
@@ -198,20 +194,29 @@ const handleReplyComment = async (postId, parentId, replyContent) => {
               </div>
             </div>
 
-            {posts.map((post) => (
-              <BlogPost
-                key={post._id}
-                post={post}
-                comments={comments[post._id]}
-                newComment={newComment}
-                setNewComment={setNewComment}
-                onAddComment={handleAddComment}
-                onReplyComment={handleReplyComment}
-                onToggleLike={handleToggleLike}
-                onToggleCommentLike={handleToggleCommentLike}
-                groupComments={groupComments}
-              />
-            ))}
+            {posts
+              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+              .map((post) => (
+                <BlogPost
+                  key={post._id}
+                  post={post}
+                  comments={comments[post._id]}
+                  newComment={newComment}
+                  setNewComment={setNewComment}
+                  onAddComment={handleAddComment}
+                  onReplyComment={handleReplyComment}
+                  onToggleLike={handleToggleLike}
+                  onToggleCommentLike={handleToggleCommentLike}
+                />
+              ))}
+
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={posts.length}
+              onChange={(page) => setCurrentPage(page)}
+              style={{ marginTop: 20, textAlign: "center" }}
+            />
           </div>
         </div>
 
