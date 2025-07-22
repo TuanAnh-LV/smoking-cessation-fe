@@ -45,5 +45,13 @@ export const CommentService = {
       url: API.COMMENT.UNLIKE_COMMENT.replace(":id", commentId),
       isLoading: false
     });
-  }
+  },
+
+  replyComment: (commentId, content) => {
+    return BaseService.post({
+      url: API.COMMENT.REPLY_COMMENT.replace(":id", commentId),
+      payload: { content },
+      isLoading: false
+    });
+  },
 };
