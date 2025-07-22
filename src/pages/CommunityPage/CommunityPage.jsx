@@ -22,6 +22,15 @@ import { UserService } from "../../services/user.service";
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
+function stringToColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const color = `hsl(${hash % 360}, 60%, 70%)`;
+  return color;
+}
+
 const CommunityPage = () => {
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -50,7 +59,7 @@ const CommunityPage = () => {
 
         setCoachSessionId(session._id);
         setCoachId(session.coach_id?._id);
-        setCoachName(session.coach_id?.full_name + " " + "(Coach)");
+        setCoachName(session.coach_id?.full_name + " (Coach)");
 
         const msgRes = await ChatService.getMessages(session._id);
         setMessages(msgRes?.data?.data || []);
@@ -122,12 +131,19 @@ const CommunityPage = () => {
     const link = `${window.location.origin}/call/${currentUserId}-${coachId}`;
     coachSocketRef.current.emit("sendMessage", {
       sessionId: coachSessionId,
-      content: `Hãy tham gia cuộc gọi video tại: ${link}`,
+      content: link,
     });
   };
 
   return (
-    <div className="flex h-screen">
+    <div
+      className="flex"
+      style={{
+        minHeight: "500px",
+        maxHeight: "calc(100vh - 180px)", // 👈 giới hạn độ cao tổng thể
+        overflow: "hidden",
+      }}
+    >
       {/* Sidebar trái */}
       <div className="w-72 bg-white border-r overflow-y-auto p-4">
         <Title level={4}>Trò chuyện</Title>
@@ -137,7 +153,14 @@ const CommunityPage = () => {
             <List.Item className="bg-blue-100 px-2 py-2 rounded-lg">
               <List.Item.Meta
                 avatar={
-                  <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=coach" />
+                  <Avatar
+                    style={{
+                      backgroundColor: stringToColor(coachName),
+                      verticalAlign: "middle",
+                    }}
+                  >
+                    {coachName.charAt(0).toUpperCase()}
+                  </Avatar>
                 }
                 title={<Text strong>{coachName}</Text>}
               />
@@ -146,10 +169,10 @@ const CommunityPage = () => {
         </List>
       </div>
 
-      {/* Main chat container bên phải */}
-      <div className="flex-1 bg-gray-50 p-6 overflow-hidden">
+      {/* Main chat container */}
+      <div className="flex-1 bg-gray-50 p-6 overflow-hidden flex flex-col">
         <Card
-          className="h-full shadow-md rounded-2xl flex flex-col"
+          className="shadow-md rounded-2xl flex flex-col h-full"
           bodyStyle={{
             padding: "1.5rem",
             flexGrow: 1,
@@ -158,21 +181,21 @@ const CommunityPage = () => {
             minHeight: 0,
           }}
           title={
-            <div
-              className="flex items-center justify-between"
-              style={{ flexShrink: 0 }}
-            >
+            <div className="flex items-center justify-between" style={{ flexShrink: 0 }}>
               <div className="flex items-center gap-4">
                 <Badge dot color="green">
                   <Avatar
+                    style={{
+                      backgroundColor: stringToColor(coachName),
+                      verticalAlign: "middle",
+                    }}
                     size={48}
-                    src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${coachName}`}
-                  />
+                  >
+                    {coachName.charAt(0).toUpperCase()}
+                  </Avatar>
                 </Badge>
                 <div>
-                  <Title level={5} className="mb-0">
-                    {coachName}
-                  </Title>
+                  <Title level={5} className="mb-0">{coachName}</Title>
                   <Text type="secondary">Đang hoạt động</Text>
                 </div>
               </div>
@@ -187,11 +210,8 @@ const CommunityPage = () => {
             </div>
           }
         >
-          {/* Container tin nhắn có scroll */}
-          <div
-            className="flex-grow overflow-y-auto px-2 pt-4 space-y-4 mb-4"
-            style={{ minHeight: 0 }}
-          >
+          {/* Tin nhắn */}
+          <div className="flex-grow overflow-y-auto px-2 pt-4 space-y-4 mb-4" style={{ minHeight: 0 }}>
             {messages.map((msg, index) => {
               const senderId =
                 msg.user_id?._id || msg.user_id || msg.author_id?._id;
@@ -201,24 +221,32 @@ const CommunityPage = () => {
                   key={msg.id || msg._id || index}
                   className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
                 >
-                  <div className="max-w-[70%]">
+                  <div className="max-w-[70%] break-words">
                     <div
-                      className={`px-4 py-2 rounded-xl break-words ${
-                        isOwn
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 text-black"
+                      className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words ${
+                        isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
                       }`}
+                      style={{
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                      }}
                     >
                       <Text>
                         {msg.content.startsWith("http") ? (
-                          <a
-                            href={msg.content}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline"
-                          >
-                            {msg.content}
-                          </a>
+                          <>
+                            Hãy tham gia cuộc gọi video tại:{" "}
+                            <a
+                              href={msg.content}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: isOwn ? "white" : "#1d4ed8",
+                                textDecoration: "underline",
+                              }}
+                            >
+                              {msg.content}
+                            </a>
+                          </>
                         ) : (
                           msg.content
                         )}
@@ -226,9 +254,7 @@ const CommunityPage = () => {
                     </div>
                     <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                       <ClockCircleOutlined className="text-[10px]" />
-                      <span>
-                        {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
-                      </span>
+                      <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
                     </div>
                   </div>
                 </div>
@@ -237,11 +263,8 @@ const CommunityPage = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input chat */}
-          <div
-            className="flex items-center gap-2 mt-2"
-            style={{ flexShrink: 0 }}
-          >
+          {/* Nhập tin nhắn */}
+          <div className="flex items-center gap-2 mt-2" style={{ flexShrink: 0 }}>
             <TextArea
               rows={1}
               placeholder="Nhập tin nhắn..."
