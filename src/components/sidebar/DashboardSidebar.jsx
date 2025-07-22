@@ -9,9 +9,12 @@ import {
   Settings,
   LogOut,
   Home,
+  ChartBar,
+  MessageCircle,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
+import { Chat } from "stream-chat-react";
 
 const sidebarConfig = {
   admin: [
@@ -24,8 +27,8 @@ const sidebarConfig = {
     { title: "Transactions", path: "/admin/transactions", icon: DollarSign },
   ],
   coach: [
-    { title: "Dashboard", path: "/coach", icon: LayoutDashboard },
-    { title: "Chat Message", path: "/coach/chat", icon: Users },
+    { title: "Manage User", path: "/coach/user", icon: Users },
+    { title: "Chat Message", path: "/coach/chat", icon: MessageCircle },
     { title: "Quit Plans", path: "/coach/quitplan-coach", icon: ClipboardList },
     { title: "Settings", path: "/coach/settings", icon: Settings },
   ],

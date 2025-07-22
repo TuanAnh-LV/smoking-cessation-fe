@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AdminService } from "../../../services/admin.service";
 import {
   Users,
@@ -11,40 +11,9 @@ import {
   Eye,
 } from "lucide-react";
 
-const iconMap = {
-  "Total Users": Users,
-  "Active Memberships": CreditCard,
-  "Active Coaches": UserCheck,
-  "Badges Awarded": Award,
-};
-
 export default function CoachDashboard() {
-  const [stats, setStats] = useState([]);
+  // const [stats, setStats] = useState([]);
   const [activities, setActivities] = useState([]);
-
-  useEffect(() => {
-    AdminService.getDashboard()
-      .then((res) => {
-        const statsWithIcon = res.data.stats.map((s) => ({
-          ...s,
-          icon: iconMap[s.title] || Users,
-          colorClass:
-            s.title === "Total Users"
-              ? "text-blue-600 bg-blue-100"
-              : s.title === "Active Memberships"
-              ? "text-green-600 bg-green-100"
-              : s.title === "Active Coaches"
-              ? "text-purple-600 bg-purple-100"
-              : "text-orange-600 bg-orange-100",
-        }));
-        setStats(statsWithIcon);
-        setActivities(res.data.recentActivities);
-      })
-
-      .catch((err) => {
-        console.error("Failed to load dashboard:", err);
-      });
-  }, []);
 
   return (
     <div className="space-y-8">
@@ -65,7 +34,7 @@ export default function CoachDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {stats.map((stat, i) => (
           <div key={i} className="p-8 bg-white rounded shadow">
             <div className="flex items-center justify-between pb-2">
@@ -92,7 +61,7 @@ export default function CoachDashboard() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded shadow-sm">

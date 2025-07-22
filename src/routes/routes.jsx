@@ -63,6 +63,11 @@ const AddEditCoachPage = lazy(() =>
   import("../components/admin/AddEditCoachPage")
 );
 const BadgeFormPage = lazy(() => import("../components/admin/BadgeFormPage"));
+
+const CoachUser = lazy(() => import("../pages/Dashboard/Coach/CoachUser"));
+const CoachUserDetail = lazy(() =>
+  import("../pages/Dashboard/Coach/CoachUserDetail")
+);
 const routes = [
   // Public routes
   {
@@ -119,9 +124,11 @@ const routes = [
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <CoachDashboard /> },
+      { index: true, element: <CoachUser /> },
       { path: "chat", element: <ChatMessage /> },
       { path: "quitplan-coach", element: <QuitPlansCoach /> },
+      { path: "user", element: <CoachUser /> },
+      { path: "user/:id", element: <CoachUserDetail /> },
     ],
   },
 
