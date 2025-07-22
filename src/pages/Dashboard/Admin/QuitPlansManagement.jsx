@@ -1,78 +1,30 @@
-import React, { useState } from "react";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Filter,
-  MoreHorizontal,
-} from "lucide-react";
-
-const mockQuitPlans = [
-  {
-    id: 1,
-    name: "7-Day Quick Start",
-    description: "A beginner-friendly plan to quit smoking in 7 days",
-    duration: "7 days",
-    difficulty: "Beginner",
-    totalSteps: 7,
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "30-Day Complete",
-    description: "Comprehensive 30-day program with daily goals",
-    duration: "30 days",
-    difficulty: "Intermediate",
-    totalSteps: 30,
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "90-Day Master",
-    description: "Advanced program for long-term success",
-    duration: "90 days",
-    difficulty: "Advanced",
-    totalSteps: 90,
-    status: "Draft",
-  },
-];
-
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Edit, Trash2, Eye, Filter } from "lucide-react";
+import { QuitPlanService } from "../../../services/quitPlan.service";
 export default function QuitPlansManagement() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [quitPlans, setQuitPlans] = useState([]);
 
-  const filteredPlans = mockQuitPlans.filter(
-    (plan) =>
-      plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    QuitPlanService.getAllQuitPlans()
+      .then((response) => {
+        setQuitPlans(response?.data || []);
+      })
+      .catch((error) => {
+        console.error("Error fetching quit plans:", error);
+      });
+  }, []);
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case "Beginner":
-        return "bg-green-100 text-green-800";
-      case "Intermediate":
-        return "bg-yellow-100 text-yellow-800";
-      case "Advanced":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Active":
-        return "bg-green-100 text-green-800";
-      case "Draft":
-        return "bg-gray-100 text-gray-800";
-      case "Archived":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  const filteredPlans = quitPlans.filter((plan) => {
+    const userName = plan.user_id?.full_name || "";
+    const coachName = plan.coach_user_id?.full_name || "";
+    return (
+      plan.goal?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coachName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      plan.note?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <div className="space-y-6">
@@ -83,15 +35,17 @@ export default function QuitPlansManagement() {
             Manage smoking cessation programs and plans
           </p>
         </div>
-        <button className="flex items-center bg-blue-600 text-white rounded px-3 py-1 text-sm hover:bg-blue-700">
+        <button className="flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800">
           <Plus className="h-4 w-4 mr-1" /> Create Plan
         </button>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
+      <div className="bg-white rounded shadow p-7">
         <div className="flex justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-lg">All Quit Plans</h2>
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">
+              All Quit Plans
+            </h2>
             <p className="text-sm text-gray-500">
               A list of all smoking cessation plans
             </p>
@@ -104,69 +58,66 @@ export default function QuitPlansManagement() {
                 placeholder="Search plans..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded pl-8 pr-2 py-1 text-sm"
+                className="border rounded pl-10 h-[40px] w-[300px] pr-2 py-1 text-sm"
               />
             </div>
-            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100">
+            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100 h-[40px]">
               <Filter className="h-4 w-4 mr-1" /> Filter
             </button>
           </div>
         </div>
 
         <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-50">
+          <thead className="border-b border-b-gray-200">
             <tr>
-              <th className="p-2 text-left">Plan Name</th>
-              <th className="p-2 text-left">Description</th>
-              <th className="p-2 text-left">Duration</th>
-              <th className="p-2 text-left">Difficulty</th>
-              <th className="p-2 text-left">Steps</th>
+              <th className="p-2 text-left">User</th>
+              <th className="p-2 text-left">Coach</th>
+              <th className="p-2 text-left">Goal</th>
+              <th className="p-2 text-left">Start Date</th>
               <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-right">Actions</th>
+              <th className="p-2 text-left">Note</th>
+              <th className="p-2 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredPlans.map((plan) => (
-              <tr key={plan.id} className="border-b">
-                <td className="p-2 font-medium">{plan.name}</td>
-                <td className="p-2 text-gray-500 truncate max-w-xs">
-                  {plan.description}
-                </td>
-                <td className="p-2">{plan.duration}</td>
+              <tr key={plan._id} className="border-b border-b-gray-200">
+                <td className="p-2">{plan.user_id?.full_name || "-"}</td>
+                <td className="p-2">{plan.coach_user_id?.full_name || "-"}</td>
+                <td className="p-2">{plan.goal}</td>
                 <td className="p-2">
-                  <span
-                    className={`px-2 py-0.5 rounded text-xs ${getDifficultyColor(
-                      plan.difficulty
-                    )}`}
-                  >
-                    {plan.difficulty}
-                  </span>
+                  {new Date(plan.start_date).toLocaleDateString()}
                 </td>
-                <td className="p-2">{plan.totalSteps} steps</td>
-                <td className="p-2">
-                  <span
-                    className={`px-2 py-0.5 rounded text-xs ${getStatusColor(
-                      plan.status
-                    )}`}
-                  >
+                <td className="p-2 capitalize">
+                  <span className="px-2 py-0.5 rounded text-xs bg-green-100 text-green-800">
                     {plan.status}
                   </span>
                 </td>
-                <td className="p-2 text-right">
+                <td className="p-2 text-gray-500 truncate max-w-xs">
+                  {plan.note || "-"}
+                </td>
+                <td className="p-2 text-center">
                   <div className="inline-flex gap-1">
-                    <button className="border rounded px-1 hover:bg-gray-100">
+                    <button className="px-1 hover:bg-gray-100">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button className="border rounded px-1 hover:bg-gray-100">
+                    <button className="px-1 hover:bg-gray-100">
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button className="border rounded px-1 text-red-600 hover:bg-gray-100">
+                    <button className="px-1 text-red-600 hover:bg-gray-100">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
               </tr>
             ))}
+            {filteredPlans.length === 0 && (
+              <tr>
+                <td colSpan="7" className="p-4 text-center text-gray-400">
+                  No quit plans found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
