@@ -8,8 +8,10 @@ import {
   LayoutDashboard,
   Settings,
   LogOut,
+  Home,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 
 const sidebarConfig = {
   admin: [
@@ -29,18 +31,19 @@ const sidebarConfig = {
   ],
 };
 
-export function DashboardSidebar({
-  role = "admin",
-  userName = "User",
-  userEmail = "user@example.com",
-}) {
+export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { userInfo, logout } = useAuth();
+
+  const role = userInfo?.role || "admin";
+  const userName = userInfo?.username || "User";
+  const userEmail = userInfo?.email || "user@example.com";
 
   const menuItems = sidebarConfig[role] || [];
 
   const handleNavigation = (path) => navigate(path);
-  const handleLogout = () => {};
+  const handleLogout = logout;
 
   return (
     <div className="flex flex-col min-h-screen w-64 border-r border-gray-200 bg-white">
@@ -57,6 +60,13 @@ export function DashboardSidebar({
             <p className="text-sm text-gray-500">Management System</p>
           </div>
         </div>
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-lg transition-colors hover:bg-gray-100"
+        >
+          <Home className="h-4 w-4" />
+          <span className="font-medium">Back to Home</span>
+        </button>
       </div>
 
       {/* Menu */}
@@ -70,7 +80,9 @@ export function DashboardSidebar({
               key={item.title}
               onClick={() => handleNavigation(item.path)}
               className={`flex items-center gap-3 px-3 py-2 w-full text-left rounded-lg transition-colors ${
-                location.pathname.startsWith(item.path)
+                location.pathname === item.path ||
+                (location.pathname.startsWith(item.path) &&
+                  item.path !== "/admin")
                   ? "bg-gray-100"
                   : "hover:bg-gray-100"
               }`}

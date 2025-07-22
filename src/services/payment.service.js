@@ -32,4 +32,12 @@ export const PaymentService = {
       isAuth: true,
     });
   },
+  getTransactionSummary: () => {
+  return BaseService.get({
+    url: API.PAYMENT.GET_SUMMARY,
+    isLoading: true,
+    isAuth: true,
+  });
+},
+
 };

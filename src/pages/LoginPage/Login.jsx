@@ -43,10 +43,21 @@ const LoginPage = () => {
         email: formData.email,
         password: formData.password,
       });
-      if (response?.data?.token && response?.data?.user) {
-        await handleLogin(response.data.token, response.data.user);
+
+      const token = response?.data?.token;
+      const user = response?.data?.user;
+
+      if (token && user) {
+        await handleLogin(token, user);
         toast.success("Login successful!");
-        navigate(ROUTER_URL.COMMON.HOME);
+
+        if (user.role === "admin") {
+          navigate("/admin");
+        } else if (user.role === "coach") {
+          navigate("/coach");
+        } else {
+          navigate(ROUTER_URL.COMMON.HOME);
+        }
       } else {
         toast.error("Invalid login response.");
       }

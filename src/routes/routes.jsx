@@ -59,6 +59,10 @@ const QuitPlansCoach = lazy(() =>
 const VerifyEmailPage = lazy(() =>
   import("../pages/RegisterPage/VerifyEmailPage")
 );
+const AddEditCoachPage = lazy(() =>
+  import("../components/admin/AddEditCoachPage")
+);
+const BadgeFormPage = lazy(() => import("../components/admin/BadgeFormPage"));
 const routes = [
   // Public routes
   {
@@ -96,13 +100,16 @@ const routes = [
       { index: true, element: <AdminDashboard /> },
       { path: "badges", element: <BadgesManagement /> },
       { path: "coaches", element: <CoachesManagement /> },
+      { path: "coaches/new", element: <AddEditCoachPage /> },
+      { path: "coaches/:id", element: <AddEditCoachPage /> },
+      { path: "badges/create", element: <BadgeFormPage /> },
+      { path: "badges/:id", element: <BadgeFormPage /> },
       { path: "memberships", element: <MembershipsManagement /> },
       { path: "quit-plans", element: <QuitPlansManagement /> },
       { path: "transactions", element: <TransactionsManagement /> },
       { path: "users", element: <UsersManagement /> },
     ],
   },
-
   // Seller route with DashboardLayout
   {
     path: "/coach",

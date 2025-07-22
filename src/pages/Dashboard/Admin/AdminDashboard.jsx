@@ -94,64 +94,64 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded shadow-sm">
-          <h2 className="text-2xl font-semibold">Recent Activity</h2>
-          <p className="text-sm text-muted-foreground">System updates</p>
-          {activities.length === 0 ? (
-            <p className="text-gray-400 text-sm mt-4">
-              No recent activities recorded.
-            </p>
-          ) : (
-            <div className="space-y-4 mt-4">
-              {activities.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center gap-3 p-3 rounded-lg hover:bg-muted/50"
-                >
-                  <div className="flex gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full mt-2 ${
-                        item.status === "success"
-                          ? "bg-green-500"
-                          : item.status === "pending"
-                          ? "bg-yellow-500"
-                          : "bg-blue-500"
-                      }`}
-                    ></span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">
-                        {item.user && (
-                          <span className="font-semibold text-blue-600">
-                            {item.user}
-                          </span>
-                        )}
-                        : {item.message}
-                      </p>
-
-                      <p className="text-xs text-gray-400 mt-1">
-                        {new Date(item.time).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8"> */}
+      <div className="bg-white p-6 rounded shadow-sm">
+        <h2 className="text-2xl font-semibold">Recent Activity</h2>
+        <p className="text-sm text-muted-foreground">System updates</p>
+        {activities.length === 0 ? (
+          <p className="text-gray-400 text-sm mt-4">
+            No recent activities recorded.
+          </p>
+        ) : (
+          <div className="space-y-4 mt-4">
+            {activities.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex justify-between items-center gap-3 p-3 rounded-lg hover:bg-muted/50"
+              >
+                <div className="flex gap-2">
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full ${
+                    className={`w-2 h-2 rounded-full mt-2 ${
                       item.status === "success"
-                        ? "bg-gray-900 text-white"
+                        ? "bg-green-500"
                         : item.status === "pending"
-                        ? "bg-gray-100 text-gray-800"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-yellow-500"
+                        : "bg-blue-500"
                     }`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  ></span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">
+                      {item.user && (
+                        <span className="font-semibold text-blue-600">
+                          {item.user}
+                        </span>
+                      )}
+                      : {item.message}
+                    </p>
 
-        <div className="bg-white p-4 rounded shadow">
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(item.time).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full ${
+                    item.status === "success"
+                      ? "bg-gray-900 text-white"
+                      : item.status === "pending"
+                      ? "bg-gray-100 text-gray-800"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {item.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* <div className="bg-white p-4 rounded shadow">
           <h2 className="text-lg font-semibold">Quick Actions</h2>
           <p className="text-sm mb-4">Common administrative tasks</p>
           <div className="grid grid-cols-2 gap-2">
@@ -164,8 +164,8 @@ export default function AdminDashboard() {
               <span className="text-xs">Create Badge</span>
             </button>
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </div>
   );
 }

@@ -99,8 +99,7 @@ const CommunityPage = () => {
     const checkMembershipAndSetup = async () => {
       try {
         const res = await UserService.getUserMembership(userId);
-        const permissions = res?.data?.package_id?.permissions || [];
-        if (permissions.includes("can_chat_coach")) {
+        if (res?.data?.package_id?.can_message_coach) {
           setupCoachSocket();
         }
       } catch (err) {
