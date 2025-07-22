@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import { io } from "socket.io-client";
 import { ChatService } from "../../services/chat.service";
 import { UserService } from "../../services/user.service";
+import { Link } from "react-router-dom";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -111,11 +112,6 @@ const CommunityPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
 
   const sendMessage = () => {
     if (!input.trim() || !coachSessionId) return;
@@ -153,16 +149,40 @@ const CommunityPage = () => {
             <List.Item className="bg-blue-100 px-2 py-2 rounded-lg">
               <List.Item.Meta
                 avatar={
-                  <Avatar
-                    style={{
-                      backgroundColor: stringToColor(coachName),
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    {coachName.charAt(0).toUpperCase()}
-                  </Avatar>
+                  coachId ? (
+                    <Link to={`/coach/${coachId}`}>
+                      <Avatar
+                        style={{
+                          backgroundColor: stringToColor(coachName),
+                          verticalAlign: "middle",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {coachName.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </Link>
+                  ) : (
+                    <Avatar
+                      style={{
+                        backgroundColor: stringToColor(coachName),
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      {coachName.charAt(0).toUpperCase()}
+                    </Avatar>
+                  )
                 }
-                title={<Text strong>{coachName}</Text>}
+                title={
+                  coachId ? (
+                    <Link to={`/coach/${coachId}`}>
+                      <Text strong style={{ cursor: "pointer" }}>
+                        {coachName}
+                      </Text>
+                    </Link>
+                  ) : (
+                    <Text strong>{coachName}</Text>
+                  )
+                }
               />
             </List.Item>
           )}
@@ -184,18 +204,41 @@ const CommunityPage = () => {
             <div className="flex items-center justify-between" style={{ flexShrink: 0 }}>
               <div className="flex items-center gap-4">
                 <Badge dot color="green">
-                  <Avatar
-                    style={{
-                      backgroundColor: stringToColor(coachName),
-                      verticalAlign: "middle",
-                    }}
-                    size={48}
-                  >
-                    {coachName.charAt(0).toUpperCase()}
-                  </Avatar>
+                  {coachId ? (
+                    <Link to={`/profile-coach/${coachId}`}>
+                      <Avatar
+                        style={{
+                          backgroundColor: stringToColor(coachName),
+                          verticalAlign: "middle",
+                          cursor: "pointer",
+                        }}
+                        size={48}
+                      >
+                        {coachName.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </Link>
+                  ) : (
+                    <Avatar
+                      style={{
+                        backgroundColor: stringToColor(coachName),
+                        verticalAlign: "middle",
+                      }}
+                      size={48}
+                    >
+                      {coachName.charAt(0).toUpperCase()}
+                    </Avatar>
+                  )}
                 </Badge>
                 <div>
-                  <Title level={5} className="mb-0">{coachName}</Title>
+                  {coachId ? (
+                    <Link to={`/profile-coach/${coachId}`}>
+                      <Title level={5} className="mb-0" style={{ marginBottom: 0 }}>
+                        {coachName}
+                      </Title>
+                    </Link>
+                  ) : (
+                    <Title level={5} className="mb-0">{coachName}</Title>
+                  )}
                   <Text type="secondary">Đang hoạt động</Text>
                 </div>
               </div>

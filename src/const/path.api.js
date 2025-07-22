@@ -141,4 +141,11 @@ export const API = {
     DELETE_COMMENT: "/comments/:id",
     REPLY_COMMENT: "/comments/:id/reply"
   },
+   FEEDBACK: {
+    CREATE_FEEDBACK_COACH: "/feedback/coach",
+    GET_FEEDBACKS_BY_COACH: "/feedback/coach/:coach_user_id",
+    UPDATE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
+    DELETE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
+    GET_FEEDBACKS_COACH_OF_USER: "/feedback/coach-of-user/:userId"
+  },
 };

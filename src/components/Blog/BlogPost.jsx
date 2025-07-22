@@ -10,6 +10,8 @@ const BlogPost = ({
   onReplyComment,
   onToggleLike,
   onToggleCommentLike,
+  onToggleReply,
+  replyOpen,
 }) => {
   const [visibleCount, setVisibleCount] = useState(2); // Hiển thị 2 comment đầu
 
@@ -52,7 +54,8 @@ const BlogPost = ({
                 setNewComment={setNewComment}
                 onReplyComment={onReplyComment}
                 onToggleCommentLike={onToggleCommentLike}
-                // isReplyOpen and toggleReply can be added if you want reply toggle
+                isReplyOpen={replyOpen[cmt._id]}
+                onToggleReply={onToggleReply}
               />
             ))}
 

@@ -83,6 +83,7 @@ const routes = [
       { path: ROUTER_URL.COMMON.COACH, element: <CoachPage /> },
       { path: ROUTER_URL.COMMON.ACHIEVEMENTS, element: <AchievementPage /> },
       { path: ROUTER_URL.COMMON.PROFILE, element: <ProfilePage /> },
+       { path: ROUTER_URL.COMMON.PROFILE_COACH_DETAIL, element: <ProfileCoach /> },
       { path: ROUTER_URL.COMMON.PROFILE_COACH, element: <ProfileCoach /> },
       { path: ROUTER_URL.COMMON.PAYMENT, element: <PaymentPage /> },
       { path: ROUTER_URL.COMMON.PAYMENT_SUCCESS, element: <PaymentSuccess /> },

@@ -20,6 +20,9 @@ const BlogPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
 
+  // Trạng thái reply mở cho mỗi bình luận
+  const [replyOpen, setReplyOpen] = useState({});
+
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -137,6 +140,13 @@ const BlogPage = () => {
     if (textarea) textarea.focus();
   };
 
+  const handleToggleReply = (commentId) => {
+    setReplyOpen((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId], // Toggle trạng thái reply
+    }));
+  };
+
   return (
     <div className="blog-page">
       <div className="blog-page__content">
@@ -179,7 +189,6 @@ const BlogPage = () => {
           <div className="blog-posts">
             <div className="post post--new">
               <div className="post__avatar">
-                {/* Lấy chữ cái đầu tên người đăng bài */}
                 {posts.length > 0 && posts[0].user?.full_name
                   ? posts[0].user.full_name.charAt(0).toUpperCase()
                   : "S"}
@@ -207,6 +216,8 @@ const BlogPage = () => {
                   onReplyComment={handleReplyComment}
                   onToggleLike={handleToggleLike}
                   onToggleCommentLike={handleToggleCommentLike}
+                  onToggleReply={handleToggleReply}
+                  replyOpen={replyOpen}
                 />
               ))}
 
