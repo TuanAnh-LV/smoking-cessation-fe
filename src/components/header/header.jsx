@@ -145,9 +145,9 @@ const Header = () => {
         <Link to="/status">
           <p>Quit Plan</p>
         </Link>
-        <Link to="/coach">
+        {/* <Link to="/coach">
           <p>Coach</p>
-        </Link>
+        </Link> */}
         <Link to="/blog">
           <p>Blogs</p>
         </Link>
