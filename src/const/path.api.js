@@ -40,7 +40,8 @@ export const API = {
     CREATE_COACH: "/coach-users",
     GET_ALL_COACH: "/coach-users",
     UPDATE_COACH: "/coach-users/:id",
-    DELETE_COACH: "/coach-users/:id",
+    DELETE_RELATION: "/coach-users/:id",
+    GET_COACH_BY_ID: "/coach-users/:id", 
   },
   BADGES: {
     GET_ALL_BADGES: "/badges",

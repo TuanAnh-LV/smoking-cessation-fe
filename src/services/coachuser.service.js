@@ -4,7 +4,7 @@ import { API } from "../const/path.api";
 export const CoachUserService = {
   createRelation: (payload) => {
     return BaseService.post({
-      url: API.COACH_USER.CREATE_RELATION,
+      url: API.COACH_USER.CREATE_COACH,
       payload,
       isAuth: true,
       isLoading: true,
@@ -12,7 +12,7 @@ export const CoachUserService = {
   },
   getRelations: (params = {}) => {
     return BaseService.get({
-      url: API.COACH_USER.GET_RELATIONS,
+      url: API.COACH_USER.GET_ALL_COACH,
       params,
       isAuth: true,
       isLoading: true,
@@ -20,7 +20,7 @@ export const CoachUserService = {
   },
   updateRelation: (id, payload) => {
     return BaseService.patch({
-      url: API.COACH_USER.UPDATE_RELATION.replace(":id", id),
+      url: API.COACH_USER.UPDATE_COACH.replace(":id", id),
       payload,
       isAuth: true,
       isLoading: true,
@@ -32,5 +32,12 @@ export const CoachUserService = {
       isAuth: true,
       isLoading: true,
     });
-  }
+  },
+  getById: (id) => {
+  return BaseService.get({
+    url: API.COACH_USER.GET_COACH_BY_ID.replace(":id", id),
+    isAuth: true,
+    isLoading: true,
+  });
+},
 };
