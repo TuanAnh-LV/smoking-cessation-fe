@@ -1,48 +1,63 @@
-import React, { useState } from "react";
-import { Search, Plus, Edit, Trash2, Eye, Filter, Mail } from "lucide-react";
-
-const mockCoaches = [
-  {
-    id: 1,
-    name: "Dr. Emily Smith",
-    email: "emily.smith@coaches.com",
-    specialization: "Addiction Recovery",
-    status: "active",
-    experience: "5 years",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: 2,
-    name: "John Martinez",
-    email: "john.martinez@coaches.com",
-    specialization: "Behavioral Therapy",
-    status: "active",
-    experience: "8 years",
-    avatar: "/placeholder.svg",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Edit, Trash2, Eye, Filter } from "lucide-react";
+import { CoachService } from "../../../services/coach.service";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function CoachesManagement() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [coaches, setCoaches] = useState([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedCoachId, setSelectedCoachId] = useState(null);
+  const navigate = useNavigate();
 
-  const filteredCoaches = mockCoaches.filter(
+  useEffect(() => {
+    const fetchCoaches = async () => {
+      try {
+        const res = await CoachService.getAllCoaches();
+        const data = res?.data || [];
+        setCoaches(data);
+      } catch (err) {
+        console.error("Failed to fetch coaches:", err);
+        setCoaches([]);
+      }
+    };
+
+    fetchCoaches();
+  }, []);
+
+  const filteredCoaches = coaches.filter(
     (coach) =>
-      coach.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      coach.email.toLowerCase().includes(searchTerm.toLowerCase())
+      coach.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      coach.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDelete = async () => {
+    try {
+      await CoachService.deleteCoach(selectedCoachId);
+      setCoaches((prev) => prev.filter((c) => c._id !== selectedCoachId));
+      toast.success("Coach deleted successfully");
+    } catch (err) {
+      console.error("Delete failed:", err);
+      toast.error("Delete failed");
+    } finally {
+      setShowDeleteConfirm(false);
+      setSelectedCoachId(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Coaches Management</h1>
-          <p className="text-gray-500">Manage coaches and their information</p>
+          <p className="text-gray-500">Manage all registered coaches</p>
         </div>
         <div className="flex gap-2">
-          <button className="flex items-center border rounded px-3 py-1 text-sm hover:bg-gray-100">
-            <Mail className="h-4 w-4 mr-1" /> Invite Coach
-          </button>
-          <button className="flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800">
+          <button
+            onClick={() => navigate("/admin/coaches/new")}
+            className="flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800"
+          >
             <Plus className="h-4 w-4 mr-2" /> Add Coach
           </button>
         </div>
@@ -55,7 +70,7 @@ export default function CoachesManagement() {
               All Coaches
             </h2>
             <p className="text-sm text-gray-500">
-              A list of all coaches in your system
+              A list of all coaches in the system
             </p>
           </div>
           <div className="flex gap-2 items-center">
@@ -80,54 +95,85 @@ export default function CoachesManagement() {
             <tr>
               <th className="p-2 text-left">Coach</th>
               <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-left">Users</th>
               <th className="p-2 text-left">Specialization</th>
               <th className="p-2 text-left">Experience</th>
-              <th className="p-2 text-left">Status</th>
               <th className="p-2 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredCoaches.map((coach) => (
-              <tr key={coach.id} className="border-b border-b-gray-200">
-                <td className="p-5 flex items-center gap-2">
-                  <img
-                    src={coach.avatar}
-                    alt="avatar"
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span className="font-medium">{coach.name}</span>
-                </td>
-                <td className="p-2 text-gray-500">{coach.email}</td>
-                <td className="p-2">{coach.specialization}</td>
-                <td className="p-2">{coach.experience}</td>
-                <td className="p-2">
-                  <span
-                    className={`px-2 py-0.5 rounded-3xl text-xs ${
-                      coach.status === "active"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {coach.status}
-                  </span>
-                </td>
-                <td className="p-2 text-right">
-                  <div className="inline-flex gap-1">
-                    <button className="border rounded px-1 hover:bg-gray-100">
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button className="border rounded px-1 hover:bg-gray-100">
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button className="border rounded px-1 text-red-600 hover:bg-gray-100">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+            {filteredCoaches.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center py-6 text-gray-400">
+                  No coaches found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredCoaches.map((coach) => (
+                <tr key={coach._id} className="border-b border-b-gray-200">
+                  <td className="p-5 flex items-center gap-2">
+                    <img
+                      src={coach.avatar || "/placeholder.svg"}
+                      alt="avatar"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="font-medium">{coach.full_name}</span>
+                  </td>
+                  <td className="p-2 text-gray-600">{coach.email}</td>
+                  <td className="p-2 text-gray-700">
+                    {coach.current_users} / {coach.max_users}
+                  </td>
+                  <td className="p-2 text-gray-600">{coach.specialization}</td>
+                  <td className="p-2 text-gray-600">{coach.experience}</td>
+                  <td className="p-2 text-right">
+                    <div className="inline-flex gap-1">
+                      <button
+                        className="px-1 hover:bg-gray-100"
+                        onClick={() => navigate(`/admin/coaches/${coach._id}`)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="px-1 text-red-600 hover:bg-gray-100"
+                        onClick={() => {
+                          setSelectedCoachId(coach._id);
+                          setShowDeleteConfirm(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+
+        {showDeleteConfirm && (
+          <div className="fixed inset-0  bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-xl shadow-lg w-[400px]">
+              <h2 className="text-lg font-semibold mb-2">Confirm Deletion</h2>
+              <p className="text-gray-600">
+                Are you sure you want to delete this coach?
+              </p>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

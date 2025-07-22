@@ -34,12 +34,14 @@ export const API = {
     GET_COACH_RELATIONSHIP: "/coaches",
     UPDATE_COACH: "/coaches/:id",
     DELETE_COACH: "/coaches/:id",
+    GET_COACH_BY_ID: "/coaches/:id",
   },
   COACH_USER: {
     CREATE_COACH: "/coach-users",
     GET_ALL_COACH: "/coach-users",
     UPDATE_COACH: "/coach-users/:id",
-    DELETE_COACH: "/coach-users/:id",
+    DELETE_RELATION: "/coach-users/:id",
+    GET_COACH_BY_ID: "/coach-users/:id", 
   },
   BADGES: {
     GET_ALL_BADGES: "/badges",
@@ -62,7 +64,8 @@ export const API = {
     CREATE_ORDER_PAYPAL: "/payments/paypal/create",
     ACCECPT_PAYPAL: "/payments/paypal/capture",
     GET_FOR_USER: "/transactions/me",
-    GET_ALL_TRANSACTION: "/admin/transactions",
+    GET_ALL_TRANSACTION: "/transactions",
+    GET_SUMMARY: "/transactions/summary"
   },
   QUITPLAN: {
     GET_ALL_QUITPLAN: "/quit-plans",
@@ -92,6 +95,7 @@ export const API = {
 
   ADMIN: {
     GET_DASHBOARD: "/admin/dashboard",
+    GET_ALL_COACHES: "/admin/coaches",
   },
   COMMUNITY: {
     MESSAGES: "/community/messages",

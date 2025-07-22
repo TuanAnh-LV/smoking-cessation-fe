@@ -1,46 +1,50 @@
-import React, { useState } from "react";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Filter,
-  MoreHorizontal,
-  Award,
-} from "lucide-react";
-
-const mockBadges = [
-  {
-    id: 1,
-    name: "First Week",
-    description: "Complete your first week smoke-free",
-    icon: "🏆",
-    color: "#FFD700",
-    criteria: "7 days smoke-free",
-  },
-  {
-    id: 2,
-    name: "First Month",
-    description: "One month of smoke-free living",
-    icon: "🎖️",
-    color: "#C0C0C0",
-    criteria: "30 days smoke-free",
-  },
-  {
-    id: 3,
-    name: "Milestone Master",
-    description: "Achieved multiple milestones",
-    icon: "⭐",
-    color: "#CD7F32",
-    criteria: "Complete 5 milestones",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { Search, Plus, Edit, Trash2, Eye, Filter } from "lucide-react";
+import { BadgeService } from "../../../services/badge.service";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function BadgesManagement() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [badges, setBadges] = useState([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedBadgeId, setSelectedBadgeId] = useState(null);
+  const navigate = useNavigate();
 
-  const filteredBadges = mockBadges.filter(
+  useEffect(() => {
+    const fetchBadges = async () => {
+      try {
+        const res = await BadgeService.getAllBadges();
+        const badgeArray = Array.isArray(res?.data?.badges)
+          ? res.data.badges
+          : [];
+        setBadges(badgeArray);
+      } catch (err) {
+        console.error("Failed to fetch badges", err);
+        toast.error("Failed to load badges");
+      }
+    };
+
+    fetchBadges();
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      await BadgeService.deleteBadge(selectedBadgeId);
+      setBadges((prev) =>
+        prev.filter((badge) => badge._id !== selectedBadgeId)
+      );
+      toast.success("Badge deleted successfully");
+    } catch (err) {
+      console.error("Delete failed:", err);
+      toast.error("Delete failed");
+    } finally {
+      setShowDeleteConfirm(false);
+      setSelectedBadgeId(null);
+    }
+  };
+
+  const filteredBadges = badges.filter(
     (badge) =>
       badge.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       badge.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,16 +57,21 @@ export default function BadgesManagement() {
           <h1 className="text-3xl font-bold">Badges Management</h1>
           <p className="text-gray-500">Manage achievement badges and rewards</p>
         </div>
-        <button className="flex items-center gap-1 bg-blue-600 text-white rounded px-3 py-1 text-sm hover:bg-blue-700">
+        <button
+          onClick={() => navigate("/admin/badges/create")}
+          className="flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800"
+        >
           <Plus className="h-4 w-4" /> Create Badge
         </button>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
+      <div className="bg-white rounded shadow p-7">
         <div className="flex justify-between mb-4">
           <div>
-            <h2 className="font-semibold text-lg">All Badges</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-2xl font-semibold leading-none tracking-tight">
+              All Badges
+            </h2>
+            <p className="text-gray-500">
               A list of all achievement badges in your system
             </p>
           </div>
@@ -74,67 +83,96 @@ export default function BadgesManagement() {
                 placeholder="Search badges..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded pl-8 pr-2 py-1 text-sm"
+                className="border rounded pl-10 h-[40px] w-[300px] pr-2 py-1 text-sm"
               />
             </div>
-            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100">
+            <button className="flex items-center border rounded px-2 py-1 text-sm hover:bg-gray-100 h-[40px]">
               <Filter className="h-4 w-4 mr-1" /> Filter
             </button>
           </div>
         </div>
 
         <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-50">
+          <thead className="border-b border-b-gray-200">
             <tr>
-              <th className="p-2 text-left">Badge</th>
-              <th className="p-2 text-left">Description</th>
-              <th className="p-2 text-left">Criteria</th>
-              <th className="p-2 text-left">Color</th>
-              <th className="p-2 text-right">Actions</th>
+              <th className="p-4 text-left">Badge</th>
+              <th className="p-4 text-left">Description</th>
+              <th className="p-4 text-left">Criteria</th>
+              <th className="p-4 text-left">Pro Only</th>
+              <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredBadges.map((badge) => (
-              <tr key={badge.id} className="border-b">
-                <td className="p-2 flex items-center gap-2">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-lg"
-                    style={{ backgroundColor: badge.color }}
-                  >
-                    {badge.icon}
-                  </div>
-                  {badge.name}
-                </td>
-                <td className="p-2 text-gray-500">{badge.description}</td>
-                <td className="p-2">
-                  <span className="border rounded px-2 py-0.5 text-xs">
-                    {badge.criteria}
-                  </span>
-                </td>
-                <td className="p-2 flex items-center gap-1">
-                  <div
-                    className="w-4 h-4 rounded-full border"
-                    style={{ backgroundColor: badge.color }}
-                  ></div>
-                  <span className="text-xs">{badge.color}</span>
-                </td>
-                <td className="p-2 text-right">
-                  <div className="inline-flex gap-1">
-                    <button className="border rounded px-1 hover:bg-gray-100">
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <button className="border rounded px-1 hover:bg-gray-100">
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button className="border rounded px-1 text-red-600 hover:bg-gray-100">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+            {filteredBadges.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="text-center py-6 text-gray-400">
+                  No badges found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredBadges.map((badge) => (
+                <tr
+                  key={badge._id || badge.id}
+                  className="border-b border-b-gray-200"
+                >
+                  <td className="p-4 font-medium">{badge.name}</td>
+                  <td className="p-4 text-gray-500">{badge.description}</td>
+                  <td className="p-4 text-sm">
+                    {badge.condition?.description || ""}
+                  </td>
+                  <td className="p-4 text-xs">
+                    {badge.proOnly ? "Yes" : "No"}
+                  </td>
+                  <td className="p-4 text-right">
+                    <div className="inline-flex gap-1">
+                      <button
+                        className="px-3 hover:bg-gray-100"
+                        onClick={() => navigate(`/admin/badges/${badge._id}`)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="px-3 text-red-600 hover:bg-gray-100"
+                        onClick={() => {
+                          setSelectedBadgeId(badge._id);
+                          setShowDeleteConfirm(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
+
+        {/* Modal confirm delete */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-xl shadow-lg w-[400px]">
+              <h2 className="text-lg font-semibold mb-2">Confirm Deletion</h2>
+              <p className="text-gray-600">
+                Are you sure you want to delete this badge?
+              </p>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
