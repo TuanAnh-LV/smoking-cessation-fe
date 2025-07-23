@@ -29,8 +29,6 @@ const sidebarConfig = {
   coach: [
     { title: "Manage User", path: "/coach/user", icon: Users },
     { title: "Chat Message", path: "/coach/chat", icon: MessageCircle },
-    { title: "Quit Plans", path: "/coach/quitplan-coach", icon: ClipboardList },
-    { title: "Settings", path: "/coach/settings", icon: Settings },
   ],
 };
 

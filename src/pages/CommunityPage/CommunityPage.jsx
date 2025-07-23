@@ -111,12 +111,6 @@ const CommunityPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
   const sendMessage = () => {
     if (!input.trim() || !coachSessionId) return;
     coachSocketRef.current.emit("sendMessage", {
@@ -181,7 +175,10 @@ const CommunityPage = () => {
             minHeight: 0,
           }}
           title={
-            <div className="flex items-center justify-between" style={{ flexShrink: 0 }}>
+            <div
+              className="flex items-center justify-between"
+              style={{ flexShrink: 0 }}
+            >
               <div className="flex items-center gap-4">
                 <Badge dot color="green">
                   <Avatar
@@ -195,7 +192,9 @@ const CommunityPage = () => {
                   </Avatar>
                 </Badge>
                 <div>
-                  <Title level={5} className="mb-0">{coachName}</Title>
+                  <Title level={5} className="mb-0">
+                    {coachName}
+                  </Title>
                   <Text type="secondary">Đang hoạt động</Text>
                 </div>
               </div>
@@ -211,7 +210,10 @@ const CommunityPage = () => {
           }
         >
           {/* Tin nhắn */}
-          <div className="flex-grow overflow-y-auto px-2 pt-4 space-y-4 mb-4" style={{ minHeight: 0 }}>
+          <div
+            className="flex-grow overflow-y-auto px-2 pt-4 space-y-4 mb-4"
+            style={{ minHeight: 0 }}
+          >
             {messages.map((msg, index) => {
               const senderId =
                 msg.user_id?._id || msg.user_id || msg.author_id?._id;
@@ -224,7 +226,9 @@ const CommunityPage = () => {
                   <div className="max-w-[70%] break-words">
                     <div
                       className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words ${
-                        isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
+                        isOwn
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-100 text-black"
                       }`}
                       style={{
                         wordWrap: "break-word",
@@ -254,7 +258,9 @@ const CommunityPage = () => {
                     </div>
                     <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                       <ClockCircleOutlined className="text-[10px]" />
-                      <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
+                      <span>
+                        {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -264,7 +270,10 @@ const CommunityPage = () => {
           </div>
 
           {/* Nhập tin nhắn */}
-          <div className="flex items-center gap-2 mt-2" style={{ flexShrink: 0 }}>
+          <div
+            className="flex items-center gap-2 mt-2"
+            style={{ flexShrink: 0 }}
+          >
             <TextArea
               rows={1}
               placeholder="Nhập tin nhắn..."
