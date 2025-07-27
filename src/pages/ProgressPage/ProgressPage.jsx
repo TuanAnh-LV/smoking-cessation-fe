@@ -12,16 +12,19 @@ import { ReminderService } from "../../services/reminder.service";
 import { toast } from "react-toastify";
 import { UserService } from "../../services/user.service";
 import { useAuth } from "../../context/authContext";
+import { useNavigate } from "react-router-dom";
+
 const ProgressPage = () => {
   const [summary, setSummary] = useState(null);
   const { id: planId } = useParams(); // id trong /progress/:id
   const [reminders, setReminders] = useState([]);
   const [membershipPackageCode, setMembershipPackageCode] = useState("");
   const { userInfo } = useAuth(); // lấy userId từ context
+  const navigate = useNavigate();
   const checkPermission = async () => {
     try {
       const res = await UserService.getUserMembership(userInfo._id); // hoặc user.id
-      const code = res?.data?.package_id?.name;
+      const code = res?.data?.package_id?.type;
       setMembershipPackageCode(code);
     } catch (err) {
       console.error("Không thể kiểm tra quyền:", err);
@@ -44,6 +47,12 @@ const ProgressPage = () => {
   const fetchReminders = async () => {
     try {
       const res = await ReminderService.getMyReminders();
+      if (res?.data?.status === "cancelled") {
+        toast.info("Your quit plan has been cancelled.");
+        localStorage.removeItem("currentPlanId");
+        navigate("/status");
+        return;
+      }
       setReminders(res.data || []);
     } catch (err) {
       toast.error("Failed to load reminders");

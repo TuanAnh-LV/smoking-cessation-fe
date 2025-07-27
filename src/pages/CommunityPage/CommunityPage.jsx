@@ -91,7 +91,7 @@ const CommunityPage = () => {
     const checkPermission = async () => {
       try {
         const res = await UserService.getUserMembership(userId);
-        const code = res?.data?.package_id?.name;
+        const code = res?.data?.package_id?.type;
         setMembershipPackageCode(code);
         if (res?.data?.package_id?.can_message_coach) {
           await setupCoachSocket();

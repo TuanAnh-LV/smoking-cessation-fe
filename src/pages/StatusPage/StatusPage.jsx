@@ -3,6 +3,7 @@ import "./StatusPage.scss";
 import { FaSmoking } from "react-icons/fa";
 import { SmokingStatusService } from "../../services/smokingStatus.service";
 import { useNavigate } from "react-router-dom";
+import { QuitGoalDraftService } from "../../services/quitGoal.service";
 
 const StatusPage = () => {
   const [cigarettesPerDay, setCigarettesPerDay] = useState("");
@@ -14,6 +15,10 @@ const StatusPage = () => {
   const [annualCosts, setAnnualCosts] = useState("0");
   const [cigarettesPerYear, setCigarettesPerYear] = useState("0");
 
+  const [goal, setGoal] = useState("");
+  const [isGoalSaved, setIsGoalSaved] = useState(false);
+  const [goalError, setGoalError] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   useEffect(() => {
     const count = parseInt(cigarettesPerDay);
@@ -35,39 +40,89 @@ const StatusPage = () => {
     const annual = monthly * 12;
     const yearlyCigs = numCigarettesPerDay * 365;
 
-    setMonthlyExpenses(
-      monthly.toLocaleString("vi-VN", { minimumFractionDigits: 2 })
-    );
-    setAnnualCosts(
-      annual.toLocaleString("vi-VN", { minimumFractionDigits: 2 })
-    );
+    setMonthlyExpenses(monthly.toLocaleString("vi-VN"));
+
+    setAnnualCosts(annual.toLocaleString("vi-VN"));
+
     setCigarettesPerYear(
       yearlyCigs.toLocaleString("vi-VN", { maximumFractionDigits: 0 })
     );
   }, [cigarettesPerDay, pricePerPackage, packsPerWeek]);
 
-  const isFormValid = () => {
-    return (
-      cigarettesPerDay && suctionFrequency && pricePerPackage && packsPerWeek
-    );
+  const fetchGoal = async () => {
+    try {
+      const res = await QuitGoalDraftService.getGoalDraft();
+      if (res?.data?.goal) {
+        setGoal(res.data.goal);
+        setIsGoalSaved(true);
+      }
+
+      setGoal(res?.data?.goal || "");
+    } catch (err) {
+      console.error(" Failed to fetch goal draft:", err);
+      alert("Something went wrong.");
+    }
   };
 
+  useEffect(() => {
+    fetchGoal();
+  }, []);
+
   const handleSubmit = async () => {
-    const cigarette_count = parseInt(cigarettesPerDay);
-    const money_spent =
-      parseFloat(pricePerPackage) * parseFloat(packsPerWeek) || 0;
+    let newErrors = {};
+    let hasError = false;
+
+    if (!goal.trim()) {
+      setGoalError("Please enter your quit goal before continuing.");
+      hasError = true;
+    } else {
+      setGoalError("");
+    }
+
+    if (!cigarettesPerDay) {
+      newErrors.cigarettesPerDay = "Required";
+      hasError = true;
+    } else if (isNaN(cigarettesPerDay) || parseFloat(cigarettesPerDay) <= 0) {
+      newErrors.cigarettesPerDay = "Must be a valid number > 0";
+      hasError = true;
+    }
+
+    if (!pricePerPackage) {
+      newErrors.pricePerPackage = "Required";
+      hasError = true;
+    } else if (isNaN(pricePerPackage) || parseFloat(pricePerPackage) <= 0) {
+      newErrors.pricePerPackage = "Must be a valid number > 0";
+      hasError = true;
+    }
+
+    if (!packsPerWeek) {
+      newErrors.packsPerWeek = "Required";
+      hasError = true;
+    } else if (isNaN(packsPerWeek) || parseFloat(packsPerWeek) <= 0) {
+      newErrors.packsPerWeek = "Must be a valid number > 0";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({}); // clear previous errors
 
     try {
       await SmokingStatusService.recordInitialSmokingStatus({
-        cigarette_count,
-        money_spent,
+        cigarette_count: parseInt(cigarettesPerDay),
+        price_per_pack: parseFloat(pricePerPackage),
+        packs_per_week: parseFloat(packsPerWeek),
         time_of_smoking: new Date().toISOString(),
-        suction_frequency: suctionFrequency, // light | medium | heavy
+        suction_frequency: suctionFrequency,
         health_note: "",
       });
+
       navigate("/quit-plan");
     } catch (error) {
-      console.error("❌ Failed to record initial smoking status:", error);
+      console.error("Failed to record initial smoking status:", error);
       alert("Something went wrong. Please try again.");
     }
   };
@@ -79,7 +134,48 @@ const StatusPage = () => {
         Record and track smoking habits to create an effective smoking cessation
         plan
       </p>
+      <div className="info-card">
+        <div className="info-header">
+          <span className="info-title">Your Quit Goal</span>
+        </div>
+        {isGoalSaved ? (
+          <div className="text-gray-800 text-base">{goal}</div>
+        ) : (
+          <div className="info-card">
+            <div className="form-group">
+              <label>Why do you want to quit smoking?</label>
+              <textarea
+                style={{ width: "100%" }}
+                className="border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                placeholder="Ex: For my health, family, or to save money..."
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                rows={4}
+              />
+            </div>
 
+            <button
+              className="plan-btn"
+              disabled={!goal.trim()}
+              onClick={async () => {
+                try {
+                  await QuitGoalDraftService.createGoalDraft({
+                    goal: goal.trim(),
+                  });
+                  setIsGoalSaved(true);
+                  alert("Goal saved!");
+                  fetchGoal();
+                } catch (err) {
+                  console.error(err);
+                  alert("Failed to save goal.");
+                }
+              }}
+            >
+              Save Goal
+            </button>
+          </div>
+        )}
+      </div>
       <div className="info-card">
         <div className="info-header">
           <span className="icon" role="img" aria-label="smoke">
@@ -92,11 +188,17 @@ const StatusPage = () => {
           <div className="form-group">
             <label>Number of cigarettes/day</label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               placeholder="10"
               value={cigarettesPerDay}
               onChange={(e) => setCigarettesPerDay(e.target.value)}
             />
+            {errors.cigarettesPerDay && (
+              <div style={{ color: "red", marginTop: "4px" }}>
+                {errors.cigarettesPerDay}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -113,36 +215,57 @@ const StatusPage = () => {
             <label>Price/package (VND)</label>
             <input
               type="text"
+              inputMode="numeric"
+              pattern="\d*"
               placeholder="25.000"
               value={
                 pricePerPackage === ""
                   ? ""
                   : parseFloat(pricePerPackage).toLocaleString("vi-VN")
               }
-              onChange={(e) =>
-                setPricePerPackage(e.target.value.replace(/\./g, ""))
-              }
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^\d]/g, "");
+                setPricePerPackage(raw);
+              }}
             />
+
+            {errors.pricePerPackage && (
+              <div style={{ color: "red", marginTop: "4px" }}>
+                {errors.pricePerPackage}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
             <label>Number of packs/week</label>
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
               placeholder="3.5"
               value={packsPerWeek}
               onChange={(e) => setPacksPerWeek(e.target.value)}
             />
+            {errors.packsPerWeek && (
+              <div style={{ color: "red", marginTop: "4px" }}>
+                {errors.packsPerWeek}
+              </div>
+            )}
           </div>
         </div>
 
         <button
           className="plan-btn"
-          disabled={!isFormValid()}
+          // disabled={!isFormValid()}
           onClick={handleSubmit}
         >
           Make a Plan
         </button>
+
+        {goalError && (
+          <div style={{ color: "red", marginTop: "12px", fontSize: "0.95rem" }}>
+            {goalError}
+          </div>
+        )}
       </div>
 
       <div className="summary-row">

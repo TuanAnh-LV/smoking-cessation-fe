@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import { QuitStageService } from "../../services/quitState.service";
 import { QuitPlanProgressService } from "../../services/quitPlanProgress.service";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("en-GB");
 
 const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   const [stages, setStages] = useState([]);
   const [inputData, setInputData] = useState({});
-
+  const navigate = useNavigate();
   const fetchStages = async () => {
     try {
-      const stageRes = await QuitStageService.getAllStagesOfPlan(planId); // ⬅️ API mới đã có `status` + `recordedToday`
+      const stageRes = await QuitStageService.getAllStagesOfPlan(planId);
+      console.log("Fetched stages:", stageRes.data); // check status here
       setStages(stageRes.data || []);
     } catch (err) {
-      console.error("[fetchStages]", err);
       toast.error("Failed to load stages");
     }
   };
@@ -35,15 +36,43 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   };
 
   const handleSubmit = async (stageId) => {
-    const { cigarette_count = 0 } = inputData[stageId] || {};
+    const { cigarette_count = 0, note = "" } = inputData[stageId] || {};
 
     try {
-      await QuitPlanProgressService.recordProgress(planId, stageId, {
-        cigarette_count: Number(cigarette_count),
-      });
+      const res = await QuitPlanProgressService.recordProgress(
+        planId,
+        stageId,
+        {
+          cigarette_count: Number(cigarette_count),
+          note,
+        }
+      );
 
-      toast.success("Today's cigarette count recorded successfully!");
-      fetchStages();
+      // 🟡 Ưu tiên xử lý nếu bị huỷ stage
+      if (res?.data?.cancelled) {
+        toast.error(res.data.message);
+        localStorage.removeItem("currentPlanId");
+        setTimeout(() => navigate("/status"), 1000);
+        return;
+      } else if (res?.data?.warning) {
+        toast.warn(res.data.message);
+      } else {
+        toast.success("Today's cigarette count recorded successfully!");
+      }
+
+      // ✅ Nếu BE trả về updatedStage thì update vào UI ngay (không cần fetchStages)
+      if (res?.data?.updatedStage) {
+        setStages((prev) =>
+          prev.map((s) =>
+            s._id === res.data.updatedStage._id ? res.data.updatedStage : s
+          )
+        );
+        await fetchStages();
+      } else {
+        // Trường hợp bình thường: refetch
+        await fetchStages();
+      }
+
       if (onProgressRecorded) onProgressRecorded();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to record progress");
@@ -97,17 +126,18 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
                 {statusLabelMap[status]}
               </span>
             </div>
-
-            <p className="text-sm text-gray-700 mb-2 whitespace-pre-line leading-relaxed">
-              {description}
-            </p>
-
             <p className="text-sm text-gray-600 mb-3">
               <strong>{formatDate(start_date)}</strong> →{" "}
               <strong>{formatDate(end_date)}</strong>
             </p>
+            <p className="text-sm text-gray-700 mb-2 whitespace-pre-line leading-relaxed">
+              {description}
+            </p>
             <p className="text-sm text-gray-600 mb-3 font-medium">
               Progress: {stage.progressDays} / {stage.totalDays} days
+            </p>
+            <p className="text-sm text-gray-600 mb-3 font-medium">
+              Max_daily_cigarette: {stage.max_daily_cigarette}
             </p>
             {status === "in_progress" && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">

@@ -20,7 +20,8 @@ export const ROUTER_URL = {
     PAYMENT:"/payment",
     PAYMENT_SUCCESS:"payment-success",
     CALL_PAGE:"/call/:id",
-    VERIFY_EMAIL:"/verify-email"
+    VERIFY_EMAIL:"/verify-email",
+    GOAL_DRAFT:"/goal-draft"
   },
   USER: {
     GET_CURRENT_USER_INFO: "/users/me",
