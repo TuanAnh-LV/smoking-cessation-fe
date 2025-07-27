@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+// ✅ Đã cập nhật ChatMessage.jsx để hiển thị tên người gửi trên mỗi tin nhắn
+import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   Avatar,
@@ -130,9 +131,7 @@ const ChatMessage = () => {
                     {item.user_id.full_name.charAt(0).toUpperCase()}
                   </Avatar>
                 }
-                title={
-                  <Text className="font-medium">{item.user_id.full_name}</Text>
-                }
+                title={<Text className="font-medium">{item.user_id.full_name}</Text>}
                 description={<Text type="secondary">{item.user_id.email}</Text>}
               />
             </List.Item>
@@ -171,7 +170,6 @@ const ChatMessage = () => {
                     <Title level={5} className="mb-0">
                       {selectedChat.user_id.full_name}
                     </Title>
-                    <Text type="secondary">Đang hoạt động</Text>
                   </div>
                 </div>
                 <Button
@@ -179,7 +177,7 @@ const ChatMessage = () => {
                   onClick={handleVideoCall}
                   className="rounded-xl"
                 >
-                  Gọi video
+                  Meet
                 </Button>
               </div>
             }
@@ -187,25 +185,17 @@ const ChatMessage = () => {
             {/* Vùng tin nhắn */}
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 px-2">
               {messages.map((msg) => {
-                const isMe =
-                  msg.user_id === currentCoachId ||
-                  msg.user_id?._id === currentCoachId;
+                const isMe = msg.user_id === currentCoachId || msg.user_id?._id === currentCoachId;
+                const displayName = isMe ? "Bạn" : selectedChat.user_id.full_name;
                 return (
-                  <div
-                    key={msg._id || msg.id}
-                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
-                  >
+                  <div key={msg._id || msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
+                    <span className="text-xs text-gray-500 font-medium mb-1">{displayName}</span>
                     <div className="max-w-[70%] break-words">
                       <div
                         className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words ${
-                          isMe
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-100 text-black"
+                          isMe ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
                         }`}
-                        style={{
-                          wordWrap: "break-word",
-                          overflowWrap: "break-word",
-                        }}
+                        style={{ wordWrap: "break-word", overflowWrap: "break-word" }}
                       >
                         <Text>
                           {msg.content.startsWith("http") ? (

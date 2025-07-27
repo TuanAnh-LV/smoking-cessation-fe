@@ -28,6 +28,7 @@ export const API = {
     GET_HISTORY: "/user-membership/me/history",
     GET_ALL_USERMEMBERSHIP: "/user-membership",
     GET_MEMBERSHIP_BY_USER_ID: "/user-membership/admin/:id",
+    PREVIEW_UPGRADE: "/user-membership/preview-upgrade",
   },
   COACH: {
     CREATE_COACH: "/coaches",
@@ -145,5 +146,12 @@ export const API = {
     CREATE_QUITPLANDRAFT: "/quit-goal-draft",
     GET_QUITPLANDRAFT: "/quit-goal-draft",
     DELETE_QUITPLANDRAFT: "/quit-goal-draft"
-  }
+  },
+   FEEDBACK: {
+    CREATE_FEEDBACK_COACH: "/feedback/coach",
+    GET_FEEDBACKS_BY_COACH: "/feedback/coach/:coach_user_id",
+    UPDATE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
+    DELETE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
+    GET_FEEDBACKS_COACH_OF_USER: "/feedback/coach-of-user/:userId"
+  },
 };
