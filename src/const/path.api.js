@@ -28,6 +28,7 @@ export const API = {
     GET_HISTORY: "/user-membership/me/history",
     GET_ALL_USERMEMBERSHIP: "/user-membership",
     GET_MEMBERSHIP_BY_USER_ID: "/user-membership/admin/:id",
+    PREVIEW_UPGRADE: "/user-membership/preview-upgrade",
   },
   COACH: {
     CREATE_COACH: "/coaches",
@@ -119,7 +120,8 @@ export const API = {
   REMINDER: {
     GET_REMINDER_OF_USER: "/reminders",
     CREATE_REMINDER: "/reminders",
-    DELETE_REMINDER: "/reminders/:id"
+    DELETE_REMINDER: "/reminders/:id",
+    UPDATE_REMINDER: "/reminders/:id",
   },
     BLOG: {
       CREATE_BLOG: "/blogs",

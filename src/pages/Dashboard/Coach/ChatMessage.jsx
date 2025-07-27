@@ -171,7 +171,7 @@ const ChatMessage = () => {
                     <Title level={5} className="mb-0">
                       {selectedChat.user_id.full_name}
                     </Title>
-                    <Text type="secondary">Đang hoạt động</Text>
+                    {/* <Text type="secondary">Đang hoạt động</Text> */}
                   </div>
                 </div>
                 <Button

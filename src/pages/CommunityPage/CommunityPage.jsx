@@ -203,7 +203,7 @@ const CommunityPage = () => {
           title={
             <div className="flex items-center justify-between" style={{ flexShrink: 0 }}>
               <div className="flex items-center gap-4">
-                <Badge dot color="green">
+                <Badge >
                   {coachId ? (
                     <Link to={`/profile-coach/${coachId}`}>
                       <Avatar
@@ -239,7 +239,7 @@ const CommunityPage = () => {
                   ) : (
                     <Title level={5} className="mb-0">{coachName}</Title>
                   )}
-                  <Text type="secondary">Đang hoạt động</Text>
+                  {/* <Text type="secondary">Đang hoạt động</Text> */}
                 </div>
               </div>
               <Button

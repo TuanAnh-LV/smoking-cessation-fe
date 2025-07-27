@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import "./PaymentPage.scss";
 import paypal from "../../assets/paypal.png";
-import momo from "../../assets/momo.png";
+// import momo from "../../assets/momo.png";
 
 import { PaymentService } from "../../services/payment.service";
 
@@ -84,7 +84,7 @@ const PaymentPage = () => {
                 <img src={paypal} alt="Paypal" />
               </span>
             </label>
-            <label
+            {/* <label
               className={`method-option ${
                 paymentMethod === "momo" ? "selected" : ""
               }`}
@@ -100,7 +100,7 @@ const PaymentPage = () => {
               <span className="momo-icon">
                 <img src={momo} alt="Momo" />
               </span>
-            </label>
+            </label> */}
           </div>
           <div className="payment-help">
             Having trouble paying? <a href="#">See this article</a>
@@ -121,10 +121,10 @@ const PaymentPage = () => {
             <div className="package-desc">{packageInfo.desc}</div>
             <div className="package-date">{packageInfo.date}</div>
           </div>
-          <div className="form-group">
+          {/* <div className="form-group">
             <label htmlFor="discountCode">Discount code</label>
             <input type="text" id="discountCode" placeholder="MOCAEXE2" />
-          </div>
+          </div> */}
           <div className="order-total-row">
             <span>Total</span>
             <span className="order-total">

@@ -1,10 +1,11 @@
 .card-member-section {
   margin-bottom: 80px;
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    text-align: center; // Center content by default
+    text-align: center;
 
     h2 {
       font-size: 64px;
@@ -14,19 +15,19 @@
     }
 
     .cards-container {
-      display: flex; // Use flexbox for layout
-      justify-content: center; // Center the cards
-      gap: 30px; // Space between cards
-      flex-wrap: wrap; // Allow wrapping on smaller screens
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
     }
 
     .member-card {
-      background-color: white; // Light gray background
-      border-radius: 20px; // Rounded corners
+      background-color: white;
+      border-radius: 20px;
       padding: 40px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 100%; // Full width on very small screens
-      max-width: 350px; // Maximum width for cards
+      width: 100%;
+      max-width: 350px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -39,40 +40,31 @@
         width: 100%;
         margin-bottom: 20px;
 
-        .package-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #9c7055;
-          background-color: #ede0cf; // Gray background for title
-          padding: 4px 12px 4px 12px;
-          gap: 10px;
-          border-radius: 15px; // Pill shape
-        }
+        .package-title,
         .package-title-2 {
           font-size: 18px;
-          color: #9c7055;
           font-weight: 600;
-          background-color: #ede0cf; // Gray background for title
-          padding: 10px 12px 4px 12px;
-          gap: 0px;
-          border-radius: 15px; // Pill shape
+          color: #9c7055;
+          background-color: #ede0cf;
+          padding: 4px 12px;
+          border-radius: 15px;
         }
 
         .package-badge {
           font-size: 14px;
           font-weight: 500;
-          color: red; // Pink color for badge
+          color: red;
         }
       }
 
       .package-price {
         font-size: 40px;
         font-weight: bold;
-        color: #000; // Black color for price
+        color: #000;
         margin-bottom: 10px;
 
         &.free {
-          color: #000; // Black color for FREE
+          color: #000;
         }
       }
 
@@ -81,7 +73,7 @@
         color: #666;
         line-height: 1.4;
         margin-bottom: 20px;
-        flex-grow: 1; // Push button to the bottom
+        flex-grow: 1;
       }
 
       .package-features {
@@ -114,63 +106,70 @@
         border-radius: 20px;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        background-color: #000;
+        color: white;
+
+        &:hover {
+          background-color: #333;
+        }
 
         &.primary {
-          background-color: #ff2d55; // Pink background for primary button
+          background-color: #ff2d55;
           color: white;
 
           &:hover {
-            background-color: rgb(201, 145, 145); // Darker pink on hover
+            background-color: rgb(201, 145, 145);
           }
         }
 
-        &:not(.primary) {
-          background-color: #000; // Black background for other buttons
-          color: white;
-
-          &:hover {
-            background-color: #333; // Darker gray on hover
-          }
-        }
         &.super {
-          background-color: white; // Pink background for primary button
+          background-color: white;
           color: black;
           border: 1px solid #d7d7d7;
+
           &:hover {
             color: white;
-            background-color: #865b40; // Darker pink on hover
+            background-color: #865b40;
+          }
+        }
+
+        // ✅ Style cho nút bị disable
+        &:disabled {
+          background-color: #ccc !important;
+          color: #888 !important;
+          cursor: not-allowed;
+          pointer-events: none;
+          position: relative;
+
+          &::after {
+            content: "";
+            font-size: 14px;
           }
         }
       }
 
       &.monthly {
-        background-color: white; // Lighter pink background for monthly card
+        background-color: white;
 
         .package-title {
-          background-color: #f9dedc; // Lighter pink for title background
+          background-color: #f9dedc;
         }
 
         .package-price {
-          color: black; // Darker pink for price
-        }
-
-        .package-features li .check-icon {
+          color: black;
         }
       }
 
       &.yearly {
         .package-price {
-          color: black; // Pink color for price
-        }
-
-        .package-features li .check-icon {
+          color: black;
         }
       }
     }
   }
 }
 
-// Responsive adjustments
+// Responsive for tablets
 @media (max-width: 768px) {
   .card-member-section {
     padding: 60px 0;
@@ -185,109 +184,110 @@
     }
 
     .member-card {
-      max-width: 300px; // Adjust max width
-      padding: 25px; // Adjust padding
+      max-width: 300px;
+      padding: 25px;
 
       .package-header {
-        margin-bottom: 15px; // Adjust margin
+        margin-bottom: 15px;
 
         .package-title {
-          font-size: 16px; // Adjust font size
-          padding: 6px 12px; // Adjust padding
+          font-size: 16px;
+          padding: 6px 12px;
         }
 
         .package-badge {
-          font-size: 12px; // Adjust font size
+          font-size: 12px;
         }
       }
 
       .package-price {
-        font-size: 32px; // Adjust font size
-        margin-bottom: 8px; // Adjust margin
+        font-size: 32px;
+        margin-bottom: 8px;
       }
 
       .package-description {
-        font-size: 14px; // Adjust font size
-        margin-bottom: 15px; // Adjust margin
+        font-size: 14px;
+        margin-bottom: 15px;
       }
 
       .package-features {
-        margin-bottom: 20px; // Adjust margin
+        margin-bottom: 20px;
 
         li {
-          font-size: 14px; // Adjust font size
-          margin-bottom: 8px; // Adjust margin
+          font-size: 14px;
+          margin-bottom: 8px;
 
           .check-icon {
-            margin-right: 8px; // Adjust margin
+            margin-right: 8px;
           }
         }
       }
 
       .package-button {
-        padding: 10px; // Adjust padding
-        font-size: 15px; // Adjust font size
+        padding: 10px;
+        font-size: 15px;
       }
     }
   }
 }
 
+// Responsive for mobile
 @media (max-width: 480px) {
   .card-member-section {
     padding: 40px 0;
 
     h2 {
-      font-size: 28px; // Further reduce font size
-      margin-bottom: 20px; // Adjust margin
+      font-size: 28px;
+      margin-bottom: 20px;
     }
 
     .cards-container {
-      gap: 15px; // Adjust gap
+      gap: 15px;
     }
 
     .member-card {
-      max-width: 100%; // Allow card to take full width
-      padding: 20px; // Adjust padding
+      max-width: 100%;
+      padding: 20px;
 
       .package-header {
-        margin-bottom: 10px; // Adjust margin
+        margin-bottom: 10px;
 
         .package-title {
-          font-size: 15px; // Adjust font size
-          padding: 5px 10px; // Adjust padding
+          font-size: 15px;
+          padding: 5px 10px;
         }
 
         .package-badge {
-          font-size: 11px; // Adjust font size
+          font-size: 11px;
         }
       }
 
       .package-price {
-        font-size: 28px; // Adjust font size
-        margin-bottom: 6px; // Adjust margin
+        font-size: 28px;
+        margin-bottom: 6px;
       }
 
       .package-description {
-        font-size: 13px; // Adjust font size
-        margin-bottom: 10px; // Adjust margin
+        font-size: 13px;
+        margin-bottom: 10px;
       }
 
       .package-features {
-        margin-bottom: 15px; // Adjust margin
+        margin-bottom: 15px;
 
         li {
-          font-size: 13px; // Adjust font size
-          margin-bottom: 6px; // Adjust margin
+          font-size: 13px;
+          margin-bottom: 6px;
 
           .check-icon {
-            margin-right: 6px; // Adjust margin
+            margin-right: 6px;
           }
         }
       }
 
       .package-button {
-        padding: 8px; // Adjust padding
-        font-size: 14px; // Adjust font size
+        padding: 8px;
+        font-size: 14px;
       }
     }
   }

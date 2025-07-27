@@ -6,10 +6,14 @@ import { QuitPlanService } from "../../services/quitPlan.service";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import styles from "./ProgressPage.module.css";
 import { useParams } from "react-router-dom";
+import CreateReminderForm from "../../components/progressTracking/CreateReminderForm";
+import ReminderList from "../../components/progressTracking/ReminderList";
+import { ReminderService } from "../../services/reminder.service";
+import { toast } from "react-toastify";
 const ProgressPage = () => {
   const [summary, setSummary] = useState(null);
   const { id: planId } = useParams(); // id trong /progress/:id
-
+  const [reminders, setReminders] = useState([]);
   const fetchSummary = async () => {
     try {
       const res = await QuitPlanService.getPlanSummary(planId);
@@ -18,6 +22,19 @@ const ProgressPage = () => {
       console.error("Error loading summary data", err);
     }
   };
+  const fetchReminders = async () => {
+    try {
+      const res = await ReminderService.getMyReminders();
+      setReminders(res.data || []);
+    } catch (err) {
+      toast.error("Failed to load reminders");
+    }
+  };
+
+  useEffect(() => {
+    fetchSummary();
+    fetchReminders();
+  }, [planId]);
 
   useEffect(() => {
     if (planId) fetchSummary();
@@ -71,6 +88,8 @@ const ProgressPage = () => {
           healthData={statData.healthData}
         />
       )}
+      <CreateReminderForm planId={planId} onCreated={fetchReminders} />
+      <ReminderList reminders={reminders} onDelete={fetchReminders} />
 
       <section className={styles["progress-section"]}>
         <h2> Stages and Daily Records</h2>
