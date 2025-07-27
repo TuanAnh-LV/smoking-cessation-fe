@@ -133,7 +133,6 @@ export const API = {
       UNLIKE_BLOG: "/blogs/:id/unlike",
       SHARE_BADGES: "/blogs/:id/share-badges"
   },
-
   COMMENT: {
     CREATE_COMMENT: "/blogs/:id/comments",
     GET_COMMENTS_BY_BLOG: "/blogs/:id/comments",
@@ -142,6 +141,11 @@ export const API = {
     UPDATE_COMMENT: "/comments/:id",
     DELETE_COMMENT: "/comments/:id",
     REPLY_COMMENT: "/comments/:id/reply"
+  },
+  QUITPLANDRAFT: {
+    CREATE_QUITPLANDRAFT: "/quit-goal-draft",
+    GET_QUITPLANDRAFT: "/quit-goal-draft",
+    DELETE_QUITPLANDRAFT: "/quit-goal-draft"
   },
    FEEDBACK: {
     CREATE_FEEDBACK_COACH: "/feedback/coach",

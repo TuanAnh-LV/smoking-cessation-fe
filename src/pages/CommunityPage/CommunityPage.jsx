@@ -1,12 +1,6 @@
 // src/pages/CommunityPage/CommunityPage.jsx
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Typography,
-  Input,
-  Button,
-  Avatar,
-  Badge,
-} from "antd";
+import { Typography, Input, Button, Avatar, Badge } from "antd";
 import {
   SendOutlined,
   ClockCircleOutlined,
@@ -74,7 +68,8 @@ const CommunityPage = ({
 
         socketRef.on("newMessage", (msg) => {
           setMessages((prev) => {
-            if (prev.some((m) => (m._id || m.id) === (msg._id || msg.id))) return prev;
+            if (prev.some((m) => (m._id || m.id) === (msg._id || msg.id)))
+              return prev;
             return [...prev, msg];
           });
         });
@@ -94,7 +89,8 @@ const CommunityPage = ({
             setCoachSessionId(externalSessionId);
             externalSocket.on("newMessage", (msg) => {
               setMessages((prev) => {
-                if (prev.some((m) => (m._id || m.id) === (msg._id || msg.id))) return prev;
+                if (prev.some((m) => (m._id || m.id) === (msg._id || msg.id)))
+                  return prev;
                 return [...prev, msg];
               });
             });
@@ -129,12 +125,20 @@ const CommunityPage = ({
   };
 
   return (
-    <div className="flex flex-col h-full w-full" style={{ minHeight: "100%", maxHeight: "100%" }}>
+    <div
+      className="flex flex-col h-full w-full"
+      style={{ minHeight: "100%", maxHeight: "100%" }}
+    >
       {!isWidget && (
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-3">
             <Badge>
-              <Avatar style={{ backgroundColor: stringToColor(coachName), verticalAlign: "middle" }}>
+              <Avatar
+                style={{
+                  backgroundColor: stringToColor(coachName),
+                  verticalAlign: "middle",
+                }}
+              >
                 {coachName.charAt(0).toUpperCase()}
               </Avatar>
             </Badge>
@@ -156,9 +160,13 @@ const CommunityPage = ({
           </Button>
         </div>
       )}
-      <div className="flex-grow overflow-y-auto px-2 pt-4 space-y-4" style={{ minHeight: 0 }}>
+      <div
+        className="flex-grow overflow-y-auto px-2 pt-4 space-y-4"
+        style={{ minHeight: 0 }}
+      >
         {messages.map((msg, index) => {
-          const senderId = msg.user_id?._id || msg.user_id || msg.author_id?._id;
+          const senderId =
+            msg.user_id?._id || msg.user_id || msg.author_id?._id;
           const isOwn = String(senderId) === String(currentUserId);
           const displayName = isOwn ? "Bạn" : coachName;
           return (
@@ -166,7 +174,9 @@ const CommunityPage = ({
               key={msg.id || msg._id || index}
               className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}
             >
-              <span className="text-xs text-gray-500 font-medium mb-1">{displayName}</span>
+              <span className="text-xs text-gray-500 font-medium mb-1">
+                {displayName}
+              </span>
               <div className="max-w-[70%] break-words">
                 <div
                   className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words font-bold ${
@@ -176,7 +186,9 @@ const CommunityPage = ({
                   <Text>
                     {msg.content.startsWith("http") ? (
                       <>
-                        <p className="text-white font-bold">Hãy tham gia cuộc gọi video tại: </p>
+                        <p className="text-white font-bold">
+                          Hãy tham gia cuộc gọi video tại:{" "}
+                        </p>
                         <a
                           href={msg.content}
                           target="_blank"
@@ -197,7 +209,9 @@ const CommunityPage = ({
                 </div>
                 <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                   <ClockCircleOutlined className="text-[10px]" />
-                  <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
+                  <span>
+                    {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -205,7 +219,10 @@ const CommunityPage = ({
         })}
         <div ref={messagesEndRef} />
       </div>
-      <div className="flex items-center gap-2 mt-2 px-2 pb-2" style={{ flexShrink: 0 }}>
+      <div
+        className="flex items-center gap-2 mt-2 px-2 pb-2"
+        style={{ flexShrink: 0 }}
+      >
         <TextArea
           rows={1}
           placeholder="Nhập tin nhắn..."

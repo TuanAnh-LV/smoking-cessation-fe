@@ -231,7 +231,10 @@ const ChatMessage = () => {
             </div>
 
             {/* Nhập tin nhắn */}
-            <div className="flex items-center gap-2 mt-2" style={{ flexShrink: 0 }}>
+            <div
+              className="flex items-center gap-2 mt-2"
+              style={{ flexShrink: 0 }}
+            >
               <TextArea
                 rows={1}
                 placeholder="Nhập tin nhắn..."
