@@ -130,9 +130,9 @@ const Header = () => {
 
         {isLoggedIn && (
           <>
-            {/* <Link to="/community">
-              <p>Chat</p>
-            </Link> */}
+            <Link to="/community-chat">
+              <p>Community</p>
+            </Link>
             <Link to="/achievements">
               <p>Achievements</p>
             </Link>

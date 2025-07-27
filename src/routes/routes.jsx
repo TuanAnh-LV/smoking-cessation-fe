@@ -13,6 +13,7 @@ const QuitPlan = lazy(() => import("../pages/QuitPlan/QuitPlan"));
 const ProgressPage = lazy(() => import("../pages/ProgressPage/ProgressPage"));
 const AchievementPage = lazy(() => import("../pages/AchievementPage/AchievementPage"));
 const CommunityPage = lazy(() => import("../pages/CommunityPage/CommunityPage"));
+const CommunityChat = lazy(() => import("../components/Community/CommunityChat"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
 const PaymentPage = lazy(() => import("../pages/PaymentPage/PaymentPage"));
 const PaymentSuccess = lazy(() => import("../pages/PaymentPage/PaymentSuccess"));
@@ -57,6 +58,7 @@ const routes = [
       { path: ROUTER_URL.COMMON.TRACKPROGRESS, element: <ProgressPage /> },
       { path: ROUTER_URL.COMMON.QUITPLAN, element: <QuitPlan /> },
       { path: ROUTER_URL.COMMON.COMMUNITY, element: <CommunityPage /> },
+      { path: ROUTER_URL.COMMON.COMMUNITY_CHAT, element: <CommunityChat /> },
       { path: ROUTER_URL.COMMON.COACH, element: <CoachPage /> },
       { path: ROUTER_URL.COMMON.ACHIEVEMENTS, element: <AchievementPage /> },
       { path: ROUTER_URL.COMMON.PROFILE, element: <ProfilePage /> },

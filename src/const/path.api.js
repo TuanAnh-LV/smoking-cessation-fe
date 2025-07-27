@@ -43,6 +43,7 @@ export const API = {
     UPDATE_COACH: "/coach-users/:id",
     DELETE_RELATION: "/coach-users/:id",
     GET_COACH_BY_ID: "/coach-users/:id",
+    GET_BY_USER_ID: "/coach-users/by-user/:userId",
   },
   BADGES: {
     GET_ALL_BADGES: "/badges",

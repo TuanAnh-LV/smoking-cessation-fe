@@ -40,4 +40,13 @@ export const CoachUserService = {
     isLoading: true,
   });
 },
+
+  getByUserId: (userId) => {
+    return BaseService.get({
+      url: API.COACH_USER.GET_BY_USER_ID.replace(":userId", userId),
+      isAuth: true,
+      isLoading: false, 
+    });
+  },
+
 };

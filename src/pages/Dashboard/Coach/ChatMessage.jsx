@@ -1,4 +1,3 @@
-// ✅ Đã cập nhật ChatMessage.jsx để hiển thị tên người gửi trên mỗi tin nhắn
 import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
@@ -10,6 +9,7 @@ import {
   Badge,
   Divider,
   message as AntMessage,
+  Modal,
 } from "antd";
 import {
   SendOutlined,
@@ -19,6 +19,7 @@ import {
 import dayjs from "dayjs";
 import { io } from "socket.io-client";
 import { ChatService } from "../../../services/chat.service";
+import { CoachUserService } from "../../../services/coachuser.service"; 
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -37,6 +38,7 @@ const ChatMessage = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [showPlanModal, setShowPlanModal] = useState(false); // ✅ Modal control
   const socketRef = useRef(null);
   const token = localStorage.getItem("token");
   const [currentCoachId, setCurrentCoachId] = useState(null);
@@ -83,8 +85,14 @@ const ChatMessage = () => {
       const res = await ChatService.getMessages(session._id);
       setMessages(res?.data?.data || []);
       socketRef.current.emit("joinSession", session._id);
+
+      // ✅ Gọi thêm API để lấy quitPlan mới nhất
+      const relationRes = await CoachUserService.getByUserId(session.user_id._id);
+      const quitPlans = relationRes?.data?.quitPlans || [];
+      const latestQuitPlan = quitPlans[quitPlans.length - 1] || null;
+      setSelectedChat((prev) => ({ ...prev, latestQuitPlan }));
     } catch (err) {
-      AntMessage.error("Không thể tải tin nhắn");
+      AntMessage.error("Không thể tải tin nhắn hoặc quit plan");
     }
   };
 
@@ -170,13 +178,19 @@ const ChatMessage = () => {
                     <Title level={5} className="mb-0">
                       {selectedChat.user_id.full_name}
                     </Title>
+                    {selectedChat.latestQuitPlan && (
+                      <Button
+                        type="link"
+                        size="small"
+                        className="p-0 text-blue-600 underline"
+                        onClick={() => setShowPlanModal(true)}
+                      >
+                        Xem Quit Plan
+                      </Button>
+                    )}
                   </div>
                 </div>
-                <Button
-                  icon={<VideoCameraOutlined />}
-                  onClick={handleVideoCall}
-                  className="rounded-xl"
-                >
+                <Button icon={<VideoCameraOutlined />} onClick={handleVideoCall} className="rounded-xl">
                   Meet
                 </Button>
               </div>
@@ -195,12 +209,11 @@ const ChatMessage = () => {
                         className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words ${
                           isMe ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
                         }`}
-                        style={{ wordWrap: "break-word", overflowWrap: "break-word" }}
                       >
                         <Text>
                           {msg.content.startsWith("http") ? (
                             <>
-                              Hãy tham gia cuộc gọi video chung tại:{" "}
+                              Hãy tham gia cuộc gọi video tại:{" "}
                               <a
                                 href={msg.content}
                                 target="_blank"
@@ -220,9 +233,7 @@ const ChatMessage = () => {
                       </div>
                       <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                         <ClockCircleOutlined className="text-[10px]" />
-                        <span>
-                          {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
-                        </span>
+                        <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
                       </div>
                     </div>
                   </div>
@@ -231,10 +242,7 @@ const ChatMessage = () => {
             </div>
 
             {/* Nhập tin nhắn */}
-            <div
-              className="flex items-center gap-2 mt-2"
-              style={{ flexShrink: 0 }}
-            >
+            <div className="flex items-center gap-2 mt-2" style={{ flexShrink: 0 }}>
               <TextArea
                 rows={1}
                 placeholder="Nhập tin nhắn..."
@@ -258,6 +266,53 @@ const ChatMessage = () => {
           </Card>
         )}
       </div>
+
+      {/* ✅ Modal hiển thị quit plan */}
+      <Modal
+        open={showPlanModal}
+        onCancel={() => setShowPlanModal(false)}
+        footer={null}
+        title="Chi tiết Quit Plan"
+        width={600}
+      >
+        {selectedChat?.latestQuitPlan ? (
+          <div className="space-y-3">
+            <h3 className="text-lg font-bold text-blue-700">
+              {selectedChat.latestQuitPlan.goal.replace("_", " ").toUpperCase()}
+            </h3>
+            <p className="text-sm text-gray-500">
+              <strong>Start:</strong>{" "}
+              {new Date(selectedChat.latestQuitPlan.start_date).toLocaleDateString()}
+            </p>
+            <p className="text-sm">
+              <strong>Lý do:</strong>{" "}
+              {selectedChat.latestQuitPlan.reasons?.join(", ") || "Không có"}
+            </p>
+
+            <div className="space-y-2">
+              <h4 className="font-semibold">Các Giai đoạn:</h4>
+              {selectedChat.latestQuitPlan.stages?.map((stage) => (
+                <div
+                  key={stage._id}
+                  className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 rounded"
+                >
+                  <div className="flex justify-between">
+                    <p className="font-semibold text-gray-800">{stage.name}</p>
+                    <span className="text-xs text-gray-500">{stage.status.replace("_", " ")}</span>
+                  </div>
+                  <p className="text-sm text-gray-600 whitespace-pre-line">{stage.description}</p>
+                  <p className="text-xs text-gray-400">
+                    {new Date(stage.start_date).toLocaleDateString()} →{" "}
+                    {new Date(stage.end_date).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p>Không có dữ liệu Quit Plan.</p>
+        )}
+      </Modal>
     </div>
   );
 };
