@@ -104,9 +104,9 @@
                   : "Chưa có đánh giá"}
               </span>
             </div>
-            <Text strong>Chuyên môn: </Text>{coach.speciality || "Chưa cập nhật"}<br />
+            {/* <Text strong>Chuyên môn: </Text>{coach.speciality || "Chưa cập nhật"}<br />
             <Text strong>Đơn vị: </Text>{coach.organization || "Chưa cập nhật"}<br />
-            <Text strong>Kinh nghiệm: </Text>{coach.experience || "Chưa cập nhật"}
+            <Text strong>Kinh nghiệm: </Text>{coach.experience || "Chưa cập nhật"} */}
           </div>
         </Card>
 

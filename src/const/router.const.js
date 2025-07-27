@@ -8,7 +8,7 @@ export const ROUTER_URL = {
     FORGOT_PASSWORD: "/forgot-password",
     VERIFY_NEW_EMAIL: "/verify-email",
     HOME:"/",
-    COMMUNITY:"/community",
+    COMMUNITY:"/chat",
     BLOG:"/blog",
     ACHIEVEMENTS:"/achievements",
     TRACKPROGRESS:"/progress/:id",
