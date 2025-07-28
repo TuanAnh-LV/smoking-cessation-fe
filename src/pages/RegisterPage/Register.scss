@@ -104,7 +104,6 @@ input[type="password"] {
   margin-bottom: 10px; // Adjusted margin-bottom
   transition: background-color 0.3s ease;
 }
-
 .register-button:hover {
   background-color: red; // Darker pink on hover from login
 }
@@ -134,4 +133,10 @@ input[type="password"] {
   &:hover {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   }
+}
+
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
 }
