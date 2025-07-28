@@ -7,7 +7,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
 
@@ -97,7 +97,7 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success("Logout successful!");
+    message.success("Logout successful!");
     navigate("/login");
   };
   useEffect(() => {
@@ -127,27 +127,22 @@ const Header = () => {
         <Link to="/">
           <p>Home</p>
         </Link>
-
+        <Link to="/achievements">
+          <p>Achievements</p>
+        </Link>
         {isLoggedIn && (
           <>
-            {/* <Link to="/community">
-              <p>Chat</p>
-            </Link> */}
-            <Link to="/achievements">
-              <p>Achievements</p>
-            </Link>
             <Link to={planId ? `/progress/${planId}` : "/status"}>
               Track Progress
             </Link>
           </>
         )}
 
-        <Link to="/status">
-          <p>Quit Plan</p>
-        </Link>
-        {/* <Link to="/coach">
-          <p>Coach</p>
-        </Link> */}
+        {!planId && (
+          <Link to="/status">
+            <p>Quit Plan</p>
+          </Link>
+        )}
         <Link to="/blog">
           <p>Blogs</p>
         </Link>

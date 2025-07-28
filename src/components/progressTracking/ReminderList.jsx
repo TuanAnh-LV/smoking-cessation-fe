@@ -1,7 +1,7 @@
 import React from "react";
 import { Trash2, Clock } from "lucide-react";
 import { ReminderService } from "../../services/reminder.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const ReminderList = ({ reminders, onDelete }) => {
   if (!reminders?.length) return null;
@@ -9,10 +9,10 @@ const ReminderList = ({ reminders, onDelete }) => {
   const handleDelete = async (id) => {
     try {
       await ReminderService.delete(id);
-      toast.success("Reminder deleted");
+      message.success("Reminder deleted");
       onDelete?.();
     } catch (err) {
-      toast.error("Failed to delete reminder");
+      message.error("Failed to delete reminder");
     }
   };
 

@@ -3,9 +3,7 @@ import { BadgeService } from "../../services/badge.service";
 import StatCards from "../../components/StartCards/StatCards";
 import "../AchievementPage/AchievementPage.scss";
 
-import { IoLogoNoSmoking, IoMedalOutline, IoStar } from "react-icons/io5";
-import { FaRegCalendarAlt, FaCrown } from "react-icons/fa";
-import { FaDollarSign } from "react-icons/fa";
+import { IoMedalOutline, IoStar } from "react-icons/io5";
 
 import { RiBookmarkLine } from "react-icons/ri";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
@@ -32,36 +30,54 @@ const AchievementPage = () => {
       icon: IoCheckmarkCircleOutline,
     },
   });
+  const isLoggedIn = () => !!localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const res = await BadgeService.getBadgeSummary();
-        const summary = res.data;
+    const fetchData = async () => {
+      if (isLoggedIn()) {
+        try {
+          const [summaryRes, achievedRes, upcomingRes] = await Promise.all([
+            BadgeService.getBadgeSummary(),
+            BadgeService.getUserBadges(),
+            BadgeService.getUpcomingBadges(),
+          ]);
 
-        setStatData({
-          noSmokingData: {
-            value: `${summary.badge_achieved_count}`,
-            label: "Badge achieved",
-            icon: IoMedalOutline,
-          },
-          savingsData: {
-            value: `${summary.badge_upcoming_count}`,
-            label: "Upcoming badge",
-            icon: RiBookmarkLine,
-          },
-          healthData: {
-            value: `${summary.completion_rate}%`,
-            label: "Complete",
-            icon: IoCheckmarkCircleOutline,
-          },
-        });
-      } catch (err) {
-        console.error("Failed to load badge summary", err);
+          const summary = summaryRes.data;
+
+          setStatData({
+            noSmokingData: {
+              value: `${summary.badge_achieved_count}`,
+              label: "Badge achieved",
+              icon: IoMedalOutline,
+            },
+            savingsData: {
+              value: `${summary.badge_upcoming_count}`,
+              label: "Upcoming badge",
+              icon: RiBookmarkLine,
+            },
+            healthData: {
+              value: `${summary.completion_rate}%`,
+              label: "Complete",
+              icon: IoCheckmarkCircleOutline,
+            },
+          });
+
+          setAchievedBadges(achievedRes.data.badges || []);
+          setUpcomingBadges(upcomingRes.data.badges || []);
+        } catch (err) {
+          console.error("Failed to load badges (logged in)", err);
+        }
+      } else {
+        try {
+          const res = await BadgeService.getAllBadges();
+          setAchievedBadges(res.data.badges || []);
+        } catch (err) {
+          console.error("Failed to load public badges", err);
+        }
       }
     };
 
-    fetchSummary();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -90,41 +106,67 @@ const AchievementPage = () => {
         healthData={statData.healthData}
       />
 
-      <div className="full-badge">
-        <h3>Badge achieved</h3>
-        <div className="badge-list">
-          {achievedBadges.map((badge) => (
-            <BadgeCard
-              key={badge._id}
-              icon={<IoMedalOutline />}
-              title={badge.name}
-              description={badge.description}
-              rarity={badge.type}
-              achievedDate={
-                badge.granted_date
-                  ? new Date(badge.granted_date).toLocaleDateString("en-US", {
-                      timeZone: "UTC",
-                    })
-                  : ""
-              }
-            />
-          ))}
+      {isLoggedIn() && (
+        <>
+          <div className="full-badge">
+            <h3>Badge achieved</h3>
+            <div className="badge-list">
+              {achievedBadges.map((badge) => (
+                <BadgeCard
+                  key={badge._id}
+                  icon={<IoMedalOutline />}
+                  title={badge.name}
+                  description={badge.description}
+                  rarity={badge.type}
+                  achievedDate={
+                    badge.granted_date
+                      ? new Date(badge.granted_date).toLocaleDateString(
+                          "en-US",
+                          {
+                            timeZone: "UTC",
+                          }
+                        )
+                      : ""
+                  }
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="upcoming-badge-section">
+            <h3>Upcoming badge</h3>
+            <div className="upcoming-badge-list">
+              {upcomingBadges.map((badge) => (
+                <UpcomingBade
+                  key={badge._id}
+                  icon={<IoStar />}
+                  title={badge.name}
+                  description={badge.description}
+                  rarity={badge.type}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Public fallback if NOT logged in */}
+      {!isLoggedIn() && (
+        <div className="full-badge">
+          <h3>All available badges</h3>
+          <div className="badge-list">
+            {achievedBadges.map((badge) => (
+              <BadgeCard
+                key={badge._id}
+                icon={<IoMedalOutline />}
+                title={badge.name}
+                description={badge.description}
+                rarity={badge.type}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="upcoming-badge-section">
-        <h3>Upcoming badge</h3>
-        <div className="upcoming-badge-list">
-          {upcomingBadges.map((badge) => (
-            <UpcomingBade
-              key={badge._id}
-              icon={<IoStar />} // hoặc tùy logic
-              title={badge.name}
-              description={badge.description}
-              rarity={badge.type}
-            />
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 };

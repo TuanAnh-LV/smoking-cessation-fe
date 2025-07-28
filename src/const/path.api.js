@@ -86,6 +86,7 @@ export const API = {
     CREATE_QUITSTATE: "/quit-plans/:id/stages",
     UPDATE_QUITSTATE: "/quit-plans/:id/stages/:id",
     DELETE_QUITSTATE: "/quit-plans/:id/stages/:id",
+   GET_BY_STAGE: "/quit-plans/stage/:stageId/progress",
   },
   SMOKINGSTATUS: {
     RECORD_SMOKING: "/quit-plan/:id/stages/:id/status",

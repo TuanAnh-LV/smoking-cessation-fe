@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { QuitStageService } from "../../services/quitState.service";
 import { QuitPlanProgressService } from "../../services/quitPlanProgress.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useNavigate } from "react-router-dom";
-
+import StageChart from "./StageChart";
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("en-GB");
 
 const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   const [stages, setStages] = useState([]);
   const [inputData, setInputData] = useState({});
   const navigate = useNavigate();
+  const [openStageId, setOpenStageId] = useState(null);
+  const [chartData, setChartData] = useState([]);
+
   const fetchStages = async () => {
     try {
       const stageRes = await QuitStageService.getAllStagesOfPlan(planId);
       console.log("Fetched stages:", stageRes.data); // check status here
       setStages(stageRes.data || []);
     } catch (err) {
-      toast.error("Failed to load stages");
+      message.error("Failed to load stages");
     }
   };
 
@@ -50,14 +53,14 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
 
       // 🟡 Ưu tiên xử lý nếu bị huỷ stage
       if (res?.data?.cancelled) {
-        toast.error(res.data.message);
+        message.error(res.data.message);
         localStorage.removeItem("currentPlanId");
         setTimeout(() => navigate("/status"), 1000);
         return;
       } else if (res?.data?.warning) {
-        toast.warn(res.data.message);
+        message.warn(res.data.message);
       } else {
-        toast.success("Today's cigarette count recorded successfully!");
+        message.success("Today's cigarette count recorded successfully!");
       }
 
       // ✅ Nếu BE trả về updatedStage thì update vào UI ngay (không cần fetchStages)
@@ -75,7 +78,32 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
 
       if (onProgressRecorded) onProgressRecorded();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to record progress");
+      message.error(
+        err?.response?.data?.message || "Failed to record progress"
+      );
+    }
+  };
+
+  const handleStageClick = async (stageId) => {
+    if (openStageId === stageId) {
+      setOpenStageId(null); // toggle close
+      return;
+    }
+
+    try {
+      const res = await QuitPlanProgressService.getStageProgress(stageId);
+      // giả sử res.data = array of progress { date, cigarette_count }
+
+      // format lại cho biểu đồ
+      const formatted = res.data.map((p) => ({
+        date: new Date(p.date).toLocaleDateString("vi-VN"),
+        cigarettes: p.cigarette_count,
+      }));
+
+      setChartData(formatted);
+      setOpenStageId(stageId);
+    } catch (err) {
+      message.error("Failed to load progress data");
     }
   };
 
@@ -116,6 +144,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         return (
           <div
             key={_id}
+            onClick={() => handleStageClick(_id)}
             className={`p-5 rounded-xl shadow-md mb-5 ring-1 ring-inset ${colorClass[status]}`}
           >
             <div className="flex justify-between items-center mb-3">
@@ -157,11 +186,16 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     disabled
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-black text-white hover:bg-gray-800"
                   }`}
                 >
                   {disabled ? "Recorded today" : "Record progress"}
                 </button>
+              </div>
+            )}
+            {openStageId === _id && (
+              <div className="mt-4">
+                <StageChart data={chartData} />
               </div>
             )}
           </div>

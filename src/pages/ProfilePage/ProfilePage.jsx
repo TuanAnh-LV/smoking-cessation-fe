@@ -55,7 +55,7 @@ const ProfilePage = () => {
           </div>
         </div>
         <button
-          className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="mt-6 px-6 py-2 bg-black text-white rounded h-[40px] cursor-pointer hover:bg-gray-800 transition"
           onClick={() => setShowEdit(true)}
         >
           Edit Profile

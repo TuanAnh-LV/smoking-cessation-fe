@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Plus, Edit, Trash2, Eye, Filter } from "lucide-react";
 import { BadgeService } from "../../../services/badge.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 
 export default function BadgesManagement() {
@@ -21,7 +21,7 @@ export default function BadgesManagement() {
         setBadges(badgeArray);
       } catch (err) {
         console.error("Failed to fetch badges", err);
-        toast.error("Failed to load badges");
+        message.error("Failed to load badges");
       }
     };
 
@@ -34,10 +34,10 @@ export default function BadgesManagement() {
       setBadges((prev) =>
         prev.filter((badge) => badge._id !== selectedBadgeId)
       );
-      toast.success("Badge deleted successfully");
+      message.success("Badge deleted successfully");
     } catch (err) {
       console.error("Delete failed:", err);
-      toast.error("Delete failed");
+      message.error("Delete failed");
     } finally {
       setShowDeleteConfirm(false);
       setSelectedBadgeId(null);

@@ -21,4 +21,10 @@ export const QuitPlanProgressService = {
       isLoading: true,
     });
   },
+    getStageProgress: (stageId) => {
+  return BaseService.get({
+    url: API.QUITSTAGE.GET_BY_STAGE.replace(":stageId", stageId),
+    isAuth: true,
+  });
+}
 };

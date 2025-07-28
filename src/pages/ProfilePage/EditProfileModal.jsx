@@ -1,7 +1,7 @@
 // components/EditProfileModal.jsx
 import React, { useState } from "react";
 import { UserService } from "../../services/user.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const EditProfileModal = ({ user, onClose, onUpdated }) => {
   const [fullName, setFullName] = useState(user.full_name);
@@ -20,11 +20,11 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
     try {
       await UserService.updateUser(formData);
-      toast.success("Profile updated!");
+      message.success("Profile updated!");
       onUpdated();
       onClose();
     } catch (err) {
-      toast.error("Update failed!");
+      message.error("Update failed!");
       console.error(err);
     }
   };

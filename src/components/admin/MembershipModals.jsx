@@ -1,6 +1,6 @@
 // MembershipModals.js
 import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { message } from "antd";
 export function EditMembershipModal({ open, onClose, membership, onSave }) {
   const [formData, setFormData] = useState({
     name: "",
@@ -28,11 +28,11 @@ export function EditMembershipModal({ open, onClose, membership, onSave }) {
 
   const handleSubmit = () => {
     if (!formData.name) {
-      toast.warning("Please select a plan name.");
+      message.warning("Please select a plan name.");
       return;
     }
     onSave({ ...formData });
-    toast.success("Membership updated successfully!");
+    message.success("Membership updated successfully!");
     onClose();
   };
 
@@ -157,7 +157,7 @@ export function DeleteConfirmationModal({ open, onClose, onConfirm }) {
           <button
             onClick={() => {
               onConfirm();
-              toast.success("Membership deleted successfully!");
+              message.success("Membership deleted successfully!");
               onClose();
             }}
             className="bg-red-600 text-white px-4 py-1 rounded"
@@ -165,7 +165,7 @@ export function DeleteConfirmationModal({ open, onClose, onConfirm }) {
             Delete
           </button>
         </div>
-        <ToastContainer position="top-center" autoClose={2000} />
+        <messageContainer position="top-center" autoClose={2000} />
       </div>
     </div>
   );
@@ -196,12 +196,12 @@ export function CreateMembershipModal({ open, onClose, onCreate }) {
 
   const handleSubmit = () => {
     if (!formData.name) {
-      toast.warning("Please select a plan name.");
+      message.warning("Please select a plan name.");
       return;
     }
     onCreate({ ...formData });
     setFormData(initialState);
-    toast.success("Membership created successfully!");
+    message.success("Membership created successfully!");
     onClose();
   };
 

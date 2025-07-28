@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Search, Plus, Edit, Trash2, Eye, Filter } from "lucide-react";
 import { CoachService } from "../../../services/coach.service";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 export default function CoachesManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,10 +36,10 @@ export default function CoachesManagement() {
     try {
       await CoachService.deleteCoach(selectedCoachId);
       setCoaches((prev) => prev.filter((c) => c._id !== selectedCoachId));
-      toast.success("Coach deleted successfully");
+      message.success("Coach deleted successfully");
     } catch (err) {
       console.error("Delete failed:", err);
-      toast.error("Delete failed");
+      message.error("Delete failed");
     } finally {
       setShowDeleteConfirm(false);
       setSelectedCoachId(null);
