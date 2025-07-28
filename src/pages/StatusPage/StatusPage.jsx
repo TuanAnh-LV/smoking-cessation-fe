@@ -60,7 +60,6 @@ const StatusPage = () => {
       setGoal(res?.data?.goal || "");
     } catch (err) {
       console.error(" Failed to fetch goal draft:", err);
-      alert("Something went wrong.");
     }
   };
 
@@ -123,7 +122,6 @@ const StatusPage = () => {
       navigate("/quit-plan");
     } catch (error) {
       console.error("Failed to record initial smoking status:", error);
-      alert("Something went wrong. Please try again.");
     }
   };
 
@@ -141,7 +139,7 @@ const StatusPage = () => {
         {isGoalSaved ? (
           <div className="text-gray-800 text-base">{goal}</div>
         ) : (
-          <div className="info-card">
+          <div>
             <div className="form-group">
               <label>Why do you want to quit smoking?</label>
               <textarea

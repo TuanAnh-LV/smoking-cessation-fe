@@ -8,7 +8,7 @@ import { SmokingStatusService } from "../../services/smokingStatus.service";
 import { QuitPlanService } from "../../services/quitPlan.service";
 import { UserService } from "../../services/user.service";
 import { useAuth } from "../../context/authContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { QuitGoalDraftService } from "../../services/quitGoal.service";
 const QuitPlan = () => {
@@ -89,17 +89,17 @@ const QuitPlan = () => {
 
   const handleSavePlan = async () => {
     if (!startDate || isNaN(startDate.getTime())) {
-      toast.error("Please select a valid start date");
+      message.error("Please select a valid start date");
       return;
     }
     if (!goal) {
-      toast.error("Please select your quit goal");
+      message.error("Please select your quit goal");
       return;
     }
 
     // (Tùy chọn) Cảnh báo nếu không chọn lý do nào
     if (reasons.length === 0) {
-      toast.warning("You haven’t selected any reasons for quitting.");
+      message.warning("You haven’t selected any reasons for quitting.");
     }
     try {
       setIsSaving(true);
@@ -118,11 +118,11 @@ const QuitPlan = () => {
 
       localStorage.setItem("currentPlanId", res.data.plan._id);
       navigate(`/progress/${res.data.plan._id}`);
-      toast.success("Quit plan created successfully!");
+      message.success("Quit plan created successfully!");
     } catch (err) {
       const message =
         err?.response?.data?.message || "Failed to create quit plan.";
-      toast.error(message);
+      message.error(message);
     } finally {
       setIsSaving(false);
     }

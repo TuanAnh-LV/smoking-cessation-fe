@@ -1,6 +1,6 @@
 import { toggleLoading } from '../app/loadingSlice';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { message } from "antd";
 import { getItemInLocalStorage } from '../utils/localStorage';
 import store from "../app/store";
 import { DOMAIN_ADMIN, LOCAL_STORAGE } from '../const/const';
@@ -16,7 +16,7 @@ export const axiosInstance = axios.create({
   timeoutErrorMessage: `Connection timeout exceeded`
 });
 
-// ✅ Interceptor tự động thêm Authorization
+
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -29,7 +29,7 @@ axiosInstance.interceptors.request.use(
   (err) => Promise.reject(err)
 );
 
-// ✅ Interceptor xử lý lỗi toàn cục
+
 axiosInstance.interceptors.response.use(
   (res) => {
     store.dispatch(toggleLoading(false));
@@ -41,6 +41,10 @@ axiosInstance.interceptors.response.use(
     if (response?.status === 401) {
       localStorage.clear();
       window.location.href = ROUTER_URL.LOGIN;
+    }
+     if (response?.status === 403 && !localStorage.getItem('token')) {
+      console.warn("403 Forbidden - likely due to missing token on public page");
+      return Promise.reject(err);
     }
     handleErrorByToast(err);
     return Promise.reject(new HttpException(err, response?.status || 500));
@@ -54,8 +58,8 @@ const checkLoading = (isLoading = false) => {
 
 // ✅ Toast lỗi
 const handleErrorByToast = (error) => {
-  const message = error.response?.data?.message || error.message;
-  toast.error(message);
+  const messages = error.response?.data?.message || error.message;
+  message.error(messages);
   store.dispatch(toggleLoading(false));
   return null;
 };

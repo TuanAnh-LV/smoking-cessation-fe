@@ -18,7 +18,7 @@ export default function UsersManagement() {
               const memRes = await UserMembershipService.getByUserId(user._id);
               return {
                 ...user,
-                membership: memRes?.data?.package_id?.name || "None",
+                membership: memRes?.data?.package_id?.type || "None",
               };
             } catch (err) {
               return { ...user, membership: "None" };

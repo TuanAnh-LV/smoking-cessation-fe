@@ -83,7 +83,7 @@ function TransactionHistory() {
                 <td>{tx.amount.toLocaleString()}₫</td>
                 <td>
                   {tx.status === "success"
-                    ? "Completed"
+                    ? "Success"
                     : tx.status === "pending"
                     ? "Pending"
                     : "Failed"}

@@ -65,7 +65,7 @@ const ChatWidget = () => {
     const checkProStatus = async () => {
       try {
         const res = await UserService.getUserMembership(userId);
-        const pkg = res?.data?.package_id?.name;
+        const pkg = res?.data?.package_id?.type;
         setIsProUser(pkg === "pro");
       } catch (err) {
         console.error("Lỗi lấy thông tin gói:", err);
