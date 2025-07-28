@@ -7,11 +7,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AuthService } from "../../services/auth.service"; // chỉnh path nếu cần
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
+import isEmail from "validator/lib/isEmail";
+
 function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [birthDate, setBirthDate] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+
   const [form, setForm] = useState({
     username: "",
     full_name: "",
@@ -26,10 +31,33 @@ function RegisterPage() {
     setShowConfirmPassword(!showConfirmPassword);
 
   const handleRegister = async () => {
-    if (form.password !== form.confirmPassword) {
-      message.success("Passwords do not match!");
+    // Kiểm tra dữ liệu bắt buộc
+    if (
+      !form.username ||
+      !form.full_name ||
+      !form.email ||
+      !form.password ||
+      !form.confirmPassword ||
+      !birthDate ||
+      !form.gender
+    ) {
+      message.error("Please fill in all required fields!");
       return;
     }
+
+    // Kiểm tra định dạng email
+    if (!isEmail(form.email)) {
+      message.error("Invalid email format!");
+      return;
+    }
+
+    // Kiểm tra xác nhận mật khẩu
+    if (form.password !== form.confirmPassword) {
+      message.error("Passwords do not match!");
+      return;
+    }
+
+    setLoading(true); // Bắt đầu loading
 
     const formattedBirthDate = birthDate
       ? birthDate.toISOString().split("T")[0]
@@ -55,10 +83,12 @@ function RegisterPage() {
         navigate("/login");
       }, 2000);
     } catch (err) {
-      message.error("Registration failed!");
+      const msg = err?.response?.data?.error || "Registration failed!";
+      message.error(msg);
+    } finally {
+      setLoading(false); // Dừng loading
     }
   };
-
   return (
     <div className="register-container">
       <div className="register-form">
@@ -184,8 +214,12 @@ function RegisterPage() {
           </div>
         </div>
 
-        <button className="register-button" onClick={handleRegister}>
-          Sign up
+        <button
+          className="register-button"
+          onClick={handleRegister}
+          disabled={loading}
+        >
+          {loading ? "Signing up..." : "Sign up"}
         </button>
 
         <div className="login-with-google">

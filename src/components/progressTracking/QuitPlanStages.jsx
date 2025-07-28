@@ -57,7 +57,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         setTimeout(() => navigate("/status"), 1000);
         return;
       } else if (res?.data?.warning) {
-        message.warn(res.data.message);
+        message.warning(res.data.message);
       } else {
         message.success("Today's cigarette count recorded successfully!");
       }
