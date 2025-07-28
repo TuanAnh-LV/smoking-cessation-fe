@@ -9,6 +9,7 @@ export const ROUTER_URL = {
     VERIFY_NEW_EMAIL: "/verify-email",
     HOME:"/",
     COMMUNITY:"/chat",
+    COMMUNITY_CHAT: "/community-chat",
     BLOG:"/blog",
     ACHIEVEMENTS:"/achievements",
     TRACKPROGRESS:"/progress/:id",

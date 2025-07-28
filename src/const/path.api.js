@@ -42,7 +42,8 @@ export const API = {
     GET_ALL_COACH: "/coach-users",
     UPDATE_COACH: "/coach-users/:id",
     DELETE_RELATION: "/coach-users/:id",
-    GET_COACH_BY_ID: "/coach-users/:id", 
+    GET_COACH_BY_ID: "/coach-users/:id",
+    GET_BY_USER_ID: "/coach-users/by-user/:userId",
   },
   BADGES: {
     GET_ALL_BADGES: "/badges",
@@ -124,15 +125,29 @@ export const API = {
     DELETE_REMINDER: "/reminders/:id",
     UPDATE_REMINDER: "/reminders/:id",
   },
-    BLOG: {
-      CREATE_BLOG: "/blogs",
-      GET_ALL_BLOG: "/blogs",
-      GET_BLOG_BY_ID: "/blogs/:id",
-      UPDATE_BLOG: "/blogs/:id",
-      DELETE_BLOG: "/blogs/:id",
-      LIKE_BLOG: "/blogs/:id/like",
-      UNLIKE_BLOG: "/blogs/:id/unlike",
-      SHARE_BADGES: "/blogs/:id/share-badges"
+  BLOG: {
+    CREATE_BLOG: "/blogs",
+    GET_ALL_BLOG: "/blogs",
+    GET_BLOG_BY_ID: "/blogs/:id",
+    UPDATE_BLOG: "/blogs/:id",
+    DELETE_BLOG: "/blogs/:id",
+    LIKE_BLOG: "/blogs/:id/like",
+    UNLIKE_BLOG: "/blogs/:id/unlike",
+    SHARE_BADGES: "/blogs/:id/share-badges"
+  },
+  CATEGORY: {
+    GET_ALL: "/categories",
+    GET_BY_ID: "/categories/:id",
+    CREATE: "/categories",
+    UPDATE: "/categories/:id",
+    DELETE: "/categories/:id",
+  },
+  TAG: {
+    GET_ALL: "/tags",
+    GET_BY_ID: "/tags/:id",
+    CREATE: "/tags",
+    UPDATE: "/tags/:id",
+    DELETE: "/tags/:id",
   },
   COMMENT: {
     CREATE_COMMENT: "/blogs/:id/comments",
@@ -148,7 +163,7 @@ export const API = {
     GET_QUITPLANDRAFT: "/quit-goal-draft",
     DELETE_QUITPLANDRAFT: "/quit-goal-draft"
   },
-   FEEDBACK: {
+  FEEDBACK: {
     CREATE_FEEDBACK_COACH: "/feedback/coach",
     GET_FEEDBACKS_BY_COACH: "/feedback/coach/:coach_user_id",
     UPDATE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
