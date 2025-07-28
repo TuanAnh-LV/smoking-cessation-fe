@@ -16,7 +16,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   const fetchStages = async () => {
     try {
       const stageRes = await QuitStageService.getAllStagesOfPlan(planId);
-      console.log("Fetched stages:", stageRes.data); // check status here
+      console.log("Fetched stages:", stageRes.data);
       setStages(stageRes.data || []);
     } catch (err) {
       message.error("Failed to load stages");
@@ -51,7 +51,6 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         }
       );
 
-      // 🟡 Ưu tiên xử lý nếu bị huỷ stage
       if (res?.data?.cancelled) {
         message.error(res.data.message);
         localStorage.removeItem("currentPlanId");
@@ -63,7 +62,6 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         message.success("Today's cigarette count recorded successfully!");
       }
 
-      // ✅ Nếu BE trả về updatedStage thì update vào UI ngay (không cần fetchStages)
       if (res?.data?.updatedStage) {
         setStages((prev) =>
           prev.map((s) =>
@@ -72,7 +70,6 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         );
         await fetchStages();
       } else {
-        // Trường hợp bình thường: refetch
         await fetchStages();
       }
 
@@ -86,15 +83,12 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
 
   const handleStageClick = async (stageId) => {
     if (openStageId === stageId) {
-      setOpenStageId(null); // toggle close
+      setOpenStageId(null);
       return;
     }
 
     try {
       const res = await QuitPlanProgressService.getStageProgress(stageId);
-      // giả sử res.data = array of progress { date, cigarette_count }
-
-      // format lại cho biểu đồ
       const formatted = res.data.map((p) => ({
         date: new Date(p.date).toLocaleDateString("vi-VN"),
         cigarettes: p.cigarette_count,

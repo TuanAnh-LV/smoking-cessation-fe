@@ -8,9 +8,9 @@ import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
 import { message } from "antd";
+import { SmokingStatusService } from "../../services/smokingStatus.service";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
-
 const Header = () => {
   const navigate = useNavigate();
   const {
@@ -50,16 +50,16 @@ const Header = () => {
     });
   }, [isLoggedIn, userInfo?._id]);
 
-  // Lấy planId khi localStorage thay đổi
   useEffect(() => {
-    const handler = () => setPlanId(localStorage.getItem("currentPlanId"));
-    window.addEventListener("storage", handler);
+    const checkPlanIdChange = () => {
+      const stored = localStorage.getItem("currentPlanId");
+      setPlanId((prev) => (prev !== stored ? stored : prev));
+    };
 
-    // Cập nhật lại planId khi user login (hoặc refresh)
-    setPlanId(localStorage.getItem("currentPlanId"));
+    const interval = setInterval(checkPlanIdChange, 1000); // kiểm tra mỗi giây
 
-    return () => window.removeEventListener("storage", handler);
-  }, [token, userInfo?._id]);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleToggleDropdown = () => setShowDropdown(!showDropdown);
 
@@ -94,6 +94,27 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  const handleQuitPlanClick = async (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await SmokingStatusService.getLatestPrePlanStatus();
+      const data = res.data;
+
+      if (data?.plan_id === null) {
+        navigate("/quit-plan"); // Đã có status nhưng chưa có plan → tạo kế hoạch
+      } else {
+        navigate("/status"); // Chưa có gì hoặc lỗi → cho vào status
+      }
+    } catch (err) {
+      console.error("Error checking pre-plan status:", err);
+      navigate("/status");
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -130,7 +151,7 @@ const Header = () => {
         <Link to="/achievements">
           <p>Achievements</p>
         </Link>
-        {isLoggedIn && (
+        {isLoggedIn && planId && (
           <>
             <Link to={planId ? `/progress/${planId}` : "/status"}>
               Track Progress
@@ -139,10 +160,11 @@ const Header = () => {
         )}
 
         {!planId && (
-          <Link to="/status">
-            <p>Quit Plan</p>
-          </Link>
+          <p onClick={handleQuitPlanClick} style={{ cursor: "pointer" }}>
+            Quit Plan
+          </p>
         )}
+
         <Link to="/blog">
           <p>Blogs</p>
         </Link>

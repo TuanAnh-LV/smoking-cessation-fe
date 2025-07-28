@@ -23,6 +23,7 @@ const ChatWidget = () => {
   const [latestQuitPlan, setLatestQuitPlan] = useState(null);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [role, setRole] = useState(null);
+  const [chatDisabledReason, setChatDisabledReason] = useState("");
   const coachSocketRef = useRef(null);
   const navigate = useNavigate();
 
@@ -57,18 +58,20 @@ const ChatWidget = () => {
         });
 
         setSocket(socketRef);
-      } catch (error) {
-        console.error("Lỗi tạo coach session:", error);
+      } catch (_) {
+        setChatDisabledReason(
+          "Bạn cần nâng cấp lên gói PRO để sử dụng tính năng chat với coach."
+        );
       }
     };
 
     const checkProStatus = async () => {
       try {
         const res = await UserService.getUserMembership(userId);
-        const pkg = res?.data?.package_id?.type;
+        const pkg = res?.data?.package_id?.name;
         setIsProUser(pkg === "pro");
-      } catch (err) {
-        console.error("Lỗi lấy thông tin gói:", err);
+      } catch (_) {
+        setIsProUser(false);
       }
     };
 
@@ -79,9 +82,7 @@ const ChatWidget = () => {
         if (plans.length > 0) {
           setLatestQuitPlan(plans[plans.length - 1]);
         }
-      } catch (err) {
-        console.error("Không lấy được quit plan:", err);
-      }
+      } catch (_) {}
     };
 
     setupCoach();
@@ -95,11 +96,12 @@ const ChatWidget = () => {
     };
   }, []);
 
+  // Chờ role load xong mới render
+  if (role === null) return null;
   if (role === "admin" || role === "coach") return null;
 
   const handleVideoCall = () => {
     if (!coachId || !currentUserId || !coachSessionId || !socket) return;
-
     const link = `${window.location.origin}/call/${currentUserId}-${coachId}`;
     socket.emit("sendMessage", {
       sessionId: coachSessionId,
@@ -113,6 +115,7 @@ const ChatWidget = () => {
         position: "fixed",
         bottom: "20px",
         right: "20px",
+        left: "auto",
         zIndex: 9999,
       }}
     >
@@ -170,7 +173,10 @@ const ChatWidget = () => {
 
               {latestQuitPlan && (
                 <span style={{ fontSize: "12px", color: "#fefefe" }}>
-                  Đang theo: <strong>{latestQuitPlan.goal.replace("_", " ").toUpperCase()}</strong>
+                  Đang theo:{" "}
+                  <strong>
+                    {latestQuitPlan.goal.replace("_", " ").toUpperCase()}
+                  </strong>
                   <Button
                     type="link"
                     size="small"
@@ -187,25 +193,38 @@ const ChatWidget = () => {
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <VideoCameraOutlined
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleVideoCall();
-                }}
-                style={{ fontSize: "18px", cursor: "pointer" }}
-                title="Meet"
+              {!chatDisabledReason && (
+                <VideoCameraOutlined
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleVideoCall();
+                  }}
+                  style={{ fontSize: "18px", cursor: "pointer" }}
+                  title="Meet"
+                />
+              )}
+              <CloseOutlined
+                onClick={() => setOpen(false)}
+                style={{ cursor: "pointer" }}
               />
-              <CloseOutlined onClick={() => setOpen(false)} style={{ cursor: "pointer" }} />
             </div>
           </div>
 
           <div style={{ flex: 1, overflow: "hidden" }}>
-            <CommunityPage
-              isWidget={true}
-              externalSocket={socket}
-              externalSessionId={coachSessionId}
-              externalUserId={currentUserId}
-            />
+            {chatDisabledReason ? (
+              <div
+                style={{ padding: "16px", textAlign: "center", color: "gray" }}
+              >
+                <p>{chatDisabledReason}</p>
+              </div>
+            ) : (
+              <CommunityPage
+                isWidget={true}
+                externalSocket={socket}
+                externalSessionId={coachSessionId}
+                externalUserId={currentUserId}
+              />
+            )}
           </div>
         </div>
       )}
@@ -223,10 +242,12 @@ const ChatWidget = () => {
               {latestQuitPlan.goal.replace("_", " ").toUpperCase()}
             </h3>
             <p className="text-sm text-gray-500">
-              <strong>Start:</strong> {new Date(latestQuitPlan.start_date).toLocaleDateString()}
+              <strong>Start:</strong>{" "}
+              {new Date(latestQuitPlan.start_date).toLocaleDateString()}
             </p>
             <p className="text-sm">
-              <strong>Lý do:</strong> {latestQuitPlan.reasons?.join(", ") || "Không có"}
+              <strong>Lý do:</strong>{" "}
+              {latestQuitPlan.reasons?.join(", ") || "Không có"}
             </p>
             <div className="space-y-2 mt-4">
               <h4 className="font-semibold">Các Giai đoạn:</h4>
@@ -237,11 +258,16 @@ const ChatWidget = () => {
                 >
                   <div className="flex justify-between">
                     <p className="font-semibold text-gray-800">{stage.name}</p>
-                    <span className="text-xs text-gray-500">{stage.status.replace("_", " ")}</span>
+                    <span className="text-xs text-gray-500">
+                      {stage.status.replace("_", " ")}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-600 whitespace-pre-line">{stage.description}</p>
+                  <p className="text-sm text-gray-600 whitespace-pre-line">
+                    {stage.description}
+                  </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {new Date(stage.start_date).toLocaleDateString()} → {new Date(stage.end_date).toLocaleDateString()}
+                    {new Date(stage.start_date).toLocaleDateString()} →{" "}
+                    {new Date(stage.end_date).toLocaleDateString()}
                   </p>
                 </div>
               ))}

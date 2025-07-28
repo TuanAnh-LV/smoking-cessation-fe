@@ -4,7 +4,7 @@ import { FaSmoking } from "react-icons/fa";
 import { SmokingStatusService } from "../../services/smokingStatus.service";
 import { useNavigate } from "react-router-dom";
 import { QuitGoalDraftService } from "../../services/quitGoal.service";
-
+import { message } from "antd";
 const StatusPage = () => {
   const [cigarettesPerDay, setCigarettesPerDay] = useState("");
   const [suctionFrequency, setSuctionFrequency] = useState("");
@@ -161,11 +161,11 @@ const StatusPage = () => {
                     goal: goal.trim(),
                   });
                   setIsGoalSaved(true);
-                  alert("Goal saved!");
+                  message.success("Goal saved!");
                   fetchGoal();
                 } catch (err) {
                   console.error(err);
-                  alert("Failed to save goal.");
+                  message.error("Failed to save goal.");
                 }
               }}
             >

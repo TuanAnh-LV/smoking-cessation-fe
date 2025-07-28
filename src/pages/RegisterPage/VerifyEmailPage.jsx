@@ -1,12 +1,34 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { AuthService } from "../../services/auth.service";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState("Verifying your email...");
   const hasRun = useRef(false);
+
+  const getStatusIcon = () => {
+    const s = status.toLowerCase();
+    if (s.includes("verifying"))
+      return <LoadingOutlined spin style={iconStyle("#1890ff")} />;
+    if (s.includes("success") || s.includes("already"))
+      return <CheckCircleOutlined style={iconStyle("#52c41a")} />;
+    if (s.includes("invalid") || s.includes("expired") || s.includes("fail"))
+      return <CloseCircleOutlined style={iconStyle("#f5222d")} />;
+    return <LoadingOutlined spin style={iconStyle("#1890ff")} />;
+  };
+
+  const iconStyle = (color) => ({
+    fontSize: 50,
+    color,
+    marginBottom: "1rem",
+  });
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -59,11 +81,33 @@ function VerifyEmailPage() {
   }, [searchParams, navigate]);
 
   return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h2>Email Verification</h2>
-      <p style={{ fontSize: "1.2rem" }}>{status}</p>
+    <div style={containerStyle}>
+      {getStatusIcon()}
+      <h2 style={titleStyle}>Email Verification</h2>
+      <p style={statusTextStyle}>{status}</p>
     </div>
   );
 }
+
+const containerStyle = {
+  maxWidth: 500,
+  margin: "5rem auto",
+  padding: "3rem 2rem",
+  textAlign: "center",
+  background: "#fff",
+  borderRadius: "12px",
+  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+};
+
+const titleStyle = {
+  fontSize: "1.8rem",
+  marginBottom: "0.5rem",
+  color: "#333",
+};
+
+const statusTextStyle = {
+  fontSize: "1.1rem",
+  color: "#666",
+};
 
 export default VerifyEmailPage;
