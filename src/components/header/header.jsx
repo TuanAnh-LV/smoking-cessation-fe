@@ -8,9 +8,9 @@ import { FiLogOut } from "react-icons/fi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { useAuth } from "../../context/authContext";
 import { message } from "antd";
+import { SmokingStatusService } from "../../services/smokingStatus.service";
 import NotificationDropdown from "../NotificationSettings/NotificationDropdown";
 import { NotificationService } from "../../services/notification.service";
-import { SmokingStatusService } from "../../services/smokingstatus.service";
 const Header = () => {
   const navigate = useNavigate();
   const {
@@ -49,22 +49,7 @@ const Header = () => {
       }
     });
   }, [isLoggedIn, userInfo?._id]);
-  // useEffect(() => {
-  //   if (!isLoggedIn || !userInfo?._id) return;
 
-  //   SmokingStatusService.getLatestPrePlanStatus()
-  //     .then((res) => {
-  //       const status = res.data;
-  //       if (status && status.plan_id === null) {
-  //         navigate("/quit-plan");
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.error("Lỗi khi lấy pre-plan status:", err);
-  //     });
-  // }, [isLoggedIn, userInfo?._id]);
-
-  // Lấy planId khi localStorage thay đổi
   useEffect(() => {
     const checkPlanIdChange = () => {
       const stored = localStorage.getItem("currentPlanId");
