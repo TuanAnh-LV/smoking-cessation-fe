@@ -5,12 +5,13 @@ import { FaEye, FaEyeSlash, FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthService } from "../../services/auth.service"; // chỉnh path nếu cần
-
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [birthDate, setBirthDate] = useState(null);
-
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     full_name: "",
@@ -26,7 +27,7 @@ function RegisterPage() {
 
   const handleRegister = async () => {
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
+      message.success("Passwords do not match!");
       return;
     }
 
@@ -46,11 +47,15 @@ function RegisterPage() {
 
       const response = await AuthService.register(payload);
       console.log("Registration success:", response);
-      alert("Registration successful!");
-      // Redirect or reset form here if needed
+      message.success(
+        "Registration successful! Please check your email to verify your account."
+      );
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
-      console.error("Registration failed:", err);
-      alert("Registration failed!");
+      message.error("Registration failed!");
     }
   };
 

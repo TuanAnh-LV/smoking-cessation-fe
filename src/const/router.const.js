@@ -8,7 +8,8 @@ export const ROUTER_URL = {
     FORGOT_PASSWORD: "/forgot-password",
     VERIFY_NEW_EMAIL: "/verify-email",
     HOME:"/",
-    COMMUNITY:"/community",
+    COMMUNITY:"/chat",
+    COMMUNITY_CHAT: "/community-chat",
     BLOG:"/blog",
     ACHIEVEMENTS:"/achievements",
     TRACKPROGRESS:"/progress/:id",
@@ -17,10 +18,12 @@ export const ROUTER_URL = {
     QUITPLAN:"/quit-plan",
     PROFILE:"/profile",
     PROFILE_COACH:"/profile-coach",
+    PROFILE_COACH_DETAIL: "/profile-coach/:id",
     PAYMENT:"/payment",
     PAYMENT_SUCCESS:"payment-success",
     CALL_PAGE:"/call/:id",
-    VERIFY_EMAIL:"/verify-email"
+    VERIFY_EMAIL:"/verify-email",
+    GOAL_DRAFT:"/goal-draft"
   },
   USER: {
     GET_CURRENT_USER_INFO: "/users/me",
@@ -82,6 +85,10 @@ export const ROUTER_URL = {
   SMOKINGSTATUS:{
     RECORD_SMOKING:"/quit-plan/:id/stages/:id/status",
     GET_ALL_SMOKING:"/quit-plan/:id/stages/:id/status"
+  },
+   FEEDBACK: {
+    COACH_FEEDBACK: "/coach/:id/feedback", 
+    USER_FEEDBACK_TO_COACH: "/feedback/my", 
   },
     UNAUTHORIZED: "/unauthorize"
   };

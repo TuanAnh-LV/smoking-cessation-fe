@@ -28,6 +28,7 @@ export const API = {
     GET_HISTORY: "/user-membership/me/history",
     GET_ALL_USERMEMBERSHIP: "/user-membership",
     GET_MEMBERSHIP_BY_USER_ID: "/user-membership/admin/:id",
+    PREVIEW_UPGRADE: "/user-membership/preview-upgrade",
   },
   COACH: {
     CREATE_COACH: "/coaches",
@@ -41,7 +42,8 @@ export const API = {
     GET_ALL_COACH: "/coach-users",
     UPDATE_COACH: "/coach-users/:id",
     DELETE_RELATION: "/coach-users/:id",
-    GET_COACH_BY_ID: "/coach-users/:id", 
+    GET_COACH_BY_ID: "/coach-users/:id",
+    GET_BY_USER_ID: "/coach-users/by-user/:userId",
   },
   BADGES: {
     GET_ALL_BADGES: "/badges",
@@ -85,6 +87,7 @@ export const API = {
     CREATE_QUITSTATE: "/quit-plans/:id/stages",
     UPDATE_QUITSTATE: "/quit-plans/:id/stages/:id",
     DELETE_QUITSTATE: "/quit-plans/:id/stages/:id",
+   GET_BY_STAGE: "/quit-plans/stage/:stageId/progress",
   },
   SMOKINGSTATUS: {
     RECORD_SMOKING: "/quit-plan/:id/stages/:id/status",
@@ -122,17 +125,30 @@ export const API = {
     DELETE_REMINDER: "/reminders/:id",
     UPDATE_REMINDER: "/reminders/:id",
   },
-    BLOG: {
-      CREATE_BLOG: "/blogs",
-      GET_ALL_BLOG: "/blogs",
-      GET_BLOG_BY_ID: "/blogs/:id",
-      UPDATE_BLOG: "/blogs/:id",
-      DELETE_BLOG: "/blogs/:id",
-      LIKE_BLOG: "/blogs/:id/like",
-      UNLIKE_BLOG: "/blogs/:id/unlike",
-      SHARE_BADGES: "/blogs/:id/share-badges"
+  BLOG: {
+    CREATE_BLOG: "/blogs",
+    GET_ALL_BLOG: "/blogs",
+    GET_BLOG_BY_ID: "/blogs/:id",
+    UPDATE_BLOG: "/blogs/:id",
+    DELETE_BLOG: "/blogs/:id",
+    LIKE_BLOG: "/blogs/:id/like",
+    UNLIKE_BLOG: "/blogs/:id/unlike",
+    SHARE_BADGES: "/blogs/:id/share-badges"
   },
-
+  CATEGORY: {
+    GET_ALL: "/categories",
+    GET_BY_ID: "/categories/:id",
+    CREATE: "/categories",
+    UPDATE: "/categories/:id",
+    DELETE: "/categories/:id",
+  },
+  TAG: {
+    GET_ALL: "/tags",
+    GET_BY_ID: "/tags/:id",
+    CREATE: "/tags",
+    UPDATE: "/tags/:id",
+    DELETE: "/tags/:id",
+  },
   COMMENT: {
     CREATE_COMMENT: "/blogs/:id/comments",
     GET_COMMENTS_BY_BLOG: "/blogs/:id/comments",
@@ -141,5 +157,17 @@ export const API = {
     UPDATE_COMMENT: "/comments/:id",
     DELETE_COMMENT: "/comments/:id",
     REPLY_COMMENT: "/comments/:id/reply"
+  },
+  QUITPLANDRAFT: {
+    CREATE_QUITPLANDRAFT: "/quit-goal-draft",
+    GET_QUITPLANDRAFT: "/quit-goal-draft",
+    DELETE_QUITPLANDRAFT: "/quit-goal-draft"
+  },
+  FEEDBACK: {
+    CREATE_FEEDBACK_COACH: "/feedback/coach",
+    GET_FEEDBACKS_BY_COACH: "/feedback/coach/:coach_user_id",
+    UPDATE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
+    DELETE_FEEDBACK_COACH: "/feedback/coach/:feedback_id",
+    GET_FEEDBACKS_COACH_OF_USER: "/feedback/coach-of-user/:userId"
   },
 };

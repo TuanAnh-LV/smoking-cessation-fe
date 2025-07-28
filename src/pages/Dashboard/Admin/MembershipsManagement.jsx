@@ -39,7 +39,7 @@ export default function MembershipsManagement() {
       const countMap = {};
       for (const m of allUserMemberships) {
         if (m.status !== "active") continue;
-        const name = m.package_id?.name || "Unknown";
+        const name = m.package_id?.name || "Unknown"; // CHỈNH Ở ĐÂY
         countMap[name] = (countMap[name] || 0) + 1;
       }
 

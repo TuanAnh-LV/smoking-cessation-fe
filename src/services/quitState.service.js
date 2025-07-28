@@ -8,4 +8,6 @@ export const QuitStageService = {
       isLoading: true,
     });
   },
+
 };
+

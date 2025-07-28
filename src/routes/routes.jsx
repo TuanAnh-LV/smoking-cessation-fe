@@ -4,70 +4,48 @@ import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./protected/protectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 
-//Common
+// Common Pages
 const HomePage = lazy(() => import("../pages/HomePage/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage/Login"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage/Register"));
 const StatusPage = lazy(() => import("../pages/StatusPage/StatusPage"));
 const QuitPlan = lazy(() => import("../pages/QuitPlan/QuitPlan"));
 const ProgressPage = lazy(() => import("../pages/ProgressPage/ProgressPage"));
-const AchievementPage = lazy(() =>
-  import("../pages/AchievementPage/AchievementPage")
-);
-const CommunityPage = lazy(() =>
-  import("../pages/CommunityPage/CommunityPage")
-);
+const AchievementPage = lazy(() => import("../pages/AchievementPage/AchievementPage"));
+const CommunityPage = lazy(() => import("../pages/CommunityPage/CommunityPage"));
+const CommunityChat = lazy(() => import("../components/Community/CommunityChat"));
 const ProfilePage = lazy(() => import("../pages/ProfilePage/ProfilePage"));
 const PaymentPage = lazy(() => import("../pages/PaymentPage/PaymentPage"));
-const PaymentSuccess = lazy(() =>
-  import("../pages/PaymentPage/PaymentSuccess")
-);
+const PaymentSuccess = lazy(() => import("../pages/PaymentPage/PaymentSuccess"));
 const CoachPage = lazy(() => import("../pages/CoachPage/CoachPage"));
 const ProfileCoach = lazy(() => import("../pages/ProfileCoach/ProfileCoach"));
-const BlogPage = lazy(() => import("../pages/BlogPage/BlogPage"));
 const CallPage = lazy(() => import("../pages/CallPage/CallPage"));
-const AdminDashboard = lazy(() =>
-  import("../pages/Dashboard/Admin/AdminDashboard")
-);
-const BadgesManagement = lazy(() =>
-  import("../pages/Dashboard/Admin/BadgesManagement")
-);
-const CoachesManagement = lazy(() =>
-  import("../pages/Dashboard/Admin/CoachesManagement")
-);
-const MembershipsManagement = lazy(() =>
-  import("../pages/Dashboard/Admin/MembershipsManagement")
-);
-const QuitPlansManagement = lazy(() =>
-  import("../pages/Dashboard/Admin/QuitPlansManagement")
-);
-const TransactionsManagement = lazy(() =>
-  import("../pages/Dashboard/Admin/TransactionsManagement")
-);
-const UsersManagement = lazy(() =>
-  import("../pages/Dashboard/Admin/UsersManagement")
-);
+const VerifyEmailPage = lazy(() => import("../pages/RegisterPage/VerifyEmailPage"));
 
-//Coach
-const CoachDashboard = lazy(() =>
-  import("../pages/Dashboard/Coach/CoachDashboard")
-);
-const ChatMessage = lazy(() => import("../pages/Dashboard/Coach/ChatMessage"));
-const QuitPlansCoach = lazy(() =>
-  import("../pages/Dashboard/Coach/QuitPlansCoach")
-);
-const VerifyEmailPage = lazy(() =>
-  import("../pages/RegisterPage/VerifyEmailPage")
-);
-const AddEditCoachPage = lazy(() =>
-  import("../components/admin/AddEditCoachPage")
-);
+// Blog Pages
+const BlogCreatePage = lazy(() => import("../pages/BlogPage/BlogPage"));
+const BlogCategoryListPage = lazy(() => import("../pages/BlogPage/BlogCategoryListPage"));
+const BlogCategoryPage = lazy(() => import("../pages/BlogPage/BlogCategoryPage"));
+const BlogDetailPage = lazy(() => import("../pages/BlogPage/BlogDetailPage"));
+
+// Admin Pages
+const AdminDashboard = lazy(() => import("../pages/Dashboard/Admin/AdminDashboard"));
+const BadgesManagement = lazy(() => import("../pages/Dashboard/Admin/BadgesManagement"));
+const CoachesManagement = lazy(() => import("../pages/Dashboard/Admin/CoachesManagement"));
+const MembershipsManagement = lazy(() => import("../pages/Dashboard/Admin/MembershipsManagement"));
+const QuitPlansManagement = lazy(() => import("../pages/Dashboard/Admin/QuitPlansManagement"));
+const TransactionsManagement = lazy(() => import("../pages/Dashboard/Admin/TransactionsManagement"));
+const UsersManagement = lazy(() => import("../pages/Dashboard/Admin/UsersManagement"));
+const AddEditCoachPage = lazy(() => import("../components/admin/AddEditCoachPage"));
 const BadgeFormPage = lazy(() => import("../components/admin/BadgeFormPage"));
 
+// Coach Pages
+const CoachDashboard = lazy(() => import("../pages/Dashboard/Coach/CoachDashboard"));
+const ChatMessage = lazy(() => import("../pages/Dashboard/Coach/ChatMessage"));
+const QuitPlansCoach = lazy(() => import("../pages/Dashboard/Coach/QuitPlansCoach"));
 const CoachUser = lazy(() => import("../pages/Dashboard/Coach/CoachUser"));
-const CoachUserDetail = lazy(() =>
-  import("../pages/Dashboard/Coach/CoachUserDetail")
-);
+const CoachUserDetail = lazy(() => import("../pages/Dashboard/Coach/CoachUserDetail"));
+
 const routes = [
   // Public routes
   {
@@ -80,20 +58,24 @@ const routes = [
       { path: ROUTER_URL.COMMON.TRACKPROGRESS, element: <ProgressPage /> },
       { path: ROUTER_URL.COMMON.QUITPLAN, element: <QuitPlan /> },
       { path: ROUTER_URL.COMMON.COMMUNITY, element: <CommunityPage /> },
+      { path: ROUTER_URL.COMMON.COMMUNITY_CHAT, element: <CommunityChat /> },
       { path: ROUTER_URL.COMMON.COACH, element: <CoachPage /> },
       { path: ROUTER_URL.COMMON.ACHIEVEMENTS, element: <AchievementPage /> },
       { path: ROUTER_URL.COMMON.PROFILE, element: <ProfilePage /> },
+      { path: ROUTER_URL.COMMON.PROFILE_COACH_DETAIL, element: <ProfileCoach /> },
       { path: ROUTER_URL.COMMON.PROFILE_COACH, element: <ProfileCoach /> },
       { path: ROUTER_URL.COMMON.PAYMENT, element: <PaymentPage /> },
       { path: ROUTER_URL.COMMON.PAYMENT_SUCCESS, element: <PaymentSuccess /> },
-      { path: ROUTER_URL.COMMON.BLOG, element: <BlogPage /> },
+      { path: "/blogs", element: <BlogCategoryListPage /> },
+      { path: "/blogs/category/:categoryId", element: <BlogCategoryPage /> },
+      { path: "/blogs/:id", element: <BlogDetailPage /> },
+      { path: "/blogs/create", element: <BlogCreatePage /> },
       { path: ROUTER_URL.COMMON.CALL_PAGE, element: <CallPage /> },
       { path: ROUTER_URL.COMMON.VERIFY_EMAIL, element: <VerifyEmailPage /> },
     ],
   },
 
-  // Admin route with DashboardLayout
-
+  // Admin routes
   {
     path: "/admin",
     element: (
@@ -115,7 +97,8 @@ const routes = [
       { path: "users", element: <UsersManagement /> },
     ],
   },
-  // Seller route with DashboardLayout
+
+  // Coach routes
   {
     path: "/coach",
     element: (
@@ -132,6 +115,7 @@ const routes = [
     ],
   },
 
+  // Member fallback
   {
     path: "/member",
     element: (
@@ -139,9 +123,9 @@ const routes = [
         <MainLayout />
       </ProtectedRoute>
     ),
-    // children: [{ path: "dashboard", element: <BuyerDashboard /> }],
   },
 
+  // Unauthorize page
   {
     path: "/unauthorize",
     element: (

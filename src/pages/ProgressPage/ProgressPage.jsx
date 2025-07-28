@@ -9,19 +9,22 @@ import { useParams } from "react-router-dom";
 import CreateReminderForm from "../../components/progressTracking/CreateReminderForm";
 import ReminderList from "../../components/progressTracking/ReminderList";
 import { ReminderService } from "../../services/reminder.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { UserService } from "../../services/user.service";
 import { useAuth } from "../../context/authContext";
+import { useNavigate } from "react-router-dom";
+
 const ProgressPage = () => {
   const [summary, setSummary] = useState(null);
-  const { id: planId } = useParams(); // id trong /progress/:id
+  const { id: planId } = useParams();
   const [reminders, setReminders] = useState([]);
   const [membershipPackageCode, setMembershipPackageCode] = useState("");
-  const { userInfo } = useAuth(); // lấy userId từ context
+  const { userInfo } = useAuth();
+  const navigate = useNavigate();
   const checkPermission = async () => {
     try {
-      const res = await UserService.getUserMembership(userInfo._id); // hoặc user.id
-      const code = res?.data?.package_id?.name;
+      const res = await UserService.getUserMembership(userInfo._id);
+      const code = res?.data?.package_id?.type;
       setMembershipPackageCode(code);
     } catch (err) {
       console.error("Không thể kiểm tra quyền:", err);
@@ -44,9 +47,15 @@ const ProgressPage = () => {
   const fetchReminders = async () => {
     try {
       const res = await ReminderService.getMyReminders();
+      if (res?.data?.status === "cancelled") {
+        message.info("Your quit plan has been cancelled.");
+        localStorage.removeItem("currentPlanId");
+        navigate("/status");
+        return;
+      }
       setReminders(res.data || []);
     } catch (err) {
-      toast.error("Failed to load reminders");
+      message.error("Failed to load reminders");
     }
   };
 

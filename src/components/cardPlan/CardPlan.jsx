@@ -3,53 +3,42 @@ import "./CardPlan.scss";
 import { GrPlan } from "react-icons/gr";
 import { QuitPlanService } from "../../services/quitPlan.service";
 
-const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
+const CardPlan = ({
+  selectedStartDate,
+  onLastStageEndDate,
+  onUpdateCustomMaxValues,
+}) => {
   const [suggestedStages, setSuggestedStages] = useState([]);
-  const [selectedPlanId, setSelectedPlanId] = useState(null);
-
+  const [maxCigsByStage, setMaxCigsByStage] = useState([]);
   useEffect(() => {
     if (!selectedStartDate) {
       setSuggestedStages([]); // reset nếu chưa chọn ngày
       return;
     }
 
-    const formatDateDMY = (date) => {
-      if (!date) return "";
-      return new Date(date).toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-    };
-
     QuitPlanService.getSuggestedQuitPlan()
       .then((res) => {
-        const today = new Date(selectedStartDate);
-        today.setHours(0, 0, 0, 0);
-
         const stages = res.suggested_stages || res.data?.suggested_stages || [];
 
-        const simulatedStages = stages.map((stage, index) => {
-          const start = new Date(today);
-          start.setDate(start.getDate() + index * 7);
-          const end = new Date(start);
-          end.setDate(start.getDate() + 6);
+        const parsedStages = stages.map((stage) => {
+          const start = new Date(stage.start_date);
+          const end = new Date(stage.end_date);
 
           return {
             ...stage,
-            start_date: formatDateDMY(start),
-            end_date: formatDateDMY(end),
+            start_date_obj: isNaN(start.getTime()) ? null : start,
+            end_date_obj: isNaN(end.getTime()) ? null : end,
           };
         });
 
-        setSuggestedStages(simulatedStages);
+        setSuggestedStages(parsedStages);
+        setMaxCigsByStage(
+          parsedStages.map((stage) => stage.max_daily_cigarette ?? 0)
+        );
 
-        if (simulatedStages.length > 0 && onLastStageEndDate) {
-          const last = simulatedStages[simulatedStages.length - 1];
-          const [dd, mm, yyyy] = last.end_date.split("/");
-          const parsedEndDate = new Date(`${yyyy}-${mm}-${dd}`);
-          parsedEndDate.setHours(0, 0, 0, 0);
-          onLastStageEndDate(parsedEndDate);
+        if (parsedStages.length > 0 && onLastStageEndDate) {
+          const last = parsedStages[parsedStages.length - 1];
+          onLastStageEndDate(last.end_date_obj);
         }
       })
       .catch((err) => {
@@ -57,9 +46,20 @@ const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
       });
   }, [selectedStartDate]);
 
-  const handlePlanSelect = (planId) => {
-    setSelectedPlanId(planId);
+  const getTotalDays = () => {
+    if (suggestedStages.length === 0) return 0;
+    const first = suggestedStages[0].start_date_obj;
+    const last = suggestedStages[suggestedStages.length - 1].end_date_obj;
+    if (!first || !last || isNaN(first) || isNaN(last)) return 0;
+
+    const diffTime = last - first;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
+  useEffect(() => {
+    if (onUpdateCustomMaxValues) {
+      onUpdateCustomMaxValues(maxCigsByStage);
+    }
+  }, [maxCigsByStage]);
 
   return (
     <div className="plan-container">
@@ -81,10 +81,7 @@ const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
             </p>
           ) : (
             <>
-              <p className="time">
-                Estimated duration: {suggestedStages.length * 7} days
-              </p>
-
+              <p className="time">Estimated duration: {getTotalDays()} days</p>
               <p>
                 This plan is tailored to your smoking status and quitting goal.
               </p>
@@ -100,27 +97,35 @@ const CardPlan = ({ selectedStartDate, onLastStageEndDate }) => {
                         <strong>{stage.name}</strong>
                       </div>
                       <div className="stage-date">
-                        ({stage.start_date} → {stage.end_date})
+                        ({stage.start_date_obj?.toLocaleDateString("vi-VN")} →{" "}
+                        {stage.end_date_obj?.toLocaleDateString("vi-VN")})
                       </div>
                       <div className="stage-description">
                         {stage.description.split("\n").map((line, i) => (
                           <div key={i}>{line}</div>
                         ))}
                       </div>
+
+                      <div style={{ marginTop: "8px" }}>
+                        <label style={{ fontWeight: 500 }}>
+                          Max cigarettes/day:{" "}
+                        </label>
+                        <input
+                          type="number"
+                          value={maxCigsByStage[index]}
+                          onChange={(e) => {
+                            const newVals = [...maxCigsByStage];
+                            newVals[index] = Number(e.target.value);
+                            setMaxCigsByStage(newVals);
+                          }}
+                          min={0}
+                          style={{ width: "60px", marginLeft: "8px" }}
+                        />
+                      </div>
                     </div>
                   </li>
                 ))}
               </ul>
-              <div className="text-center mt-4">
-                <button
-                  className={`button ${
-                    selectedPlanId === 99 ? "selected" : ""
-                  }`}
-                  onClick={() => handlePlanSelect(99)}
-                >
-                  Choose this plan
-                </button>
-              </div>
             </>
           )}
         </div>

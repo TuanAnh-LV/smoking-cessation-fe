@@ -1,229 +1,125 @@
+// coming up next: BlogPage UI with form to create full blog (title, content, category, tags, images)
+// Will include CategoryService and TagService call to populate the dropdowns
+
 import React, { useState, useEffect } from "react";
-import { Pagination } from "antd";
+import { Form, Input, Button, Select, Upload, Switch, message } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import { BlogService } from "../../services/blog.service";
-import { CommentService } from "../../services/comment.service";
-import { BadgeService } from "../../services/badge.service";
-import CommunityChat from "../../components/Community/CommunityChat";
-import BlogPost from "../../components/Blog/BlogPost";
-import "./BlogPage.scss";
+import { CategoryService } from "../../services/category.service";
+import { TagService } from "../../services/tag.service";
+
+const { TextArea } = Input;
 
 const BlogPage = () => {
-  const [posts, setPosts] = useState([]);
-  const [comments, setComments] = useState({});
-  const [newPost, setNewPost] = useState("");
-  const [newComment, setNewComment] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [showBadgeModal, setShowBadgeModal] = useState(false);
-  const [userBadges, setUserBadges] = useState([]);
-
-  // Phân trang
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(5);
+  const [form] = Form.useForm();
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [fileList, setFileList] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchBlogs();
+    const fetchOptions = async () => {
+      try {
+        const [catRes, tagRes] = await Promise.all([
+          CategoryService.getAllCategories(),
+          TagService.getAllTags(),
+        ]);
+        setCategories(catRes?.data?.categories || []);
+        setTags(tagRes?.data?.tags || []);
+      } catch (err) {
+        message.error("Không thể tải danh mục hoặc tags.");
+      }
+    };
+    fetchOptions();
   }, []);
 
-  const fetchBlogs = async () => {
+  const handleSubmit = async (values) => {
     try {
-      setLoading(true);
-      const res = await BlogService.getAllBlogs();
-      const blogList = res.data.blogs || [];
-      const commentMap = {};
+      setSubmitting(true);
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("description", values.description || "");
+      formData.append("content", values.content);
+      formData.append("status", values.status);
+      formData.append("isFeatured", values.isFeatured);
+      if (values.category) formData.append("category", values.category);
+      values.tags?.forEach((tag) => formData.append("tags", tag));
+      fileList.forEach((file) => formData.append("images", file.originFileObj));
 
-      await Promise.all(
-        blogList.map(async (post) => {
-          try {
-            const res = await CommentService.getCommentsByBlog(post._id);
-            commentMap[post._id] = res.data?.comments || [];
-          } catch {
-            commentMap[post._id] = [];
-          }
-        })
-      );
-
-      setPosts(blogList);
-      setComments(commentMap);
+      await BlogService.createBlog(formData);
+      message.success("Đăng blog thành công!");
+      form.resetFields();
+      setFileList([]);
     } catch (err) {
-      console.error("Error loading blogs:", err);
+      message.error("Lỗi khi đăng blog.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
-  };
-
-  const handleAddPost = async () => {
-    const content = newPost.trim();
-    if (!content) return;
-    try {
-      await BlogService.createBlog({ title: "Chia sẻ", content });
-      setNewPost("");
-      fetchBlogs();
-    } catch (err) {
-      console.error("Error creating blog:", err);
-    }
-  };
-
-  const handleAddComment = async (postId) => {
-    const content = (newComment[postId] || "").trim();
-    if (!content) return;
-    try {
-      await CommentService.createComment(postId, content);
-      const res = await CommentService.getCommentsByBlog(postId);
-      setComments((prev) => ({ ...prev, [postId]: res.data?.comments || [] }));
-      setNewComment((prev) => ({ ...prev, [postId]: "" }));
-    } catch (err) {
-      console.error("Error posting comment:", err);
-    }
-  };
-
-  const handleReplyComment = async (postId, parentId, replyContent) => {
-    const content = replyContent.trim();
-    if (!content) return;
-    try {
-      await CommentService.replyComment(parentId, content);
-      const res = await CommentService.getCommentsByBlog(postId);
-      setComments((prev) => ({ ...prev, [postId]: res.data?.comments || [] }));
-      setNewComment((prev) => ({ ...prev, [`${postId}_${parentId}`]: "" }));
-    } catch (err) {
-      console.error("Error replying to comment:", err);
-    }
-  };
-
-  const handleToggleLike = async (postId, isLiked) => {
-    try {
-      if (isLiked) await BlogService.unlikeBlog(postId);
-      else await BlogService.likeBlog(postId);
-      setPosts((prev) =>
-        prev.map((post) =>
-          post._id === postId
-            ? {
-                ...post,
-                isLikedByMe: !isLiked,
-                likeCount: post.likeCount + (isLiked ? -1 : 1),
-              }
-            : post
-        )
-      );
-    } catch (err) {
-      console.error("Error toggling like:", err);
-    }
-  };
-
-  const handleToggleCommentLike = async (commentId, isLiked, blogId) => {
-    try {
-      if (isLiked) await CommentService.unlikeComment(commentId);
-      else await CommentService.likeComment(commentId);
-      const res = await CommentService.getCommentsByBlog(blogId);
-      setComments((prev) => ({ ...prev, [blogId]: res.data?.comments || [] }));
-    } catch (err) {
-      console.error("Error liking comment:", err);
-    }
-  };
-
-  const openBadgeModal = async () => {
-    try {
-      const res = await BadgeService.getUserBadges();
-      setUserBadges(res?.data?.badges || []);
-      setShowBadgeModal(true);
-    } catch (err) {
-      console.error("Lỗi lấy huy hiệu:", err);
-    }
-  };
-
-  const handleSelectBadge = (badge) => {
-    setNewPost(`Tôi vừa đạt được huy hiệu 🏅 ${badge.name}: ${badge.description}`);
-    setShowBadgeModal(false);
-    const textarea = document.querySelector("textarea");
-    if (textarea) textarea.focus();
   };
 
   return (
-    <div className="blog-page">
-      <div className="blog-page__content">
-        <div className="blog-page__left">
-          <div className="blog-page__header">
-            <h1>Blogs</h1>
-            <button onClick={openBadgeModal} className="blog-share-badge-btn">
-              🏅 Chia sẻ huy hiệu
-            </button>
-          </div>
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: 32 }}>
+      <h2 style={{ marginBottom: 24 }}>Tạo Blog Mới</h2>
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={handleSubmit}
+        initialValues={{ status: "published", isFeatured: false }}
+      >
+        <Form.Item name="title" label="Tiêu đề blog" rules={[{ required: true }]}> 
+          <Input />
+        </Form.Item>
 
-          {showBadgeModal && (
-            <div className="badge-modal">
-              <div
-                className="badge-modal__overlay"
-                onClick={() => setShowBadgeModal(false)}
-              ></div>
-              <div className="badge-modal__content">
-                <h3>Chọn huy hiệu để chia sẻ</h3>
-                <div className="badge-list">
-                  {userBadges.length === 0 ? (
-                    <p>Chưa có huy hiệu nào.</p>
-                  ) : (
-                    userBadges.map((badge) => (
-                      <div
-                        key={badge._id}
-                        className="badge-item"
-                        onClick={() => handleSelectBadge(badge)}
-                      >
-                        <strong>{badge.name}</strong>
-                        <p>{badge.description}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+        <Form.Item name="description" label="Mô tả ngắn">
+          <Input />
+        </Form.Item>
 
-          <div className="blog-posts">
-            <div className="post post--new">
-              <div className="post__avatar">
-                {/* Lấy chữ cái đầu tên người đăng bài */}
-                {posts.length > 0 && posts[0].user?.full_name
-                  ? posts[0].user.full_name.charAt(0).toUpperCase()
-                  : "S"}
-              </div>
-              <div className="post__content post__content--new">
-                <textarea
-                  value={newPost}
-                  placeholder="Viết bài chia sẻ..."
-                  onChange={(e) => setNewPost(e.target.value)}
-                />
-                <button onClick={handleAddPost}>Đăng bài</button>
-              </div>
-            </div>
+        <Form.Item name="content" label="Nội dung" rules={[{ required: true }]}> 
+          <TextArea rows={6} />
+        </Form.Item>
 
-            {posts
-              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
-              .map((post) => (
-                <BlogPost
-                  key={post._id}
-                  post={post}
-                  comments={comments[post._id]}
-                  newComment={newComment}
-                  setNewComment={setNewComment}
-                  onAddComment={handleAddComment}
-                  onReplyComment={handleReplyComment}
-                  onToggleLike={handleToggleLike}
-                  onToggleCommentLike={handleToggleCommentLike}
-                />
-              ))}
+        <Form.Item name="status" label="Trạng thái">
+          <Select options={[{ label: "Published", value: "published" }, { label: "Draft", value: "draft" }]} />
+        </Form.Item>
 
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={posts.length}
-              onChange={(page) => setCurrentPage(page)}
-              style={{ marginTop: 20, textAlign: "center" }}
-            />
-          </div>
-        </div>
+        <Form.Item name="category" label="Danh mục">
+          <Select
+            placeholder="Chọn danh mục"
+            options={categories.map((c) => ({ label: c.name, value: c._id }))}
+            allowClear
+          />
+        </Form.Item>
 
-        <div className="blog-page__right">
-          <CommunityChat />
-        </div>
-      </div>
+        <Form.Item name="tags" label="Thẻ tag">
+          <Select
+            mode="multiple"
+            placeholder="Chọn tags"
+            options={tags.map((t) => ({ label: t.name, value: t._id }))}
+          />
+        </Form.Item>
+
+        <Form.Item name="isFeatured" label="Nổi bật" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+
+        <Form.Item label="Hình ảnh">
+          <Upload
+            multiple
+            listType="picture"
+            fileList={fileList}
+            onChange={({ fileList }) => setFileList(fileList)}
+            beforeUpload={() => false}
+          >
+            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+          </Upload>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={submitting}>
+            Đăng blog
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

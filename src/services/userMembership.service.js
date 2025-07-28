@@ -22,11 +22,20 @@ export const UserMembershipService = {
       isLoading: true,
     });
   },
+  
   getByUserId: (id) => {
     return BaseService.get({
       url: API.USERMEMBERSHIP.GET_MEMBERSHIP_BY_USER_ID.replace(":id", id),
       isAuth: true,
     });
-  }
-  
+  },
+
+  previewUpgrade: (newPackageId) => {
+    return BaseService.post({
+      url: API.USERMEMBERSHIP.PREVIEW_UPGRADE,
+      payload: { newPackageId },
+      isAuth: true,
+      isLoading: true,
+    });
+  },
 };

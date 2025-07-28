@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   Avatar,
@@ -9,6 +9,7 @@ import {
   Badge,
   Divider,
   message as AntMessage,
+  Modal,
 } from "antd";
 import {
   SendOutlined,
@@ -18,6 +19,7 @@ import {
 import dayjs from "dayjs";
 import { io } from "socket.io-client";
 import { ChatService } from "../../../services/chat.service";
+import { CoachUserService } from "../../../services/coachuser.service";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -36,6 +38,7 @@ const ChatMessage = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [showPlanModal, setShowPlanModal] = useState(false);
   const socketRef = useRef(null);
   const token = localStorage.getItem("token");
   const [currentCoachId, setCurrentCoachId] = useState(null);
@@ -45,22 +48,38 @@ const ChatMessage = () => {
     const decoded = JSON.parse(atob(token.split(".")[1]));
     setCurrentCoachId(decoded.id);
 
-    socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/coach`, {
+    const socket = io(`${import.meta.env.VITE_SOCKET_URL}/coach`, {
       auth: { token },
     });
 
-    socketRef.current.on("connect", () => {
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
       console.log("[Coach] Socket connected");
+      // Join tất cả sessionId để nhận tin mới realtime
+      chatList.forEach((session) => {
+        socket.emit("joinSession", session._id);
+      });
     });
 
-    socketRef.current.on("newMessage", (msg) => {
+    socket.on("newMessage", (msg) => {
+      // Cập nhật preview ở sidebar
+      setChatList((prev) =>
+        prev.map((chat) =>
+          chat._id === msg.session_id
+            ? { ...chat, lastMessage: msg.content, lastUpdated: new Date() }
+            : chat
+        )
+      );
+
+      // Nếu đang mở chat này thì thêm vào
       if (selectedChat && msg.session_id === selectedChat._id) {
         setMessages((prev) => [...prev, msg]);
       }
     });
 
-    return () => socketRef.current.disconnect();
-  }, [selectedChat]);
+    return () => socket.disconnect();
+  }, [chatList, selectedChat]);
 
   useEffect(() => {
     fetchChatSessions();
@@ -82,8 +101,15 @@ const ChatMessage = () => {
       const res = await ChatService.getMessages(session._id);
       setMessages(res?.data?.data || []);
       socketRef.current.emit("joinSession", session._id);
+
+      const relationRes = await CoachUserService.getByUserId(
+        session.user_id._id
+      );
+      const quitPlans = relationRes?.data?.quitPlans || [];
+      const latestQuitPlan = quitPlans[quitPlans.length - 1] || null;
+      setSelectedChat((prev) => ({ ...prev, latestQuitPlan }));
     } catch (err) {
-      AntMessage.error("Không thể tải tin nhắn");
+      AntMessage.error("Không thể tải tin nhắn hoặc quit plan");
     }
   };
 
@@ -97,7 +123,8 @@ const ChatMessage = () => {
   };
 
   const handleVideoCall = () => {
-    const callLink = `http://localhost:5173/call/${selectedChat?.user_id?._id}-${currentCoachId}`;
+    const origin = window.location.origin;
+    const callLink = `${origin}/call/${selectedChat?.user_id?._id}-${currentCoachId}`;
     socketRef.current.emit("sendMessage", {
       sessionId: selectedChat._id,
       content: callLink,
@@ -171,7 +198,16 @@ const ChatMessage = () => {
                     <Title level={5} className="mb-0">
                       {selectedChat.user_id.full_name}
                     </Title>
-                    <Text type="secondary">Đang hoạt động</Text>
+                    {selectedChat.latestQuitPlan && (
+                      <Button
+                        type="link"
+                        size="small"
+                        className="p-0 text-blue-600 underline"
+                        onClick={() => setShowPlanModal(true)}
+                      >
+                        Xem Quit Plan
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <Button
@@ -179,7 +215,7 @@ const ChatMessage = () => {
                   onClick={handleVideoCall}
                   className="rounded-xl"
                 >
-                  Gọi video
+                  Meet
                 </Button>
               </div>
             }
@@ -190,11 +226,19 @@ const ChatMessage = () => {
                 const isMe =
                   msg.user_id === currentCoachId ||
                   msg.user_id?._id === currentCoachId;
+                const displayName = isMe
+                  ? "Bạn"
+                  : selectedChat.user_id.full_name;
                 return (
                   <div
                     key={msg._id || msg.id}
-                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                    className={`flex flex-col ${
+                      isMe ? "items-end" : "items-start"
+                    }`}
                   >
+                    <span className="text-xs text-gray-500 font-medium mb-1">
+                      {displayName}
+                    </span>
                     <div className="max-w-[70%] break-words">
                       <div
                         className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words ${
@@ -202,15 +246,11 @@ const ChatMessage = () => {
                             ? "bg-blue-500 text-white"
                             : "bg-gray-100 text-black"
                         }`}
-                        style={{
-                          wordWrap: "break-word",
-                          overflowWrap: "break-word",
-                        }}
                       >
                         <Text>
                           {msg.content.startsWith("http") ? (
                             <>
-                              Hãy tham gia cuộc gọi video chung tại:{" "}
+                              Hãy tham gia cuộc gọi video tại:{" "}
                               <a
                                 href={msg.content}
                                 target="_blank"
@@ -268,6 +308,59 @@ const ChatMessage = () => {
           </Card>
         )}
       </div>
+
+      {/* ✅ Modal hiển thị quit plan */}
+      <Modal
+        open={showPlanModal}
+        onCancel={() => setShowPlanModal(false)}
+        footer={null}
+        title="Chi tiết Quit Plan"
+        width={600}
+      >
+        {selectedChat?.latestQuitPlan ? (
+          <div className="space-y-3">
+            <h3 className="text-lg font-bold text-blue-700">
+              {selectedChat.latestQuitPlan.goal.replace("_", " ").toUpperCase()}
+            </h3>
+            <p className="text-sm text-gray-500">
+              <strong>Start:</strong>{" "}
+              {new Date(
+                selectedChat.latestQuitPlan.start_date
+              ).toLocaleDateString()}
+            </p>
+            <p className="text-sm">
+              <strong>Lý do:</strong>{" "}
+              {selectedChat.latestQuitPlan.reasons?.join(", ") || "Không có"}
+            </p>
+
+            <div className="space-y-2">
+              <h4 className="font-semibold">Các Giai đoạn:</h4>
+              {selectedChat.latestQuitPlan.stages?.map((stage) => (
+                <div
+                  key={stage._id}
+                  className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 rounded"
+                >
+                  <div className="flex justify-between">
+                    <p className="font-semibold text-gray-800">{stage.name}</p>
+                    <span className="text-xs text-gray-500">
+                      {stage.status.replace("_", " ")}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 whitespace-pre-line">
+                    {stage.description}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {new Date(stage.start_date).toLocaleDateString()} →{" "}
+                    {new Date(stage.end_date).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p>Không có dữ liệu Quit Plan.</p>
+        )}
+      </Modal>
     </div>
   );
 };

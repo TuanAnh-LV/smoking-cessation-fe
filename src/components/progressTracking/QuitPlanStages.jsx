@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { QuitStageService } from "../../services/quitState.service";
 import { QuitPlanProgressService } from "../../services/quitPlanProgress.service";
-import { toast } from "react-toastify";
-
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
+import StageChart from "./StageChart";
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString("en-GB");
 
 const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   const [stages, setStages] = useState([]);
   const [inputData, setInputData] = useState({});
+  const navigate = useNavigate();
+  const [openStageId, setOpenStageId] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
   const fetchStages = async () => {
     try {
-      const stageRes = await QuitStageService.getAllStagesOfPlan(planId); // ⬅️ API mới đã có `status` + `recordedToday`
+      const stageRes = await QuitStageService.getAllStagesOfPlan(planId);
+      console.log("Fetched stages:", stageRes.data);
       setStages(stageRes.data || []);
     } catch (err) {
-      console.error("[fetchStages]", err);
-      toast.error("Failed to load stages");
+      message.error("Failed to load stages");
     }
   };
 
@@ -35,18 +39,65 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
   };
 
   const handleSubmit = async (stageId) => {
-    const { cigarette_count = 0 } = inputData[stageId] || {};
+    const { cigarette_count = 0, note = "" } = inputData[stageId] || {};
 
     try {
-      await QuitPlanProgressService.recordProgress(planId, stageId, {
-        cigarette_count: Number(cigarette_count),
-      });
+      const res = await QuitPlanProgressService.recordProgress(
+        planId,
+        stageId,
+        {
+          cigarette_count: Number(cigarette_count),
+          note,
+        }
+      );
 
-      toast.success("Today's cigarette count recorded successfully!");
-      fetchStages();
+      if (res?.data?.cancelled) {
+        message.error(res.data.message);
+        localStorage.removeItem("currentPlanId");
+        setTimeout(() => navigate("/status"), 1000);
+        return;
+      } else if (res?.data?.warning) {
+        message.warn(res.data.message);
+      } else {
+        message.success("Today's cigarette count recorded successfully!");
+      }
+
+      if (res?.data?.updatedStage) {
+        setStages((prev) =>
+          prev.map((s) =>
+            s._id === res.data.updatedStage._id ? res.data.updatedStage : s
+          )
+        );
+        await fetchStages();
+      } else {
+        await fetchStages();
+      }
+
       if (onProgressRecorded) onProgressRecorded();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to record progress");
+      message.error(
+        err?.response?.data?.message || "Failed to record progress"
+      );
+    }
+  };
+
+  const handleStageClick = async (stageId) => {
+    if (openStageId === stageId) {
+      setOpenStageId(null);
+      return;
+    }
+
+    try {
+      const res = await QuitPlanProgressService.getStageProgress(stageId);
+      const formatted = res.data.map((p) => ({
+        date: new Date(p.date).toLocaleDateString("vi-VN"),
+        cigarettes: p.cigarette_count,
+      }));
+
+      setChartData(formatted);
+      setOpenStageId(stageId);
+    } catch (err) {
+      message.error("Failed to load progress data");
     }
   };
 
@@ -87,6 +138,7 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
         return (
           <div
             key={_id}
+            onClick={() => handleStageClick(_id)}
             className={`p-5 rounded-xl shadow-md mb-5 ring-1 ring-inset ${colorClass[status]}`}
           >
             <div className="flex justify-between items-center mb-3">
@@ -97,17 +149,18 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
                 {statusLabelMap[status]}
               </span>
             </div>
-
-            <p className="text-sm text-gray-700 mb-2 whitespace-pre-line leading-relaxed">
-              {description}
-            </p>
-
             <p className="text-sm text-gray-600 mb-3">
               <strong>{formatDate(start_date)}</strong> →{" "}
               <strong>{formatDate(end_date)}</strong>
             </p>
+            <p className="text-sm text-gray-700 mb-2 whitespace-pre-line leading-relaxed">
+              {description}
+            </p>
             <p className="text-sm text-gray-600 mb-3 font-medium">
               Progress: {stage.progressDays} / {stage.totalDays} days
+            </p>
+            <p className="text-sm text-gray-600 mb-3 font-medium">
+              Max_daily_cigarette: {stage.max_daily_cigarette}
             </p>
             {status === "in_progress" && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -127,11 +180,16 @@ const QuitPlanStages = ({ planId, onProgressRecorded }) => {
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     disabled
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-black text-white hover:bg-gray-800"
                   }`}
                 >
                   {disabled ? "Recorded today" : "Record progress"}
                 </button>
+              </div>
+            )}
+            {openStageId === _id && (
+              <div className="mt-4">
+                <StageChart data={chartData} />
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CoachService } from "../../services/coach.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 export default function AddEditCoachPage() {
   const { id } = useParams();
@@ -37,7 +37,7 @@ export default function AddEditCoachPage() {
           });
         })
         .catch(() => {
-          toast.error("Failed to load coach data");
+          message.error("Failed to load coach data");
         });
     }
   }, [id]);
@@ -63,15 +63,15 @@ export default function AddEditCoachPage() {
 
       if (isEdit) {
         await CoachService.updateCoach(id, form);
-        toast.success("Coach updated successfully");
+        message.success("Coach updated successfully");
       } else {
         await CoachService.createCoach(form);
-        toast.success("Coach created successfully");
+        message.success("Coach created successfully");
       }
       navigate("/admin/coaches");
     } catch (err) {
       console.error("Save failed", err);
-      toast.error("Failed to save coach");
+      message.error("Failed to save coach");
     }
   };
 

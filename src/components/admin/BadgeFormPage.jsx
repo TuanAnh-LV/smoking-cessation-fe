@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BadgeService } from "../../services/badge.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 const defaultData = {
   name: "",
@@ -34,7 +34,7 @@ export default function BadgeFormPage() {
             });
           }
         })
-        .catch(() => toast.error("Failed to load badge"));
+        .catch(() => message.error("Failed to load badge"));
     }
   }, [id]);
 
@@ -62,14 +62,14 @@ export default function BadgeFormPage() {
     try {
       if (id) {
         await BadgeService.updateBadge(id, formData);
-        toast.success("Badge updated!");
+        message.success("Badge updated!");
       } else {
         await BadgeService.createBadge(formData);
-        toast.success("Badge created!");
+        message.success("Badge created!");
       }
       navigate("/admin/badges");
     } catch {
-      toast.error("Failed to save badge");
+      message.error("Failed to save badge");
     }
   };
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ReminderService } from "../../services/reminder.service";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { Plus, Edit, Trash2, Clock } from "lucide-react";
 
 const CreateReminderForm = ({ planId, onCreated }) => {
@@ -28,7 +28,7 @@ const CreateReminderForm = ({ planId, onCreated }) => {
 
     const localTime = new Date(form.remind_at);
     if (isNaN(localTime.getTime())) {
-      toast.error("Remind time is not valid");
+      message.error("Remind time is not valid");
       return;
     }
 
@@ -40,12 +40,12 @@ const CreateReminderForm = ({ planId, onCreated }) => {
 
     const nowUTC = new Date();
     if (utcTime <= nowUTC) {
-      toast.error("Please choose a time in the future");
+      message.error("Please choose a time in the future");
       return;
     }
 
     if (form.is_recurring && !form.repeat_pattern) {
-      toast.error("Please select a repeat pattern");
+      message.error("Please select a repeat pattern");
       return;
     }
 
@@ -57,7 +57,7 @@ const CreateReminderForm = ({ planId, onCreated }) => {
         repeat_pattern: form.is_recurring ? form.repeat_pattern : null,
       });
 
-      toast.success("Reminder created!");
+      message.success("Reminder created!");
       setForm({
         title: "",
         content: "",
@@ -68,7 +68,9 @@ const CreateReminderForm = ({ planId, onCreated }) => {
       onCreated?.();
       setFormVisible(false);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to create reminder");
+      message.error(
+        err?.response?.data?.message || "Failed to create reminder"
+      );
     }
   };
 
@@ -76,7 +78,7 @@ const CreateReminderForm = ({ planId, onCreated }) => {
     <div className="mb-6">
       <button
         onClick={toggleForm}
-        className="mb-3 px-4 py-2 flex items-center gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-medium transition-all"
+        className="mb-3 px-4 py-2 flex items-center gap-1 bg-black text-white rounded h-[40px] px-3 py-1 cursor-pointer hover:bg-gray-800 transition-all"
       >
         {formVisible ? <Edit size={18} /> : <Plus size={18} />}
         {formVisible ? "Cancel Reminder" : "Create Reminder"}

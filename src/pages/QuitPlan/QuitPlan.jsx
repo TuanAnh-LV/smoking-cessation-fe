@@ -8,8 +8,9 @@ import { SmokingStatusService } from "../../services/smokingStatus.service";
 import { QuitPlanService } from "../../services/quitPlan.service";
 import { UserService } from "../../services/user.service";
 import { useAuth } from "../../context/authContext";
-import { toast } from "react-toastify";
+import { message } from "antd";
 import { useNavigate } from "react-router-dom";
+import { QuitGoalDraftService } from "../../services/quitGoal.service";
 const QuitPlan = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [latestStatus, setLatestStatus] = useState(null);
@@ -19,11 +20,13 @@ const QuitPlan = () => {
   const { userInfo } = useAuth();
   const [membershipPackageCode, setMembershipPackageCode] = useState(null);
   const [goal, setGoal] = useState("");
-  const [note, setNote] = useState("");
+  // const [note, setNote] = useState("");
   const [reasons, setReasons] = useState([]);
   const [reasonsDetail, setReasonsDetail] = useState("");
   const [selectedCoachId, setSelectedCoachId] = useState(null);
   const navigate = useNavigate();
+  const [customMaxCigs, setCustomMaxCigs] = useState([]);
+
   const reasonOptions = [
     "Health for yourself and your family",
     "Save costs",
@@ -74,7 +77,7 @@ const QuitPlan = () => {
       try {
         if (!userInfo?._id) return;
         const res = await UserService.getUserMembership(userInfo._id);
-        const code = res?.data?.package_id?.name;
+        const code = res?.data?.package_id?.type;
         setMembershipPackageCode(code);
       } catch (err) {
         console.error("Failed to fetch membership", err);
@@ -83,20 +86,39 @@ const QuitPlan = () => {
 
     fetchMembership();
   }, [userInfo]);
+  useEffect(() => {
+    const fetchGoalDraft = async () => {
+      try {
+        const res = await QuitGoalDraftService.getGoalDraft();
+        const draft = res?.data;
+        console.log("Goal draft res:", draft);
 
+        if (!res) return;
+
+        // So sánh user_id từ API với user đang đăng nhập
+        if (draft.user_id === userInfo?._id) {
+          if (draft.goal) setGoal(draft.goal);
+        }
+      } catch (err) {
+        console.error("Failed to load goal draft", err);
+      }
+    };
+
+    fetchGoalDraft();
+  }, [userInfo]);
   const handleSavePlan = async () => {
     if (!startDate || isNaN(startDate.getTime())) {
-      toast.error("Please select a valid start date");
+      message.error("Please select a valid start date");
       return;
     }
     if (!goal) {
-      toast.error("Please select your quit goal");
+      message.error("Please select your quit goal");
       return;
     }
 
     // (Tùy chọn) Cảnh báo nếu không chọn lý do nào
     if (reasons.length === 0) {
-      toast.warning("You haven’t selected any reasons for quitting.");
+      message.warning("You haven’t selected any reasons for quitting.");
     }
     try {
       setIsSaving(true);
@@ -106,19 +128,21 @@ const QuitPlan = () => {
       const res = await QuitPlanService.createQuitPlan({
         goal,
         start_date: startDateISO,
-        note,
+        // note,
         coach_user_id: selectedCoachId || null,
         reasons,
         reasons_detail: reasonsDetail,
+        custom_max_values: customMaxCigs,
       });
 
       localStorage.setItem("currentPlanId", res.data.plan._id);
+      window.dispatchEvent(new Event("storage"));
       navigate(`/progress/${res.data.plan._id}`);
-      toast.success("Quit plan created successfully!");
+      message.success("Quit plan created successfully!");
     } catch (err) {
-      const message =
+      const errorMessage =
         err?.response?.data?.message || "Failed to create quit plan.";
-      toast.error(message);
+      message.error(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -166,24 +190,16 @@ const QuitPlan = () => {
 
         <div className="goal-card">
           <h3>Your goal</h3>
-          <select
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-            className="goal-select"
+          <div
+            style={{
+              fontSize: "1rem",
+              fontWeight: 500,
+              marginTop: "6px",
+              padding: "10px",
+            }}
           >
-            <option value="">-- Select your quit goal --</option>
-            <option value="quit_completely">Quit smoking completely</option>
-            <option value="reduce_gradually">Reduce gradually then quit</option>
-            <option value="just_cut_down">Just want to cut down</option>
-          </select>
-
-          <h4 style={{ marginTop: "1rem" }}>Other notes (optional)</h4>
-          <textarea
-            className="note-textarea"
-            placeholder="Anything else you'd like to share..."
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
+            {goal || "No goal selected yet"}
+          </div>
         </div>
       </div>
 
@@ -193,7 +209,11 @@ const QuitPlan = () => {
         endDate={endDate}
       />
 
-      <CardPlan selectedStartDate={startDate} onLastStageEndDate={setEndDate} />
+      <CardPlan
+        selectedStartDate={startDate}
+        onLastStageEndDate={setEndDate}
+        onUpdateCustomMaxValues={setCustomMaxCigs}
+      />
 
       {membershipPackageCode === "pro" && (
         <>

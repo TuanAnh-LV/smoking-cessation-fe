@@ -8,8 +8,7 @@ import { signInWithPopup } from "firebase/auth";
 import { useAuth } from "../../context/authContext";
 import { auth, provider } from "../../config/firebase.config";
 import { ROUTER_URL } from "../../const/router.const";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { message } from "antd";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -28,10 +27,10 @@ const LoginPage = () => {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
       await loginGoogle(idToken);
-      toast.success("Successfully signed in with Google!");
+      message.success("Successfully signed in with Google!");
       navigate(ROUTER_URL.COMMON.HOME);
     } catch {
-      toast.error("Google sign-in failed.");
+      message.error("Google sign-in failed.");
     }
   };
 
@@ -49,7 +48,7 @@ const LoginPage = () => {
 
       if (token && user) {
         await handleLogin(token, user);
-        toast.success("Login successful!");
+        message.success("Login successful!");
 
         if (user.role === "admin") {
           navigate("/admin");
@@ -59,10 +58,10 @@ const LoginPage = () => {
           navigate(ROUTER_URL.COMMON.HOME);
         }
       } else {
-        toast.error("Invalid login response.");
+        message.error("Invalid login response.");
       }
     } catch {
-      toast.error("Login failed. Please check your credentials.");
+      message.error("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
