@@ -19,7 +19,7 @@ import {
 import dayjs from "dayjs";
 import { io } from "socket.io-client";
 import { ChatService } from "../../../services/chat.service";
-import { CoachUserService } from "../../../services/coachuser.service"; 
+import { CoachUserService } from "../../../services/coachuser.service";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -38,7 +38,7 @@ const ChatMessage = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [showPlanModal, setShowPlanModal] = useState(false); // ✅ Modal control
+  const [showPlanModal, setShowPlanModal] = useState(false);
   const socketRef = useRef(null);
   const token = localStorage.getItem("token");
   const [currentCoachId, setCurrentCoachId] = useState(null);
@@ -48,22 +48,38 @@ const ChatMessage = () => {
     const decoded = JSON.parse(atob(token.split(".")[1]));
     setCurrentCoachId(decoded.id);
 
-    socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/coach`, {
+    const socket = io(`${import.meta.env.VITE_SOCKET_URL}/coach`, {
       auth: { token },
     });
 
-    socketRef.current.on("connect", () => {
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
       console.log("[Coach] Socket connected");
+      // Join tất cả sessionId để nhận tin mới realtime
+      chatList.forEach((session) => {
+        socket.emit("joinSession", session._id);
+      });
     });
 
-    socketRef.current.on("newMessage", (msg) => {
+    socket.on("newMessage", (msg) => {
+      // Cập nhật preview ở sidebar
+      setChatList((prev) =>
+        prev.map((chat) =>
+          chat._id === msg.session_id
+            ? { ...chat, lastMessage: msg.content, lastUpdated: new Date() }
+            : chat
+        )
+      );
+
+      // Nếu đang mở chat này thì thêm vào
       if (selectedChat && msg.session_id === selectedChat._id) {
         setMessages((prev) => [...prev, msg]);
       }
     });
 
-    return () => socketRef.current.disconnect();
-  }, [selectedChat]);
+    return () => socket.disconnect();
+  }, [chatList, selectedChat]);
 
   useEffect(() => {
     fetchChatSessions();
@@ -86,8 +102,9 @@ const ChatMessage = () => {
       setMessages(res?.data?.data || []);
       socketRef.current.emit("joinSession", session._id);
 
-      // ✅ Gọi thêm API để lấy quitPlan mới nhất
-      const relationRes = await CoachUserService.getByUserId(session.user_id._id);
+      const relationRes = await CoachUserService.getByUserId(
+        session.user_id._id
+      );
       const quitPlans = relationRes?.data?.quitPlans || [];
       const latestQuitPlan = quitPlans[quitPlans.length - 1] || null;
       setSelectedChat((prev) => ({ ...prev, latestQuitPlan }));
@@ -106,7 +123,8 @@ const ChatMessage = () => {
   };
 
   const handleVideoCall = () => {
-    const callLink = `http://localhost:5173/call/${selectedChat?.user_id?._id}-${currentCoachId}`;
+    const origin = window.location.origin;
+    const callLink = `${origin}/call/${selectedChat?.user_id?._id}-${currentCoachId}`;
     socketRef.current.emit("sendMessage", {
       sessionId: selectedChat._id,
       content: callLink,
@@ -139,7 +157,9 @@ const ChatMessage = () => {
                     {item.user_id.full_name.charAt(0).toUpperCase()}
                   </Avatar>
                 }
-                title={<Text className="font-medium">{item.user_id.full_name}</Text>}
+                title={
+                  <Text className="font-medium">{item.user_id.full_name}</Text>
+                }
                 description={<Text type="secondary">{item.user_id.email}</Text>}
               />
             </List.Item>
@@ -190,7 +210,11 @@ const ChatMessage = () => {
                     )}
                   </div>
                 </div>
-                <Button icon={<VideoCameraOutlined />} onClick={handleVideoCall} className="rounded-xl">
+                <Button
+                  icon={<VideoCameraOutlined />}
+                  onClick={handleVideoCall}
+                  className="rounded-xl"
+                >
                   Meet
                 </Button>
               </div>
@@ -199,15 +223,28 @@ const ChatMessage = () => {
             {/* Vùng tin nhắn */}
             <div className="flex-1 overflow-y-auto space-y-4 mb-4 px-2">
               {messages.map((msg) => {
-                const isMe = msg.user_id === currentCoachId || msg.user_id?._id === currentCoachId;
-                const displayName = isMe ? "Bạn" : selectedChat.user_id.full_name;
+                const isMe =
+                  msg.user_id === currentCoachId ||
+                  msg.user_id?._id === currentCoachId;
+                const displayName = isMe
+                  ? "Bạn"
+                  : selectedChat.user_id.full_name;
                 return (
-                  <div key={msg._id || msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                    <span className="text-xs text-gray-500 font-medium mb-1">{displayName}</span>
+                  <div
+                    key={msg._id || msg.id}
+                    className={`flex flex-col ${
+                      isMe ? "items-end" : "items-start"
+                    }`}
+                  >
+                    <span className="text-xs text-gray-500 font-medium mb-1">
+                      {displayName}
+                    </span>
                     <div className="max-w-[70%] break-words">
                       <div
                         className={`px-4 py-2 rounded-xl whitespace-pre-wrap break-words ${
-                          isMe ? "bg-blue-500 text-white" : "bg-gray-100 text-black"
+                          isMe
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-100 text-black"
                         }`}
                       >
                         <Text>
@@ -233,7 +270,9 @@ const ChatMessage = () => {
                       </div>
                       <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                         <ClockCircleOutlined className="text-[10px]" />
-                        <span>{dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}</span>
+                        <span>
+                          {dayjs(msg.sent_at || msg.timestamp).format("HH:mm")}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -242,7 +281,10 @@ const ChatMessage = () => {
             </div>
 
             {/* Nhập tin nhắn */}
-            <div className="flex items-center gap-2 mt-2" style={{ flexShrink: 0 }}>
+            <div
+              className="flex items-center gap-2 mt-2"
+              style={{ flexShrink: 0 }}
+            >
               <TextArea
                 rows={1}
                 placeholder="Nhập tin nhắn..."
@@ -282,7 +324,9 @@ const ChatMessage = () => {
             </h3>
             <p className="text-sm text-gray-500">
               <strong>Start:</strong>{" "}
-              {new Date(selectedChat.latestQuitPlan.start_date).toLocaleDateString()}
+              {new Date(
+                selectedChat.latestQuitPlan.start_date
+              ).toLocaleDateString()}
             </p>
             <p className="text-sm">
               <strong>Lý do:</strong>{" "}
@@ -298,9 +342,13 @@ const ChatMessage = () => {
                 >
                   <div className="flex justify-between">
                     <p className="font-semibold text-gray-800">{stage.name}</p>
-                    <span className="text-xs text-gray-500">{stage.status.replace("_", " ")}</span>
+                    <span className="text-xs text-gray-500">
+                      {stage.status.replace("_", " ")}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-600 whitespace-pre-line">{stage.description}</p>
+                  <p className="text-sm text-gray-600 whitespace-pre-line">
+                    {stage.description}
+                  </p>
                   <p className="text-xs text-gray-400">
                     {new Date(stage.start_date).toLocaleDateString()} →{" "}
                     {new Date(stage.end_date).toLocaleDateString()}

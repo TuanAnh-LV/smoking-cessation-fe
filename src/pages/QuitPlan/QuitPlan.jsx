@@ -86,7 +86,26 @@ const QuitPlan = () => {
 
     fetchMembership();
   }, [userInfo]);
+  useEffect(() => {
+    const fetchGoalDraft = async () => {
+      try {
+        const res = await QuitGoalDraftService.getGoalDraft();
+        const draft = res?.data;
+        console.log("Goal draft res:", draft);
 
+        if (!res) return;
+
+        // So sánh user_id từ API với user đang đăng nhập
+        if (draft.user_id === userInfo?._id) {
+          if (draft.goal) setGoal(draft.goal);
+        }
+      } catch (err) {
+        console.error("Failed to load goal draft", err);
+      }
+    };
+
+    fetchGoalDraft();
+  }, [userInfo]);
   const handleSavePlan = async () => {
     if (!startDate || isNaN(startDate.getTime())) {
       message.error("Please select a valid start date");
@@ -117,36 +136,17 @@ const QuitPlan = () => {
       });
 
       localStorage.setItem("currentPlanId", res.data.plan._id);
+      window.dispatchEvent(new Event("storage"));
       navigate(`/progress/${res.data.plan._id}`);
       message.success("Quit plan created successfully!");
     } catch (err) {
-      const message =
+      const errorMessage =
         err?.response?.data?.message || "Failed to create quit plan.";
-      message.error(message);
+      message.error(errorMessage);
     } finally {
       setIsSaving(false);
     }
   };
-  useEffect(() => {
-    const fetchGoalDraft = async () => {
-      try {
-        const res = await QuitGoalDraftService.getGoalDraft();
-        const draft = res?.data;
-        console.log("Goal draft res:", draft);
-
-        if (!res) return;
-
-        // So sánh user_id từ API với user đang đăng nhập
-        if (draft.user_id === userInfo?._id) {
-          if (draft.goal) setGoal(draft.goal);
-        }
-      } catch (err) {
-        console.error("Failed to load goal draft", err);
-      }
-    };
-
-    fetchGoalDraft();
-  }, [userInfo]);
 
   return (
     <div className="quit-plan-page">
