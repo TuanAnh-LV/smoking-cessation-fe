@@ -31,37 +31,31 @@ function RegisterPage() {
     setShowConfirmPassword(!showConfirmPassword);
 
   const handleRegister = async () => {
-    // Kiểm tra dữ liệu bắt buộc
-    if (
-      !form.username ||
-      !form.full_name ||
-      !form.email ||
-      !form.password ||
-      !form.confirmPassword ||
-      !birthDate ||
-      !form.gender
-    ) {
-      message.error("Please fill in all required fields!");
+    const newErrors = {};
+
+    // Validate từng trường
+    if (!form.username) newErrors.username = "Username is required.";
+    if (!form.full_name) newErrors.full_name = "Full name is required.";
+    if (!form.email) newErrors.email = "Email is required.";
+    else if (!isEmail(form.email)) newErrors.email = "Invalid email format.";
+    if (!form.password) newErrors.password = "Password is required.";
+    if (!form.confirmPassword)
+      newErrors.confirmPassword = "Please confirm password.";
+    else if (form.password !== form.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match.";
+    if (!birthDate) newErrors.birth_date = "Date of birth is required.";
+    if (!form.gender) newErrors.gender = "Gender is required.";
+
+    // Nếu có lỗi thì dừng và hiển thị
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    // Kiểm tra định dạng email
-    if (!isEmail(form.email)) {
-      message.error("Invalid email format!");
-      return;
-    }
+    setErrors({}); // clear errors
+    setLoading(true);
 
-    // Kiểm tra xác nhận mật khẩu
-    if (form.password !== form.confirmPassword) {
-      message.error("Passwords do not match!");
-      return;
-    }
-
-    setLoading(true); // Bắt đầu loading
-
-    const formattedBirthDate = birthDate
-      ? birthDate.toISOString().split("T")[0]
-      : "";
+    const formattedBirthDate = birthDate.toISOString().split("T")[0];
 
     try {
       const payload = {
@@ -74,21 +68,17 @@ function RegisterPage() {
       };
 
       const response = await AuthService.register(payload);
-      console.log("Registration success:", response);
-      message.success(
-        "Registration successful! Please check your email to verify your account."
-      );
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      console.log(response);
+      message.success("Registration successful! Please check your email.");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       const msg = err?.response?.data?.error || "Registration failed!";
-      message.error(msg);
+      setErrors({ email: msg });
     } finally {
-      setLoading(false); // Dừng loading
+      setLoading(false);
     }
   };
+
   return (
     <div className="register-container">
       <div className="register-form">
@@ -104,6 +94,9 @@ function RegisterPage() {
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
+          {errors.username && (
+            <p className="text-sm text-red-500 mt-1">{errors.username}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -115,6 +108,9 @@ function RegisterPage() {
             value={form.full_name}
             onChange={(e) => setForm({ ...form, full_name: e.target.value })}
           />
+          {errors.full_name && (
+            <p className="text-sm text-red-500 mt-1">{errors.full_name}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -158,6 +154,9 @@ function RegisterPage() {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
+          {errors.email && (
+            <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -170,6 +169,9 @@ function RegisterPage() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
+            {errors.password && (
+              <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+            )}
             {showPassword ? (
               <FaEyeSlash
                 className="icon"
@@ -198,6 +200,11 @@ function RegisterPage() {
                 setForm({ ...form, confirmPassword: e.target.value })
               }
             />
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
             {showConfirmPassword ? (
               <FaEyeSlash
                 className="icon"
