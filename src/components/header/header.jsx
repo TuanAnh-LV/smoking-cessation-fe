@@ -165,7 +165,7 @@ const Header = () => {
           </p>
         )}
 
-        <Link to="/blog">
+        <Link to="/blogs">
           <p>Blogs</p>
         </Link>
       </div>
